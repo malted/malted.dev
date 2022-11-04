@@ -1,7 +1,7 @@
 <script>
 	import { onMount } from "svelte";
 
-	const speed = 0.02;
+	const speed = 0.01;
 	const magnitude = 50;
 	const perspective = 150;
 
@@ -10,7 +10,7 @@
 	let ball1, ball2;
 	let shadow1, shadow2;
 
-	let x, z;
+	let x, z, y, s;
 
 	function rotateBalls() {
 		requestAnimationFrame(rotateBalls);
@@ -19,17 +19,25 @@
 
 		x = Math.sin(counter * speed) * magnitude;
 		z = Math.cos(counter * speed) * magnitude;
+		y = Math.sin(counter * 0.05) * 10;
+		s = (c) => Math.sin(c * 0.05) / 2 + 2.5;
 
 		ball1.style.transform = `
             perspective(${perspective}px)
-            translateX(calc(${x}px - 50%))
-            translateZ(${z}px)
+			translate3d(
+				calc(${x}px - 50%),
+				${y}px,
+				${z}px
+			)
         `;
 
 		ball2.style.transform = `
             perspective(${perspective}px)
-            translateX(calc(${-x}px - 50%))
-            translateZ(${-z}px)
+   			translate3d(
+				calc(${-x}px - 50%),
+				${-y}px,
+				${-z}px
+			)
         `;
 
 		shadow1.style.transform = `
@@ -39,6 +47,7 @@
             translateZ(${z}px)
             rotateX(90deg)
         `;
+		shadow1.style.width = shadow1.style.height = `${s(counter)}rem`;
 
 		shadow2.style.transform = `
             perspective(${perspective}px)
@@ -47,35 +56,14 @@
             translateZ(${-z}px)
             rotateX(90deg)
         `;
+		shadow2.style.width = shadow2.style.height = `${s(-counter)}rem`;
 	}
 	onMount(() => rotateBalls());
-
-	function over(event) {
-		event.target.style.borderRadius = "0";
-		(event.target === ball1 ? shadow1 : shadow2).style.borderRadius = "0";
-		(event.target === ball1 ? shadow1 : shadow2).style.filter = "none";
-
-		event.target.style.boxShadow = "none";
-
-		event.target.style.background = "#F0F";
-		(event.target === ball1 ? shadow1 : shadow2).style.background = "#F0F";
-	}
-	function leave(event) {
-		event.target.style.borderRadius = "50%";
-		(event.target === ball1 ? shadow1 : shadow2).style.borderRadius = "50%";
-		(event.target === ball1 ? shadow1 : shadow2).style.filter = "blur(1.5rem)";
-
-		event.target.style.boxShadow = "inset 0 1rem 1rem rgba(0, 0, 0, 0.8)";
-
-		event.target.style.background = event.target === ball1 ? "#4f46e5" : "#dc2626";
-		(event.target === ball1 ? shadow1 : shadow2).style.background =
-			event.target === ball1 ? "#6366f1" : "#ef4444";
-	}
 </script>
 
 <div id="container">
-	<div bind:this={ball1} on:focus on:mouseover={over} on:mouseleave={leave} id="ball-1" />
-	<div bind:this={ball2} on:focus on:mouseover={over} on:mouseleave={leave} id="ball-2" />
+	<div bind:this={ball1} id="ball-1" />
+	<div bind:this={ball2} id="ball-2" />
 	<div bind:this={shadow1} id="shadow-1" />
 	<div bind:this={shadow2} id="shadow-2" />
 </div>

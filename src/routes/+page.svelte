@@ -22,7 +22,7 @@
 	{#if ballsVisible}
 		<div in:fade><Balls /></div>
 	{/if}
-	<Rotate />
+	<!-- <Rotate /> -->
 </main>
 
 <style>
