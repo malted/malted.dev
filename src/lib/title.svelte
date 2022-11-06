@@ -25,6 +25,7 @@
 		right: 0;
 		margin: 2rem;
 		gap: 5rem;
+		white-space: nowrap;
 
 		writing-mode: vertical-rl;
 	}
