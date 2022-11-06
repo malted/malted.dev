@@ -22,5 +22,10 @@
 		"svelte": "^3.44.0",
 		"vite": "^3.1.0"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"simplex-noise": "^4.0.1",
+		"three": "^0.146.0",
+		"three.meshline": "^1.4.0"
+	}
 }

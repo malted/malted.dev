@@ -1,5 +1,4 @@
 <slot />
-<div id="img" />
 
 <style>
 	@font-face {
@@ -12,11 +11,16 @@
 	}
 	@font-face {
 		font-family: "Neue";
-		src: url("/fonts/NeueSemiBold.otf") format("opentype");
+		src: url("/fonts/NeueSemiBold.otf") formacss t("opentype");
+	}
+
+	@font-face {
+		font-family: "Valorant";
+		src: url("/fonts/Valorant.ttf") format("truetype");
 	}
 
 	:root {
-		font-family: "Neue";
+		font-family: "Valorant";
 		color: white;
 		background-color: black;
 	}
@@ -24,15 +28,5 @@
 	:global(a) {
 		text-decoration: none;
 		color: white;
-	}
-
-	#img {
-		background-image: url("/noise.png");
-		z-index: -10;
-		position: absolute;
-		inset: 0;
-		width: 100vw;
-		height: 100vh;
-		filter: contrast(60%);
 	}
 </style>

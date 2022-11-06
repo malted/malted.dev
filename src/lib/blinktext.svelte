@@ -8,8 +8,6 @@
 	export const blinkCount = 2;
 	export const blinkSpeed = 80;
 	export const interDelay = 40;
-	export const offCol = "black";
-	export const onCol = "white";
 
 	const uids = Array.from(Array(target.length), () => {
 		return crypto.randomUUID();
@@ -28,11 +26,9 @@
 		for (let i = 0; i < scrambled.length; i++) {
 			setTimeout(async () => {
 				for (let j = 0; j < blinkCount * 2; j++) {
-					document.getElementById(`letter-${scrambled[i]}`).style.color =
-						j % 2 === 0 ? onCol : offCol;
+					document.getElementById(`letter-${scrambled[i]}`).style.opacity = j % 2 === 0 ? "0" : "1";
 					await sleep(blinkSpeed);
 				}
-				document.getElementById(`letter-${scrambled[i]}`).style.color = onCol;
 			});
 			await sleep(interDelay);
 		}
@@ -45,6 +41,6 @@
 
 <style>
 	span {
-		color: black;
+		opacity: 0;
 	}
 </style>
