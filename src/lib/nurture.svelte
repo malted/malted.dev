@@ -35,16 +35,23 @@
 		renderer.setSize(desiredWidth, desiredHeight, false);
 		document.body.appendChild(renderer.domElement);
 
-		let material = new MeshLineMaterial({ color: 0xffffff, lineWidth: 0.15 });
 		const geometry = new THREE.BufferGeometry();
 
 		let mesh;
 		function funkyLine() {
-			const scroll = document.scrollingElement.scrollTop / 10000;
+			const scroll = document.documentElement.scrollTop / 10000;
+			const scrollMax = (document.documentElement.scrollHeight - window.innerHeight) / 10000;
+			const scrollDiff = scrollMax - scroll;
+
+			const material = new MeshLineMaterial({
+				color: 0xffffff,
+				lineWidth: scrollDiff * 0.15
+			});
 
 			const points = [];
 			for (let y = startY; y < endY; y += lineRes) {
-				const scale = ((19.9 - Math.abs(y)) / 10) ** 3;
+				let scale = ((19.9 - Math.abs(y)) / 10) ** 3;
+				scale = scale * scrollDiff;
 
 				const x = noise(y, scroll) * scale;
 				const z = noise(y, scroll + 10) * scale;
@@ -55,7 +62,7 @@
 
 			geometry.setFromPoints(points);
 
-			if (mesh) scene.remove(mesh);
+			scene.remove(mesh);
 			const line = new MeshLine();
 			line.setGeometry(geometry);
 			mesh = new THREE.Mesh(line, material);
@@ -63,10 +70,12 @@
 		}
 
 		const clock = new THREE.Clock();
+		let squiggleRotation = 0;
 		function animate() {
 			requestAnimationFrame(animate);
 
-			mesh.rotation.y += rotationSpeed;
+			squiggleRotation += rotationSpeed;
+			// mesh.rotation.y = squiggleRotation;
 
 			renderer.render(scene, camera);
 		}
