@@ -84,7 +84,8 @@
 	canvas {
 		width: 100vw;
 		height: 100vh;
-		inset: 0;
+		top: 0;
+		left: -20%;
 		position: fixed;
 		z-index: -10;
 	}
