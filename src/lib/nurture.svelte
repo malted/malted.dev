@@ -40,9 +40,7 @@
 		const material = new LineMaterial({
 			color: 0xffffff
 		});
-
 		const geometry = new LineGeometry();
-
 		const line = new Line2(geometry, material);
 
 		let points = [];
@@ -51,7 +49,7 @@
 			const scrollMax = (document.documentElement.scrollHeight - window.innerHeight) / 10000;
 			const scrollDiff = scrollMax - scroll;
 
-			material.linewidth = scrollDiff * 0.003;
+			material.linewidth = scrollDiff * 0.003 * window.devicePixelRatio || 1;
 
 			let index = 0;
 			for (let y = startY; y < endY; y += lineRes) {
