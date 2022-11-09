@@ -25,7 +25,6 @@
 	"type": "module",
 	"dependencies": {
 		"simplex-noise": "^4.0.1",
-		"three": "^0.146.0",
-		"three.meshline": "^1.4.0"
+		"three": "^0.146.0"
 	}
 }

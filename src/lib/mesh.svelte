@@ -1,17 +1,26 @@
 <script>
 	import { onMount } from "svelte";
+	import { fade } from "svelte/transition";
+
 	import { Gradient } from "$lib/gradient.js";
+
+	let showCanvas = false;
 
 	onMount(() => {
 		const gradient = new Gradient();
 		gradient.initGradient("#gradient-canvas");
+		showCanvas = true;
 	});
 </script>
 
+{#if !showCanvas}
+	<div id="cover" out:fade />
+{/if}
 <canvas id="gradient-canvas" data-transition-in />
 
 <style>
-	#gradient-canvas {
+	#gradient-canvas,
+	#cover {
 		width: 100vw;
 		height: 100vh;
 		position: fixed;
@@ -21,5 +30,10 @@
 		--gradient-color-2: #111118;
 		--gradient-color-3: #0c0c11;
 		--gradient-color-4: #0a0a0d;
+	}
+
+	#cover {
+		z-index: 40;
+		background: black;
 	}
 </style>
