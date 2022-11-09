@@ -49,7 +49,7 @@
 			const scrollMax = (document.documentElement.scrollHeight - window.innerHeight) / 10000;
 			const scrollDiff = scrollMax - scroll;
 
-			material.linewidth = scrollDiff * 0.003 * window.devicePixelRatio || 1;
+			material.linewidth = scrollDiff * 0.003;
 
 			let index = 0;
 			for (let y = startY; y < endY; y += lineRes) {
