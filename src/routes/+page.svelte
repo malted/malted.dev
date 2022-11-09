@@ -11,7 +11,7 @@
 <main>
 	<Mesh />
 	<Nurture />
-	<!-- <Title /> -->
+	<Title />
 	<!-- <Balls /> -->
 </main>
 
