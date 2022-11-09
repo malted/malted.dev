@@ -4,12 +4,17 @@
 
 	import { Gradient } from "$lib/gradient.js";
 
+	import { ready } from "$lib/stores.js";
+
 	let showCanvas = false;
+	ready.subscribe((value) => {
+		showCanvas = value;
+	});
 
 	onMount(() => {
 		const gradient = new Gradient();
 		gradient.initGradient("#gradient-canvas");
-		showCanvas = true;
+		ready.set(true);
 	});
 </script>
 

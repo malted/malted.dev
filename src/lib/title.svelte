@@ -1,21 +1,24 @@
 <script>
-	import { onMount } from "svelte";
 	import { fly } from "svelte/transition";
 
 	import BlinkText from "$lib/blinktext.svelte";
 
-	let visible = false;
-	onMount(() => (visible = true));
+	import { ready } from "$lib/stores.js";
+
+	let showTitle = false;
+	ready.subscribe((value) => {
+		showTitle = value;
+	});
 </script>
 
-<div id="container">
-	<h1><BlinkText target="malted.dev" /></h1>
-	<div>
-		{#if visible}
+{#if showTitle}
+	<div id="container">
+		<h1><BlinkText delay="100" target="malted.dev" /></h1>
+		<div>
 			<h2 in:fly={{ delay: 800, y: -100 }}>Patent pending</h2>
-		{/if}
+		</div>
 	</div>
-</div>
+{/if}
 
 <style>
 	#container {

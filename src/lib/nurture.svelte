@@ -8,13 +8,27 @@
 
 	const noise = createNoise2D();
 
+	function lerp(a, b, t) {
+		return (1 - t) * a + b * t;
+	}
+	function lerpClamp(a, b, t) {
+		const q = (1 - t) * a + b * t;
+		return t < 0 ? a : t > 1 ? b : q;
+	}
+	function invLerp(a, b, value) {
+		return (value - a) / (b - a);
+	}
+	function remap(iMin, iMax, oMin, oMax, v) {
+		return lerp(oMin, oMax, invLerp(iMin, iMax, v));
+	}
+
 	let canvas;
 
 	onMount(() => {
 		const startY = -20;
 		const endY = 20;
 		const lineRes = 0.01;
-		const rotationSpeed = 0.005;
+		let rotationSpeed = 0.001;
 		const cameraZoom = 25;
 
 		const scene = new THREE.Scene();
@@ -45,20 +59,22 @@
 
 		let points = [];
 		function funkyLine() {
-			const scroll = document.documentElement.scrollTop / 10000;
-			const scrollMax = (document.documentElement.scrollHeight - window.innerHeight) / 10000;
-			const scrollDiff = scrollMax - scroll;
+			const scroll = document.documentElement.scrollTop;
+			const scrollMax = window.innerHeight;
+			const scrollDiff = remap(0, scrollMax, 0, 1, scroll / 2);
 
-			material.linewidth = scrollDiff * 0.003;
+			material.linewidth = lerpClamp(0.0025, 0.001, scrollDiff / 2) * window.devicePixelRatio;
+			rotationSpeed = lerpClamp(0.005, 0.5, scrollDiff);
+			line.position.x = lerpClamp(0, window.innerWidth / -100, scrollDiff);
 
 			let index = 0;
 			for (let y = startY; y < endY; y += lineRes) {
 				let scale = ((19.9 - Math.abs(y)) / 10) ** 3;
-				scale = scale * scrollDiff;
+				scale = scale * lerpClamp(1, 0, scrollDiff);
 
-				const x = noise(y, scroll) * scale;
-				const z = noise(y, scroll + 10) * scale;
-				const offsetY = noise(y, scroll + 20) * scale;
+				const x = noise(y, scrollDiff) * scale;
+				const z = noise(y, scrollDiff + 10) * scale;
+				const offsetY = noise(y, scrollDiff + 20) * scale;
 
 				// points[index++] = new THREE.Vector3(x, y + offsetY, z); //helo :D
 				points[index++] = x;
