@@ -63,8 +63,8 @@
 			const scrollMax = window.innerHeight;
 			const scrollDiff = remap(0, scrollMax, 0, 1, scroll / 2);
 
-			material.linewidth = lerpClamp(0.0025, 0.001, scrollDiff / 2) * window.devicePixelRatio;
-			rotationSpeed = lerpClamp(0.005, 0.5, scrollDiff);
+			material.linewidth = lerpClamp(0.0025, 0.001, scrollDiff) * window.devicePixelRatio;
+			rotationSpeed = lerpClamp(0.005, 0.25, scrollDiff);
 			line.position.x = lerpClamp(0, window.innerWidth / -100, scrollDiff);
 
 			let index = 0;
@@ -76,7 +76,6 @@
 				const z = noise(y, scrollDiff + 10) * scale;
 				const offsetY = noise(y, scrollDiff + 20) * scale;
 
-				// points[index++] = new THREE.Vector3(x, y + offsetY, z); //helo :D
 				points[index++] = x;
 				points[index++] = y + offsetY;
 				points[index++] = z;

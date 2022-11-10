@@ -5,6 +5,8 @@
 
 	import { ready } from "$lib/stores.js";
 
+	export let title;
+
 	let showTitle = false;
 	ready.subscribe((value) => {
 		showTitle = value;
@@ -12,7 +14,7 @@
 </script>
 
 {#if showTitle}
-	<div id="container">
+	<div id="container" bind:this={title}>
 		<h1><BlinkText delay="100" target="malted.dev" /></h1>
 		<div>
 			<h2 in:fly={{ delay: 800, y: -100 }}>Patent pending</h2>
@@ -43,6 +45,6 @@
 	}
 
 	h2 {
-		opacity: 0.5;
+		opacity: 0.6;
 	}
 </style>
