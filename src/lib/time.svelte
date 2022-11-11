@@ -2,26 +2,13 @@
 	import { onMount, onDestroy } from "svelte";
 	import { fade } from "svelte/transition";
 
-	function elementsOverlap(el1, el2) {
-		if (!el1 || !el2) return true;
-		const domRect1 = el1.getBoundingClientRect();
-		const domRect2 = el2.getBoundingClientRect();
-		console.log(domRect2);
-
-		return el1.top;
-	}
-
 	let display;
 	export let title;
 
-	let scrollY;
 	let shouldDisplay;
-	$: if (scrollY) {
+	function scroll() {
 		if (title) {
 			shouldDisplay = display.getBoundingClientRect().top > title.getBoundingClientRect().bottom;
-			console.log(
-				`d${display.getBoundingClientRect().top} t: ${title.getBoundingClientRect().bottom}`
-			);
 		}
 	}
 
@@ -46,12 +33,18 @@
 	onDestroy(() => clearInterval(interval));
 </script>
 
-<svelte:window bind:scrollY />
+<svelte:window on:scroll={scroll} />
 
-<div bind:this={display}>
-	{#if time && day && shouldDisplay}
-		<p in:fade out:fade>It's {time} on {day} for me</p>
-	{/if}
+<div
+	bind:this={display}
+	on:focus
+	on:mouseenter={() => (shouldDisplay = false)}
+	on:mouseleave={() => (shouldDisplay = true)}
+>
+	<p in:fade out:fade style:opacity={shouldDisplay ? 0.4 : 0}>
+		It's {time} on {day}<br />
+		MST (Malted Standard Time)
+	</p>
 </div>
 
 <style>
@@ -60,7 +53,7 @@
 		right: 0;
 		bottom: 0;
 		margin: 1rem;
-		width: 50%;
+		width: fit-content;
 	}
 
 	p {
@@ -68,5 +61,6 @@
 		margin: 0;
 		opacity: 0.4;
 		text-align: right;
+		transition: 0.25s;
 	}
 </style>

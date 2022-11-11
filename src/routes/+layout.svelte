@@ -11,7 +11,7 @@
 	}
 	@font-face {
 		font-family: "Neue";
-		src: url("/fonts/NeueSemiBold.otf") formacss t("opentype");
+		src: url("/fonts/NeueSemiBold.otf") format("opentype");
 	}
 
 	@font-face {

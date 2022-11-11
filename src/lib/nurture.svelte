@@ -6,6 +6,8 @@
 	import { LineGeometry } from "three/addons/lines/LineGeometry.js";
 	import { createNoise2D } from "simplex-noise";
 
+	import { TransformControls } from "three/addons/controls/TransformControls.js";
+
 	const noise = createNoise2D();
 
 	function lerp(a, b, t) {
@@ -56,6 +58,13 @@
 		});
 		const geometry = new LineGeometry();
 		const line = new Line2(geometry, material);
+
+		const cube = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshNormalMaterial());
+		// scene.add(cube);
+
+		const transformControl = new TransformControls(camera, renderer.domElement);
+		transformControl.attach(cube);
+		// scene.add(transformControl);
 
 		let points = [];
 		function funkyLine() {
@@ -114,6 +123,5 @@
 		top: 0;
 		left: -20%;
 		position: fixed;
-		z-index: -10;
 	}
 </style>
