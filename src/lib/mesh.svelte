@@ -32,7 +32,7 @@
 		inset: 0;
 		z-index: -50;
 		--gradient-color-1: #25273c;
-		--gradient-color-2: #3e3f4d;
+		--gradient-color-2: #262730;
 		--gradient-color-3: #0a0a0d;
 		--gradient-color-4: #2b1212;
 	}

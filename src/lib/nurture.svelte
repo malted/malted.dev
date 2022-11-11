@@ -123,5 +123,6 @@
 		top: 0;
 		left: -20%;
 		position: fixed;
+		z-index: -10;
 	}
 </style>
