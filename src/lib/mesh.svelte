@@ -31,10 +31,10 @@
 		position: fixed;
 		inset: 0;
 		z-index: -50;
-		--gradient-color-1: #1d1d29;
-		--gradient-color-2: #111118;
-		--gradient-color-3: #0c0c11;
-		--gradient-color-4: #0a0a0d;
+		--gradient-color-1: #25273c;
+		--gradient-color-2: #3e3f4d;
+		--gradient-color-3: #0a0a0d;
+		--gradient-color-4: #2b1212;
 	}
 
 	#cover {
