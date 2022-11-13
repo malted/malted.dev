@@ -22,11 +22,13 @@
 		width: 100%;
 		margin: 0;
 		margin-top: 60rem;
+		z-index: -8;
 	}
 	nav {
 		position: absolute;
 		right: 0;
 		background-color: black;
+		/* box-shadow: 0 -5rem 1rem black; */
 		opacity: 0;
 		height: 100vh;
 	}

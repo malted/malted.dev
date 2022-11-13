@@ -73,7 +73,7 @@
 		let points = [];
 		function funkyLine() {
 			const scroll = document.documentElement.scrollTop;
-			const scrollMax = 1_000; //window.innerHeight;
+			const scrollMax = 1_000;
 			const scrollDiff = remap(0, scrollMax, 0, 1, scroll);
 
 			material.linewidth = lerpClamp(0.0025, 0.001, scrollDiff);
@@ -81,6 +81,7 @@
 			canvas.style.left =
 				lerpClamp(-20, 40 - (canvas.clientWidth < 660 ? 10 : 0), easeOut(scrollDiff)) + "%";
 			if (nav) nav.style.opacity = `${lerpClamp(0, 0.5, scrollDiff)}`;
+			console.log(`clientWidth: ${canvas.clientWidth}\nscrollDiff: ${scrollDiff}`);
 
 			let index = 0;
 			for (let y = startY; y < endY; y += lineRes) {
@@ -124,10 +125,10 @@
 
 <style>
 	canvas {
-		width: 100vw;
-		height: 100vh;
+		width: 100%;
+		height: 100%;
 		top: 0;
 		position: fixed;
-		z-index: -10;
+		z-index: -5;
 	}
 </style>
