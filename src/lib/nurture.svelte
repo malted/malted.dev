@@ -81,7 +81,6 @@
 			canvas.style.left =
 				lerpClamp(-20, 40 - (canvas.clientWidth < 660 ? 10 : 0), easeOut(scrollDiff)) + "%";
 			if (nav) nav.style.opacity = `${lerpClamp(0, 0.5, scrollDiff)}`;
-			console.log(`clientWidth: ${canvas.clientWidth}\nscrollDiff: ${scrollDiff}`);
 
 			let index = 0;
 			for (let y = startY; y < endY; y += lineRes) {
@@ -126,7 +125,7 @@
 <style>
 	canvas {
 		width: 100%;
-		height: 100%;
+		height: 100vh;
 		top: 0;
 		position: fixed;
 		z-index: -5;

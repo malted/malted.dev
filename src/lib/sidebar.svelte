@@ -28,7 +28,7 @@
 		position: absolute;
 		right: 0;
 		background-color: black;
-		/* box-shadow: 0 -5rem 1rem black; */
+		box-shadow: 0 -5rem 1rem black;
 		opacity: 0;
 		height: 100vh;
 	}
