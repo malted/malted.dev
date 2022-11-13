@@ -50,7 +50,7 @@
 <style>
 	div {
 		position: fixed;
-		right: 0;
+		left: 0;
 		bottom: 0;
 		margin: 1rem;
 		width: fit-content;
@@ -60,7 +60,6 @@
 		font-size: 0.8rem;
 		margin: 0;
 		opacity: 0.4;
-		text-align: right;
 		transition: 0.25s;
 	}
 </style>

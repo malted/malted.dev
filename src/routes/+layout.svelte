@@ -24,6 +24,9 @@
 		color: white;
 		background-color: black;
 	}
+	:global(body) {
+		margin: 0;
+	}
 
 	:global(a) {
 		text-decoration: none;

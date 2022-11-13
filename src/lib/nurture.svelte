@@ -23,8 +23,12 @@
 	function remap(iMin, iMax, oMin, oMax, v) {
 		return lerp(oMin, oMax, invLerp(iMin, iMax, v));
 	}
+	function easeOut(x) {
+		return 1 - Math.pow(1 - x, 3);
+	}
 
-	let canvas;
+	export let canvas;
+	export let nav;
 
 	onMount(() => {
 		const startY = -20;
@@ -59,22 +63,24 @@
 		const geometry = new LineGeometry();
 		const line = new Line2(geometry, material);
 
-		const cube = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshNormalMaterial());
+		// const cube = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshNormalMaterial());
 		// scene.add(cube);
 
-		const transformControl = new TransformControls(camera, renderer.domElement);
-		transformControl.attach(cube);
+		// const transformControl = new TransformControls(camera, renderer.domElement);
+		// transformControl.attach(cube);
 		// scene.add(transformControl);
 
 		let points = [];
 		function funkyLine() {
 			const scroll = document.documentElement.scrollTop;
-			const scrollMax = window.innerHeight;
-			const scrollDiff = remap(0, scrollMax, 0, 1, scroll / 2);
+			const scrollMax = 1_000; //window.innerHeight;
+			const scrollDiff = remap(0, scrollMax, 0, 1, scroll);
 
-			material.linewidth = lerpClamp(0.0025, 0.001, scrollDiff) * window.devicePixelRatio;
+			material.linewidth = lerpClamp(0.0025, 0.001, scrollDiff);
 			rotationSpeed = lerpClamp(0.005, 0.25, scrollDiff);
-			line.position.x = lerpClamp(0, window.innerWidth / -100, scrollDiff);
+			canvas.style.left =
+				lerpClamp(-20, 40 - (canvas.clientWidth < 660 ? 10 : 0), easeOut(scrollDiff)) + "%";
+			if (nav) nav.style.opacity = `${lerpClamp(0, 0.5, scrollDiff)}`;
 
 			let index = 0;
 			for (let y = startY; y < endY; y += lineRes) {
@@ -121,7 +127,6 @@
 		width: 100vw;
 		height: 100vh;
 		top: 0;
-		left: -20%;
 		position: fixed;
 		z-index: -10;
 	}

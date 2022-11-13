@@ -2,6 +2,8 @@
 	import { fade } from "svelte/transition";
 
 	let title;
+	let nurtureCanvas;
+	let nav;
 
 	import Title from "$lib/title.svelte";
 	import Rotate from "$lib/rotate.svelte";
@@ -9,14 +11,18 @@
 	import Nurture from "$lib/nurture.svelte";
 	import Mesh from "$lib/mesh.svelte";
 	import Time from "$lib/time.svelte";
+	import Desc from "$lib/desc.svelte";
+	import Sidebar from "$lib/sidebar.svelte";
 </script>
 
 <main>
 	<Mesh />
-	<Nurture />
+	<Nurture bind:canvas={nurtureCanvas} {nav} />
 	<Title bind:title />
 	<!-- <Balls /> -->
 	<Time {title} />
+	<!-- <Desc /> -->
+	<Sidebar bind:nav {nurtureCanvas} />
 </main>
 
 <style>
