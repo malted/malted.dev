@@ -9,7 +9,9 @@
 
 <div id="container">
 	<nav bind:this={nav}>
-		<h3>&lt;nav /&gt;</h3>
+		<div id="internal">
+			<h3>&lt;nav /&gt;</h3>
+		</div>
 	</nav>
 </div>
 
@@ -25,13 +27,17 @@
 		position: absolute;
 		right: 0;
 		background-color: black;
+		opacity: 0;
 		height: 100vh;
+	}
+
+	#internal {
 		display: flex;
 		justify-content: center;
+		margin-top: 2rem;
 	}
 
 	h3 {
 		writing-mode: vertical-rl;
-		margin: 0;
 	}
 </style>
