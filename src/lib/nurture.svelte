@@ -10,6 +10,9 @@
 
 	const noise = createNoise2D();
 
+	function clamp(t) {
+		return t < 0 ? 0 : t > 1 ? 1 : t;
+	}
 	function lerp(a, b, t) {
 		return (1 - t) * a + b * t;
 	}
@@ -25,6 +28,9 @@
 	}
 	function easeOut(x) {
 		return 1 - Math.pow(1 - x, 3);
+	}
+	function easeInQuart(x) {
+		return x * 2;
 	}
 
 	export let canvas;
@@ -57,8 +63,11 @@
 		renderer.setSize(desiredWidth, desiredHeight, false);
 		document.body.appendChild(renderer.domElement);
 
+		const clock = new THREE.Clock();
+		clock.start();
+
 		const material = new LineMaterial({
-			color: 0xffffff
+			vertexColors: true
 		});
 		const geometry = new LineGeometry();
 		const line = new Line2(geometry, material);
@@ -71,23 +80,27 @@
 		// scene.add(transformControl);
 
 		let points = [];
+		let colours = [];
+
+		let first = true;
 		function funkyLine() {
 			const scroll = document.documentElement.scrollTop;
 			const scrollMax = 1_000;
 			const scrollDiff = remap(0, scrollMax, 0, 1, scroll);
 
-			material.linewidth = lerpClamp(0.0025, 0.001, scrollDiff);
+			material.linewidth = lerpClamp(0.0015, 0.0035, scrollDiff);
 			rotationSpeed = lerpClamp(0.005, 0.25, scrollDiff);
 
 			// JavaScript media queries 💀
 			canvas.style.left =
-				lerpClamp(-20, 40 - (canvas.clientWidth < 660 ? 10 : 0), easeOut(scrollDiff)) + "%";
+				lerpClamp(-20, 40 - (canvas.clientWidth < 660 ? 10 : 0), easeOut(scrollDiff / 2)) + "%";
 			if (nav) nav.style.opacity = `${lerpClamp(0, 0.5, scrollDiff)}`;
 
 			let index = 0;
+			let colourIndex = 0;
 			for (let y = startY; y < endY; y += lineRes) {
 				let scale = ((19.9 - Math.abs(y)) / 10) ** 3;
-				scale = scale * lerpClamp(1, 0, scrollDiff);
+				scale = scale * lerpClamp(1, 0, scrollDiff / 1.5);
 
 				const x = noise(y, scrollDiff) * scale;
 				const z = noise(y, scrollDiff + 10) * scale;
@@ -96,15 +109,21 @@
 				points[index++] = x;
 				points[index++] = y + offsetY;
 				points[index++] = z;
+
+				// const c = (y + 20) / 40 < easeInQuart(scrollDiff / 2) ? 0.7 : 15 - Math.abs(y) ** 2;
+				const c = Math.abs(y) > scrollDiff * 15 ? 1 : 0.5;
+				colours[colourIndex++] = c;
+				colours[colourIndex++] = c;
+				colours[colourIndex++] = c;
 			}
 			geometry.setPositions(points);
+			geometry.setColors(colours);
 		}
 		funkyLine();
 
 		geometry.setPositions(points);
 		scene.add(line);
 
-		const clock = new THREE.Clock();
 		let squiggleRotation = 0;
 		function animate() {
 			requestAnimationFrame(animate);
@@ -115,7 +134,6 @@
 			renderer.render(scene, camera);
 		}
 
-		funkyLine();
 		animate();
 
 		window.addEventListener("scroll", () => funkyLine());
