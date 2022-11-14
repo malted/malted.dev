@@ -78,6 +78,8 @@
 
 			material.linewidth = lerpClamp(0.0025, 0.001, scrollDiff);
 			rotationSpeed = lerpClamp(0.005, 0.25, scrollDiff);
+
+			// JavaScript media queries 💀
 			canvas.style.left =
 				lerpClamp(-20, 40 - (canvas.clientWidth < 660 ? 10 : 0), easeOut(scrollDiff)) + "%";
 			if (nav) nav.style.opacity = `${lerpClamp(0, 0.5, scrollDiff)}`;
