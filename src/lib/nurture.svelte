@@ -110,11 +110,10 @@
 				points[index++] = y + offsetY;
 				points[index++] = z;
 
-				// const c = (y + 20) / 40 < easeInQuart(scrollDiff / 2) ? 0.7 : 15 - Math.abs(y) ** 2;
-				const c = Math.abs(y) > scrollDiff * 15 ? 1 : 0.5;
-				colours[colourIndex++] = c;
-				colours[colourIndex++] = c;
-				colours[colourIndex++] = c;
+				colours[colourIndex++] =
+					colours[colourIndex++] =
+					colours[colourIndex++] =
+						Math.abs(y) > scrollDiff * 20 ? 1 : 0.5;
 			}
 			geometry.setPositions(points);
 			geometry.setColors(colours);
