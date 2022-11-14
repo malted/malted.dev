@@ -32,6 +32,12 @@
 	function easeInQuart(x) {
 		return x * 2;
 	}
+	function easeOutExpo(x) {
+		return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
+	}
+	function easeInExpo(x) {
+		return x === 0 ? 0 : Math.pow(2, 10 * x - 10);
+	}
 
 	export let canvas;
 	export let nav;
@@ -113,7 +119,7 @@
 				colours[colourIndex++] =
 					colours[colourIndex++] =
 					colours[colourIndex++] =
-						Math.abs(y) > scrollDiff * 20 ? 1 : 0.5;
+						Math.abs(y) > easeInQuart(scrollDiff) * 8 ? 1 : 0.5;
 			}
 			geometry.setPositions(points);
 			geometry.setColors(colours);
