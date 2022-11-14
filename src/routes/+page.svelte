@@ -21,7 +21,7 @@
 	<Title bind:title />
 	<!-- <Balls /> -->
 	<Time {title} />
-	<!-- <Desc /> -->
+	<Desc />
 	<Sidebar bind:nav {nurtureCanvas} />
 </main>
 

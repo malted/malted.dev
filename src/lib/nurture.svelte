@@ -94,12 +94,12 @@
 			const scrollMax = 1_000;
 			const scrollDiff = remap(0, scrollMax, 0, 1, scroll);
 
-			material.linewidth = lerpClamp(0.0015, 0.0035, scrollDiff);
+			material.linewidth = lerpClamp(0.0015, 0.004, scrollDiff);
 			rotationSpeed = lerpClamp(0.005, 0.25, scrollDiff);
 
 			// JavaScript media queries 💀
 			canvas.style.left =
-				lerpClamp(-20, 40 - (canvas.clientWidth < 660 ? 10 : 0), easeOut(scrollDiff / 2)) + "%";
+				lerpClamp(-20, 40 - (canvas.clientWidth < 660 ? 10 : 0), easeOut(scrollDiff / 5)) + "%";
 			if (nav) nav.style.opacity = `${lerpClamp(0, 0.5, scrollDiff)}`;
 
 			let index = 0;
@@ -116,11 +116,15 @@
 				points[index++] = y + offsetY;
 				points[index++] = z;
 
-				colours[colourIndex++] =
-					colours[colourIndex++] =
-					colours[colourIndex++] =
-						Math.abs(y) > easeInQuart(scrollDiff) * 8 ? 1 : 0.5;
+				const col =
+					Math.abs(y) > easeInQuart(scrollDiff) * 5
+						? 1
+						: new THREE.Color(`hsl(${scrollDiff * 30}, 30%, 50%)`);
+				colours[colourIndex++] = col.isColor ? col.r : col;
+				colours[colourIndex++] = col.isColor ? col.g : col;
+				colours[colourIndex++] = col.isColor ? col.b : col;
 			}
+
 			geometry.setPositions(points);
 			geometry.setColors(colours);
 		}
