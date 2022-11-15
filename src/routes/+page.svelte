@@ -1,27 +1,26 @@
 <script>
+	import { onMount } from "svelte";
 	import { fade } from "svelte/transition";
 
 	let title;
 	let nurtureCanvas;
 	let nav;
 
-	import Title from "$lib/title.svelte";
-	import Rotate from "$lib/rotate.svelte";
-	import Balls from "../demos/balls/balls.svelte";
-	import Nurture from "$lib/nurture.svelte";
-	import Mesh from "$lib/mesh.svelte";
-	import Time from "$lib/time.svelte";
-	import Desc from "$lib/desc.svelte";
-	import Sidebar from "$lib/sidebar.svelte";
+	import Title from "/src/components/title.svelte";
+	// import Rotate from "$lib/rotate.svelte";
+	// import Balls from "../demos/balls/balls.svelte";
+	import Three from "/src/components/three.svelte";
+	import Mesh from "/src/components/mesh.svelte";
+	import Time from "/src/components/time.svelte";
+	import Sidebar from "/src/components/sidebar.svelte";
 </script>
 
 <main>
 	<Mesh />
-	<Nurture bind:canvas={nurtureCanvas} {nav} />
+	<Three bind:canvas={nurtureCanvas} {nav} />
 	<Title bind:title />
 	<!-- <Balls /> -->
 	<Time {title} />
-	<Desc />
 	<Sidebar bind:nav {nurtureCanvas} />
 </main>
 
