@@ -55,9 +55,6 @@
 		const lineGeometry = new LineGeometry();
 		const line = new Line2(lineGeometry, lineMaterial);
 
-		// const cube = new THREE.Mesh(new THREE.BoxGeometry(), new THREE.MeshNormalMaterial());
-		// scene.add(cube);
-
 		// const transformControl = new TransformControls(camera, renderer.domElement);
 		// transformControl.attach(cube);
 		// scene.add(transformControl);
@@ -110,7 +107,7 @@
 						col = new THREE.Color((-y + 20) / 40, 1, (y + 20) / 40);
 					}
 
-					first = clock.getElapsedTime() < startTime + 12;
+					first = clock.getElapsedTime() < startTime + 0.8;
 				}
 				colours[colourIndex++] = col.isColor ? col.r : col;
 				colours[colourIndex++] = col.isColor ? col.g : col;

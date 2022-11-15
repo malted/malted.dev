@@ -9,19 +9,21 @@
 	import Title from "/src/components/title.svelte";
 	// import Rotate from "$lib/rotate.svelte";
 	// import Balls from "../demos/balls/balls.svelte";
-	import Three from "/src/components/three.svelte";
+	import Nurture from "/src/components/nurture.svelte";
 	import Mesh from "/src/components/mesh.svelte";
 	import Time from "/src/components/time.svelte";
 	import Sidebar from "/src/components/sidebar.svelte";
+	import Background from "../components/background.svelte";
 </script>
 
 <main>
 	<Mesh />
-	<Three bind:canvas={nurtureCanvas} {nav} />
+	<Nurture bind:canvas={nurtureCanvas} {nav} />
 	<Title bind:title />
 	<!-- <Balls /> -->
 	<Time {title} />
 	<Sidebar bind:nav {nurtureCanvas} />
+	<Background />
 </main>
 
 <style>
