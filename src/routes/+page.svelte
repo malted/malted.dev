@@ -23,7 +23,7 @@
 	<!-- <Balls /> -->
 	<Time {title} />
 	<Sidebar bind:nav {nurtureCanvas} />
-	<Background />
+	<!-- <Background /> -->
 </main>
 
 <style>

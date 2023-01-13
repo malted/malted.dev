@@ -24,6 +24,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"animejs": "^3.2.1",
 		"simplex-noise": "^4.0.1",
 		"three": "^0.146.0"
 	}

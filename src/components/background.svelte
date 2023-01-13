@@ -2,6 +2,8 @@
 	import { onMount } from "svelte";
 	import * as THREE from "three";
 	import * as UTILS from "$lib/utils.js";
+	import Dict from "./dict.svelte";
+	import Rotate from "$lib/rotate.svelte";
 
 	let canvas;
 
@@ -38,12 +40,12 @@
 		geometry = new THREE.BufferGeometry();
 
 		const positions = [];
-		let colIndex = 0;
 		for (let i = 0; i < sideLength ** 3; i++) {
 			// Positions
 			const x = i % sideLength;
 			const y = Math.floor(i / sideLength ** 2);
 			const z = Math.floor(i / sideLength) % sideLength;
+
 			positions.push(
 				(x - sideLength / 2) * spread,
 				(y - sideLength / 2) * spread,
@@ -67,7 +69,8 @@
 
 		points = new THREE.Points(geometry, material);
 		scene.add(points);
-		points.position.z = -20;
+
+		points.position.set(0, -8, -30);
 		points.rotation.x = 0.4;
 
 		camera.position.z = 0;
@@ -93,14 +96,20 @@
 			colours[(c += 4)] = (scrollDiff * sideLength ** 3 * 4) / i < 1 ? 0 : 1;
 		}
 		geometry.setAttribute("color", new THREE.Float32BufferAttribute(colours, 4));
-
-		geometry.computeBoundingSphere();
 	}
 </script>
 
 <svelte:window on:scroll={scroll} />
 
 <canvas bind:this={canvas} />
+
+<div id="rotate">
+	<!-- <p>Line 1</p>
+	<p>Line 2</p>
+	<p>Line 3</p>
+	<p>Line 4</p> -->
+	<Rotate />
+</div>
 
 <style>
 	canvas {
@@ -109,5 +118,13 @@
 		top: 0;
 		position: fixed;
 		z-index: -10;
+	}
+
+	#rotate {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		margin-top: 150vh;
+		margin-right: 50%;
 	}
 </style>

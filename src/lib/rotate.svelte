@@ -1,37 +1,48 @@
 <script>
 	import { onMount } from "svelte";
+	import * as UTILS from "$lib/utils.js";
 
-	let l1, l2, l3, l4;
+	let container;
+
+	// The difference in rotation from one element to the next, in degrees.
+	const offset = 10;
+	const scaleFactor = 10;
+
+	// How much less the element rotation is on the x axis than the y axis;
+	const xFactor = 0.5;
 
 	onMount(() => {
 		const warpTextOnScroll = () => {
 			const s = window.scrollY;
-			l1.style.transform = `rotateY(${s / 20 - 5}deg) rotateX(${s / -30}deg)`;
-			l2.style.transform = `rotateY(${s / 22 - 5}deg) rotateX(${s / -32}deg)`;
-			l3.style.transform = `rotateY(${s / 24 - 5}deg) rotateX(${s / -34}deg)`;
-			l4.style.transform = `rotateY(${s / 26 - 5}deg) rotateX(${s / -36}deg)`;
+
+			Object.values(container.children).forEach((el, idx) => {
+				el.style.transform = `rotateY(${s / scaleFactor + idx * offset}deg)`;
+			});
+
+			// console.log(UTILS.easeOutIn(UTILS.lerpClamp(0, 1, window.scrollY / window.innerHeight)));
+			container.style.top =
+				UTILS.easeOut(UTILS.lerpClamp(0, 1, window.scrollY / window.innerHeight)) *
+					window.innerHeight +
+				"px";
 		};
 		warpTextOnScroll();
 		document.addEventListener("scroll", warpTextOnScroll);
 	});
 </script>
 
-<div id="container">
-	<p bind:this={l1}>Scroll</p>
-	<p bind:this={l2}>Scrollllllll</p>
-	<p bind:this={l3}>Scrollllll meeeeee</p>
-	<p bind:this={l4}>Weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee</p>
+<div id="container" bind:this={container}>
+	<p>Scroll</p>
+	<p>Scrollllllll</p>
+	<p>Scrollllll meeeeee</p>
+	<p>Weeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee</p>
 </div>
 
 <style>
 	#container {
-		height: 200vh;
+		position: fixed;
 		top: 100vh;
-		position: relative;
 	}
-	p {
-		font-size: 3rem;
-		font-family: "Gavency";
-		text-align: center;
+	#container > * {
+		font-size: 2rem;
 	}
 </style>

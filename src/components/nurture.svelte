@@ -20,7 +20,8 @@
 		const startY = -20;
 		const endY = 20;
 		const lineRes = 0.01;
-		let rotationSpeed = 0.001;
+		let rotationSpeed;
+		const lineRotation = { min: 0.5, max: 5 };
 		const cameraZoom = 25;
 		const startTime = 1;
 
@@ -49,7 +50,6 @@
 		camera.position.z = cameraZoom;
 
 		const clock = new THREE.Clock();
-		clock.start();
 
 		const lineMaterial = new LineMaterial({ vertexColors: true });
 		const lineGeometry = new LineGeometry();
@@ -64,18 +64,17 @@
 		let first = true;
 		function funkyLine() {
 			const scroll = document.documentElement.scrollTop;
-			const scrollMax = 1_000;
-			const scrollDiff = UTILS.remap(0, scrollMax, 0, 1, scroll);
+			const scrollDiff = UTILS.lerp(0, 1, scroll) / 1000;
 
 			lineMaterial.linewidth = UTILS.lerpClamp(0.0015, 0.004, scrollDiff);
-			rotationSpeed = UTILS.lerpClamp(0.005, 0.25, scrollDiff);
+			rotationSpeed = UTILS.lerpClamp(lineRotation.min, lineRotation.max, scrollDiff);
 
 			// JavaScript media queries 💀
 			canvas.style.left =
 				UTILS.lerpClamp(
 					-20,
 					40 - (canvas.clientWidth < 660 ? 10 : 0),
-					UTILS.easeOut(scrollDiff / 5)
+					UTILS.easeOut(scrollDiff / 4)
 				) + "%";
 			if (nav) nav.style.opacity = `${UTILS.lerpClamp(0, 0.5, scrollDiff)}`;
 
@@ -93,7 +92,7 @@
 				points[index++] = y + offsetY;
 				points[index++] = z;
 
-				let col = Math.abs(y) > UTILS.easeInQuart(scrollDiff) * 5 ? 1 : 0.5; //new THREE.Color(`hsl(${scrollDiff * 30}, 30%, 50%)`);
+				let col = Math.abs(y) > UTILS.easeInQuart(scrollDiff) * 5 ? 1 : 0.5;
 				const seg = ((y + 20) / 40) * startTime;
 
 				if (first) {
@@ -122,12 +121,11 @@
 		lineGeometry.setPositions(points);
 		scene.add(line);
 
-		let squiggleRotation = 0;
+		clock.start();
 		function animate() {
 			requestAnimationFrame(animate);
 
-			squiggleRotation += rotationSpeed;
-			line.rotation.y = squiggleRotation;
+			line.rotation.y += rotationSpeed * clock.getDelta();
 
 			if (first) funkyLine();
 

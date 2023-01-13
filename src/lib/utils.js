@@ -26,3 +26,16 @@ export function easeOutExpo(x) {
 export function easeInExpo(x) {
 	return x === 0 ? 0 : Math.pow(2, 10 * x - 10);
 }
+export function easeInOutCubic(x) {
+	return x < 0.5 ? 4 * x ** 3 : 1 - (-2 * x + 2) ** 3 / 2;
+}
+export function easeInOutCirc(x) {
+	return x < 0.5
+		? (1 - Math.sqrt(1 - Math.pow(2 * x, 2))) / 2
+		: (Math.sqrt(1 - Math.pow(-2 * x + 2, 2)) + 1) / 2;
+}
+export function easeOutIn(a, b) {
+	return function (t) {
+		return t < 0.5 ? (1 - easeInExpo(a, b)(1 - t * 2)) / 2 : (easeInExpo(a, b)(t * 2 - 1) + 1) / 2;
+	};
+}
