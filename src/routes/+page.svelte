@@ -1,2 +1,15 @@
-<h1>Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script>
+	import Scene from "./scene.svelte";
+</script>
+
+<main>
+	<Scene />
+</main>
+
+<style>
+	main {
+		height: 100%;
+		line-height: 0;
+		background-color: black;
+	}
+</style>
