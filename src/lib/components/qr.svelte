@@ -23,7 +23,7 @@
 
 		qr.querySelectorAll("rect")[0].remove();
 		// Translate every rect to the left edge of the svg by -31px, and down by 31px, to compensate for the removed rect
-		qr.querySelectorAll("rect").forEach((rect, idx) => {
+		qr.querySelectorAll("rect").forEach((rect) => {
 			rect.setAttribute("x", parseInt(rect.getAttribute("x")) - 31);
 			rect.setAttribute("y", parseInt(rect.getAttribute("y")) - 31);
 		});
