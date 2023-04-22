@@ -12,3 +12,14 @@
 <!-- <Barcode /> -->
 <Qr />
 <Canvas {data} />
+
+<h2>WIP! Check back later</h2>
+
+<style>
+	h2 {
+		position: absolute;
+		top: 0%;
+		left: 50%;
+		transform: translateX(-50%);
+	}
+</style>
