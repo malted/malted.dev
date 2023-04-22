@@ -14,7 +14,7 @@
 			padding: 4,
 			width: 256,
 			height: 256,
-			color: "#000000",
+			color: "#222222",
 			background: "transparent",
 			ecclevel: "M"
 		}).svg();
@@ -34,10 +34,10 @@
 			const randomSquare =
 				qr.querySelectorAll("rect")[Math.floor(Math.random() * qr.querySelectorAll("rect").length)];
 
-			randomSquare.style.fill = `red`;
+			randomSquare.style.fill = "#333333";
 
 			setTimeout(() => {
-				randomSquare.style.fill = "black";
+				randomSquare.style.fill = "#222222";
 			}, randomRange(100, 500));
 		}
 

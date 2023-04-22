@@ -11,19 +11,21 @@
 		"format": "prettier --plugin-search-dir . --write ."
 	},
 	"devDependencies": {
-		"@playwright/test": "^1.28.1",
+		"@playwright/test": "^1.32.3",
 		"@sveltejs/adapter-auto": "^2.0.0",
-		"@sveltejs/kit": "^1.5.0",
-		"eslint": "^8.28.0",
-		"eslint-config-prettier": "^8.5.0",
+		"@sveltejs/kit": "^1.15.4",
+		"eslint": "^8.38.0",
+		"eslint-config-prettier": "^8.8.0",
 		"eslint-plugin-svelte3": "^4.0.0",
-		"prettier": "^2.8.0",
-		"prettier-plugin-svelte": "^2.8.1",
-		"svelte": "^3.54.0",
-		"vite": "^4.0.0"
+		"prettier": "^2.8.7",
+		"prettier-plugin-svelte": "^2.10.0",
+		"svelte": "^3.58.0",
+		"vite": "^4.2.1"
 	},
 	"type": "module",
 	"dependencies": {
-		"qrcode-svg": "^1.1.0"
+		"jwa": "^2.0.0",
+		"qrcode-svg": "^1.1.0",
+		"three": "^0.151.3"
 	}
 }
