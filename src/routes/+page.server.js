@@ -20,10 +20,15 @@ export async function load() {
 	const locationUrl = `https://snapshot.apple-mapkit.com${completePath}&signature=${signature}`;
 
 	// Request the image to cache it, and convert it to a data URL
-	const imageRes = await fetch(locationUrl);
-	let buffer = await imageRes.arrayBuffer();
-	let imageStr = Buffer.from(buffer).toString("base64");
-	let dataUrl = "data:image/png;base64," + imageStr;
+	let dataUrl;
+	try {
+		const imageRes = await fetch(locationUrl);
+		let buffer = await imageRes.arrayBuffer();
+		let imageStr = Buffer.from(buffer).toString("base64");
+		dataUrl = "data:image/png;base64," + imageStr;
+	} catch (e) {
+		console.error(e);
+	}
 
 	return { mapImg: dataUrl };
 }

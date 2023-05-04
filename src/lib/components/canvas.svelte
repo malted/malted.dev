@@ -6,10 +6,15 @@
 	import { RenderPass } from "three/addons/postprocessing/RenderPass.js";
 	import { OutlinePass } from "three/addons/postprocessing/OutlinePass.js";
 	import { FilmPass } from "three/addons/postprocessing/FilmPass.js";
+	import { TextGeometry } from "three/addons/geometries/TextGeometry.js";
+	import { FontLoader } from "three/addons/loaders/FontLoader.js";
 
 	export let data;
 
 	let canvas;
+	let fps;
+
+	let cubeOpacity = 1;
 
 	const vertexShader = `
 		varying vec3 vColor;
@@ -72,6 +77,7 @@
 		cubeGroup.scale.setScalar(1);
 		//#endregion
 
+		//# region Map
 		const outlinePass = new OutlinePass(
 			new THREE.Vector2(window.innerWidth, window.innerHeight),
 			scene,
@@ -85,53 +91,77 @@
 		outlinePass.renderToScreen = true;
 		composer.addPass(outlinePass);
 
-		let map;
+		let map = new THREE.Group();
+		map.scale.setScalar(0.4);
+		map.rotation.set(Math.PI / 2.5, Math.PI / -6, Math.PI / 9);
+		map.position.x = 3;
 		loader.load(
 			"/old-map.glb",
-			function (gltf) {
-				gltf.scene.scale.setScalar(0.4);
-				gltf.scene.rotation.set(Math.PI / 2.5, Math.PI / -6, Math.PI / 9);
-				gltf.scene.position.x = 3;
+			(gltf) => {
 				const mapTexture = new THREE.TextureLoader().load(data.mapImg);
 				mapTexture.flipY = false;
-				gltf.scene.traverse((child) => {
-					if (child.isMesh) {
-						child.material.map = mapTexture;
-					}
+
+				let mapMat = new THREE.MeshPhongMaterial({
+					map: mapTexture,
+					flatShading: false,
+					side: THREE.DoubleSide
 				});
+				gltf.scene.children[0].material = mapMat;
+				// gltf.scene.children[0].material.map = mapTexture;
 
-				scene.add(gltf.scene);
-				map = gltf.scene;
+				outlinePass.selectedObjects.push(map);
 
-				// Apply it to the map
-				map && outlinePass.selectedObjects.push(map);
+				map.add(gltf.scene);
 			},
 			undefined,
-			function (error) {
-				console.error(error);
-			}
+			(error) => console.error
 		);
 
+		const fontLoader = new FontLoader();
+		fontLoader.load("/fonts/Bakemono Variable_Regular.json", (font) => {
+			const textGeometry = new TextGeometry("Live", {
+				font: font,
+				size: 0.3,
+				height: 0.05,
+				curveSegments: 12,
+				bevelEnabled: true,
+				bevelThickness: 0.05,
+				bevelSize: 0.03,
+				bevelOffset: 0,
+				bevelSegments: 5
+			});
+			const textMaterial = new THREE.MeshPhongMaterial({
+				color: 0x444444,
+				flatShading: false
+			});
+			const textMesh = new THREE.Mesh(textGeometry, textMaterial);
+			textMesh.position.set(1.25, 0, 2);
+			textMesh.rotation.set(Math.PI / -2, 0, 0);
+			map.add(textMesh);
+
+			const liveIndicator = new THREE.Mesh(
+				new THREE.SphereGeometry(0.075, 32, 32),
+				new THREE.MeshBasicMaterial({
+					color: 0xff0000,
+					opacity: 1,
+					transparent: true
+				})
+			);
+			liveIndicator.position.set(1, 0, 1.88);
+			map.add(liveIndicator);
+
+			scene.add(map);
+		});
+		//#endregion
+
 		//#region Lights
-		const directionalLight = new THREE.DirectionalLight(0xffffff, 1);
+		const directionalLight = new THREE.DirectionalLight(0xffffff, 3);
 		directionalLight.position.set(-5, -2, 3);
 		scene.add(directionalLight);
-
-		const pointLight2 = new THREE.PointLight(0xffff00, 1);
-		pointLight2.position.set(2, 0.5, 1);
-		scene.add(pointLight2);
-
-		// const pointLightHelper2 = new THREE.PointLightHelper(pointLight2, 0.1);
-		// scene.add(pointLightHelper2);
-
-		const pointLight3 = new THREE.PointLight(0xffffff, 3);
-		pointLight3.position.set(3, 3, 3);
-		scene.add(pointLight3);
-
 		//#endregion
 
 		//#region Postprocessing
-		const filmPass = new FilmPass(0.35, 0.1, 648, false);
+		const filmPass = new FilmPass(0.25, 0, 648, false);
 		filmPass.renderToScreen = true;
 		composer.addPass(filmPass);
 		// #endregion
@@ -144,30 +174,35 @@
 
 		const clock = new THREE.Clock();
 
+		let delta;
 		function animate() {
 			requestAnimationFrame(animate);
 
-			const delta = clock.getDelta();
+			delta = clock.getDelta();
 
-			if (map) {
-				map.position.y = Math.sin(clock.getElapsedTime() * 2) * 0.15 + 2;
+			if (clock.getElapsedTime() % 0.05 < delta) {
+				fps = Math.round(1 / delta);
+			}
 
-				if (raycaster.intersectObject(map).length > 0) {
-					map.scale.lerp(new THREE.Vector3(0.7, 0.7, 0.7), delta * 20);
+			if (map.children[2]) {
+				map.children[2].material.opacity = Math.sin(clock.getElapsedTime() * 4) * 0.5 + 0.5;
+			}
 
-					outlinePass.edgeStrength = THREE.MathUtils.lerp(outlinePass.edgeStrength, 3, delta * 20);
-				} else {
-					map.scale.lerp(new THREE.Vector3(0.4, 0.4, 0.4), delta * 20);
+			// map.position.y = Math.sin(clock.getElapsedTime() * 2) * 0.15 + 2;
 
-					outlinePass.edgeStrength = THREE.MathUtils.lerp(outlinePass.edgeStrength, 0, delta * 20);
-				}
+			if (raycaster.intersectObject(map).length > 0) {
+				map.scale.lerp(new THREE.Vector3(0.7, 0.7, 0.7), delta * 20);
+
+				outlinePass.edgeStrength = THREE.MathUtils.lerp(outlinePass.edgeStrength, 3, delta * 20);
+			} else {
+				map.scale.lerp(new THREE.Vector3(0.4, 0.4, 0.4), delta * 20);
+
+				outlinePass.edgeStrength = THREE.MathUtils.lerp(outlinePass.edgeStrength, 0, delta * 20);
 			}
 
 			composer.render();
-			// renderer.render(scene, camera);
 		}
-
-		animate();
+		requestAnimationFrame(animate);
 
 		const resize = () => {
 			camera.aspect = window.innerWidth / window.innerHeight;
@@ -184,7 +219,7 @@
 
 			if (raycaster.intersectObject(insideCube).length > 0) {
 				edgesCube.scale.setScalar(0);
-				insideCube.material.uniforms.opacity.value = 1;
+				insideCube.material.uniforms.opacity.value = cubeOpacity;
 			} else {
 				edgesCube.scale.setScalar(1);
 				insideCube.material.uniforms.opacity.value = 0;
@@ -201,24 +236,52 @@
 				map.rotation.set(Math.PI / 2.5 + -mouse.y * 0.1, Math.PI / -6 + mouse.x * 0.1, Math.PI / 9);
 			}
 		};
+		const onScroll = (event) => {
+			let scrollMax = 500;
+
+			// Get scroll percentage
+			let scrollPercent = window.scrollY / scrollMax;
+
+			camera.position.z = THREE.MathUtils.lerp(5, 3, scrollPercent);
+			// Lerp inner cube opacity
+			cubeOpacity = THREE.MathUtils.lerp(1, 0, scrollPercent);
+
+			// Lerp cube edges color between white and black
+			edgesCube.material.color.setRGB(
+				THREE.MathUtils.lerp(1, 0, scrollPercent),
+				THREE.MathUtils.lerp(1, 0, scrollPercent),
+				THREE.MathUtils.lerp(1, 0, scrollPercent)
+			);
+
+			raycaster.setFromCamera(mouse, camera);
+			if (raycaster.intersectObject(insideCube).length > 0) {
+				edgesCube.scale.setScalar(0);
+				insideCube.material.uniforms.opacity.value = cubeOpacity;
+			} else {
+				edgesCube.scale.setScalar(1);
+				insideCube.material.uniforms.opacity.value = 0;
+			}
+		};
 
 		resize();
 
 		window.addEventListener("resize", resize);
 		window.addEventListener("mousemove", onMouseMove, false);
-
+		window.addEventListener("scroll", onScroll, false);
 		return () => {
 			window.removeEventListener("resize", resize);
 			window.removeEventListener("mousemove", onMouseMove, false);
+			window.removeEventListener("scroll", onScroll, false);
 		};
 	});
 </script>
 
+<!-- <div>{fps} FPS</div> -->
 <canvas bind:this={canvas} />
 
 <style>
 	canvas {
-		position: absolute;
+		position: fixed;
 		inset: 0;
 		width: 100%;
 		height: 100%;
