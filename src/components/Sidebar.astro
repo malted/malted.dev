@@ -1,0 +1,40 @@
+---
+import Barcode from "./BarcodeStatic.astro";
+import Ticker from "./Ticker.svelte";
+---
+
+<header>
+	<h1>malted</h1>
+	<!-- <Ticker targetText="All these open windows but no fresh air" client:load /> -->
+	<Barcode />
+</header>
+
+<style>
+	header {
+		writing-mode: vertical-lr;
+		background-color: #ffffff20;
+		backdrop-filter: blur(0.5rem);
+		border-right: 1px solid #ffffff30;
+
+		position: fixed;
+		top: 0;
+		bottom: 0;
+		left: 0;
+
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 1.5rem 1rem;
+	}
+	@media (max-width: 600px) {
+		header {
+			padding: 1rem 0.5rem;
+		}
+	}
+
+	#end {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+</style>

@@ -1,0 +1,58 @@
+---
+import Gradient from "../components/Gradient.svelte";
+
+import Closed from "../components/Closed.svelte";
+import { isWorkingHours } from "../lib/utils";
+
+const tz = Astro.request.headers.get("x-vercel-ip-timezone");
+const open = tz ? isWorkingHours(tz) : true;
+---
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="description" content="Astro description" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>malted{!open ? " - Closed" : ""}</title>
+	</head>
+	<body>
+		<Gradient delay={open ? null : 2.5} client:only />
+
+		{open ? <slot /> : <Closed {tz} />}
+	</body>
+</html>
+<style is:global>
+	@font-face {
+		font-family: "Andika";
+		src: url("/public/fonts/Rejouice-Headline.woff2") format("woff2");
+	}
+
+	html,
+	body {
+		height: 100%;
+	}
+
+	:root {
+		--accent: 124, 58, 237;
+		--accent-gradient: linear-gradient(
+			45deg,
+			rgb(var(--accent)),
+			#da62c4 30%,
+			white 60%
+		);
+
+		font-family: "Andika";
+		background-color: black;
+		color: white;
+	}
+	a {
+		color: inherit;
+		text-decoration: none;
+	}
+	* {
+		margin: 0;
+	}
+</style>

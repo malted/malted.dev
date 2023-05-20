@@ -1,0 +1,32 @@
+---
+import { distanceInKmBetweenEarthCoordinates } from "../lib/utils";
+
+const locationRes = await fetch(
+	"https://api.malted.dev/location?token=" +
+		import.meta.env.MALTED_API_LOCATION_SECRET
+);
+if (!locationRes.ok) console.error("uhh");
+
+let location = await locationRes.json();
+if (!location || !location.success) console.error("eek");
+location = location.message.split(",");
+
+const maltedLat = location[0] as number;
+const maltedLon = location[1] as number;
+const userLat = (Astro.request.headers.get("x-vercel-ip-latitude") ??
+	0) as number;
+const userLon = (Astro.request.headers.get("x-vercel-ip-longitude") ??
+	0) as number;
+
+const distance = Math.round(
+	distanceInKmBetweenEarthCoordinates(maltedLat, maltedLon, userLat, userLon)
+);
+
+const numberFormatter = new Intl.NumberFormat(
+	Astro.request.headers.get("x-vercel-ip-country") || "GB"
+);
+---
+
+We're currently {numberFormatter.format(distance)}km apart. Why so far? When
+we're closer, email me (malted @ this website's domain) and we can grab coffee &
+small pastries at a coffee & small pastry shop.
