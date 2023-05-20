@@ -4,7 +4,7 @@ import Gradient from "../components/Gradient.svelte";
 import Closed from "../components/Closed.svelte";
 import { isWorkingHours } from "../lib/utils";
 
-const tz = Astro.request.headers.get("x-vercel-ip-timezone");
+const tz = Astro.request.headers.get("x-vercel-ip-timezone") ?? "Asia/Tokyo";
 const open = tz ? isWorkingHours(tz) : true;
 ---
 

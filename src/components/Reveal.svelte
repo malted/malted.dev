@@ -3,7 +3,7 @@
 	export let initialDelay = 0;
 	export let bySpaces = false;
 
-	let totalIndex = initialDelay;
+	let totalIndex = 0;
 </script>
 
 {#each text.split(" ") as word, wi}
@@ -21,8 +21,8 @@
 				{:else}
 					<span
 						class="char"
-						style="--delay: {totalIndex++ / text.length}s"
-						>{char}</span
+						style="--delay: {initialDelay +
+							totalIndex++ / text.length}s">{char}</span
 					>
 				{/if}
 			{/if}

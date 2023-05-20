@@ -16,6 +16,11 @@
 			bySpaces={true}
 		/>
 	</h2>
+
+	<p>
+		<Reveal text="Out of hours contact:" initialDelay={3} />
+		<b><Reveal text="malted@{'{'}this domain{'}'}" initialDelay={3.9} /></b>
+	</p>
 </main>
 
 <style>
