@@ -1,25 +1,24 @@
-<script>
-	import { timeUntilOpen } from "../lib/utils";
-	import Reveal from "./Reveal.svelte";
+---
+import { timeUntilOpen } from "../lib/utils";
+import Reveal from "./Reveal.astro";
 
-	export let tz;
+const { tz } = Astro.props;
 
-	const timeUntil = timeUntilOpen(tz);
-</script>
+const timeUntil = timeUntilOpen(tz);
+---
 
 <main>
-	<h1><Reveal text="Closed for business" bySpaces={true} /></h1>
+	<h1><Reveal text="Closed for business" /></h1>
 	<h2>
 		<Reveal
 			text={`malted.dev is open between 9am and 5pm, every day. Please check back in ${timeUntil}.`}
 			initialDelay={0.8}
-			bySpaces={true}
 		/>
 	</h2>
 
 	<p>
 		<Reveal text="Out of hours contact:" initialDelay={2} />
-		<b><Reveal text="malted@{'{'}this domain{'}'}" initialDelay={2.6} /></b>
+		<b><Reveal text="malted@{this domain}" initialDelay={2.6} /></b>
 	</p>
 </main>
 
