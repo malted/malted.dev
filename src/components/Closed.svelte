@@ -8,7 +8,7 @@
 </script>
 
 <main>
-	<h1><Reveal text="Closed for business" /></h1>
+	<h1><Reveal text="Closed for business" bySpaces={true} /></h1>
 	<h2>
 		<Reveal
 			text={`malted.dev is open between 9am and 5pm, every day. Please check back in ${timeUntil}.`}

@@ -9,7 +9,7 @@
 
 {#each text.split(" ") as word, wi}
 	<span
-		class={(bySpaces ? "word" : "") + " vercel-lookin-ass"}
+		class={bySpaces ? "word vercel-lookin-ass" : "vercel-lookin-ass"}
 		style:white-space={bySpaces ? "" : "nowrap"}
 		style={bySpaces
 			? `--delay: ${

@@ -13,6 +13,7 @@
 	justify-content: center;
 	gap: 1rem;
 }
+
 .vercel-lookin-ass {
 	background: linear-gradient(180deg, #fff, hsla(0, 0%, 100%, 0.5));
 	background-clip: text;
