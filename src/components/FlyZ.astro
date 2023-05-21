@@ -22,10 +22,11 @@ const delay = Astro.props.delay ?? 0;
 
         position: relative;
 
-		--zAmount: 5rem;
+		--zAmount: 20rem;
 	}
     .slot {
         position: absolute;
+		will-change: transform opacity;
     }
 
 	@keyframes flyz-one {
