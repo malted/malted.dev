@@ -6,18 +6,20 @@ let totalIndex = 0;
 
 {
 	text.split(" ").map((word: string, wi: number) => (
-		<span>
-			{word.split("").map((char: string) => (
-				<span
-					class="char vercel-lookin-ass"
-					style={`--delay: ${
-						initialDelay + totalIndex++ / (text.length * speed)
-					}s`}
-				>
-					{char}
-				</span>
-			))}
-		</span>
+		<>
+			<span class="word">
+				{word.split("").map((char: string) => (
+					<span
+						class="char vercel-lookin-ass"
+						style={`--delay: ${
+							initialDelay + totalIndex++ / (text.length * speed)
+						}s`}
+					>
+						{char}
+					</span>
+				))}
+			</span>
+		</>
 	))
 }
 
@@ -33,8 +35,12 @@ let totalIndex = 0;
 		}
 	}
 
-	.char,
 	.word {
+		/* white-space: nowrap; */
+		display: inline-block;
+	}
+
+	.char {
 		animation: fadeIn 0.5s var(--delay) forwards;
 		opacity: 0;
 
