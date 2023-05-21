@@ -12,14 +12,14 @@
 	<h2>
 		<Reveal
 			text={`malted.dev is open between 9am and 5pm, every day. Please check back in ${timeUntil}.`}
-			initialDelay={1}
+			initialDelay={0.8}
 			bySpaces={true}
 		/>
 	</h2>
 
 	<p>
-		<Reveal text="Out of hours contact:" initialDelay={3} />
-		<b><Reveal text="malted@{'{'}this domain{'}'}" initialDelay={3.9} /></b>
+		<Reveal text="Out of hours contact:" initialDelay={2} />
+		<b><Reveal text="malted@{'{'}this domain{'}'}" initialDelay={2.6} /></b>
 	</p>
 </main>
 

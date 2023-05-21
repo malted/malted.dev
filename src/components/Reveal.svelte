@@ -2,16 +2,19 @@
 	export let text;
 	export let initialDelay = 0;
 	export let bySpaces = false;
+	export let speed = 1.5;
 
 	let totalIndex = 0;
 </script>
 
 {#each text.split(" ") as word, wi}
 	<span
-		class={bySpaces ? "word" : ""}
+		class={(bySpaces ? "word" : "") + " vercel-lookin-ass"}
 		style:white-space={bySpaces ? "" : "nowrap"}
 		style={bySpaces
-			? `--delay: ${initialDelay + wi / text.split(" ").length}s`
+			? `--delay: ${
+					initialDelay + wi / (text.split(" ").length * speed)
+			  }s`
 			: ""}
 	>
 		{#each word.split("") as char}
@@ -20,9 +23,9 @@
 					{char}
 				{:else}
 					<span
-						class="char"
+						class="char vercel-lookin-ass"
 						style="--delay: {initialDelay +
-							totalIndex++ / text.length}s">{char}</span
+							totalIndex++ / (text.length * speed)}s">{char}</span
 					>
 				{/if}
 			{/if}

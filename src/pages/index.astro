@@ -3,22 +3,41 @@ import Layout from "../layouts/Layout.astro";
 import Sidebar from "../components/Sidebar.astro";
 import Distance from "../components/Distance.astro";
 import Projects from "../components/Projects.svelte";
+import WithIntro from "../components/Intro.astro";
+import Slide from "../components/Slide.svelte";
+import Rotate from "../components/Rotate.astro";
+import Reveal from "../components/Reveal.svelte";
 ---
 
 <Layout>
-	<Sidebar />
-	<main>
-		<!-- <Distance /> -->
-
-		<h1>Under construction</h1>
-	</main>
+	<div id="parent">
+		<Sidebar />
+		<main>
+			<WithIntro>
+				<Reveal
+					text="The rest of this website is currently under construction. Check back in a week or so!"
+				/>
+			</WithIntro>
+		</main>
+	</div>
 </Layout>
 
 <style>
+	#parent {
+		display: grid;
+		grid-template-columns: 4rem auto;
+		height: 100%;
+		width: 100%;
+	}
 	main {
+		padding: 1rem;
+		box-sizing: border-box;
+		height: 100%;
+		position: relative;
+
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		height: 100%;
 	}
 </style>

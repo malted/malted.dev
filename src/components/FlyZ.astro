@@ -1,0 +1,57 @@
+---
+const delay = Astro.props.delay ?? 0;
+---
+
+<div id="parent" style=`--delay: ${delay}s` class="flexcol">
+    <div class="slot">
+        <slot name="flyz-1" />
+    </div>
+
+    <div class="slot">
+        <slot name="flyz-2" />
+    </div>
+</div>
+
+<style>
+
+	#parent {
+		perspective: 200px;
+		overflow: clip;
+        height: 100%;
+        width: 100%;
+
+        position: relative;
+
+		--zAmount: 5rem;
+	}
+    .slot {
+        position: absolute;
+    }
+
+	@keyframes flyz-one {
+		100% {
+			transform: translate3d(0, 0, calc(-1 * var(--zAmount)));
+			opacity: 0;
+		}
+	}
+	@keyframes flyz-two {
+		0% {
+			transform: translate3d(0, 0, var(--zAmount)));
+			opacity: 0;
+		}
+		100% {
+			transform: rotateX(0) translate3d(0, 0, 0);
+			opacity: 1;
+		}
+	}
+	.slot:nth-child(1) {
+		animation: flyz-one 0.8s var(--ease) var(--delay) forwards;
+	}
+	.slot:nth-child(2) {
+		transform: translate3d(0, 0, var(--zAmount));
+		opacity: 0;
+
+
+		animation: flyz-two 0.8s var(--ease) var(--delay) forwards;
+	}
+</style>

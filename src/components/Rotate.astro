@@ -1,0 +1,57 @@
+---
+const delay = Astro.props.delay ?? 0;
+---
+
+<div id="parent" style=`--delay: ${delay}s`>
+	<div class="slot">
+		<slot name="rot-1" />
+	</div>
+
+	<div class="slot">
+		<slot name="rot-2" />
+	</div>
+</div>
+
+<style>
+	#parent {
+		perspective: 200px;
+		width: 100%;
+
+		--yAmount: 4rem;
+	}
+	@media (max-width: 600px) {
+		#parent {
+			--yAmount: 6rem;
+		}
+	}
+
+	@keyframes one {
+		100% {
+			transform: rotateX(90deg)
+				translate3d(0, calc(-1 * var(--yAmount)), 0);
+			opacity: 0;
+		}
+	}
+	@keyframes two {
+		0% {
+			transform: rotateX(-90deg) translate3d(0, var(--yAmount), 0);
+			opacity: 0;
+		}
+		100% {
+			transform: rotateX(0) translate3d(0, 0, 0);
+			opacity: 1;
+		}
+	}
+	.slot:nth-child(1) {
+		translate: 0 50%;
+		animation: one 1.5s var(--ease) var(--delay) forwards;
+	}
+	.slot:nth-child(2) {
+		transform: rotateX(-90deg) translate3d(0, var(--yAmount), 0);
+		opacity: 0;
+
+		translate: 0 -50%;
+
+		animation: two 1.5s var(--ease) var(--delay) forwards;
+	}
+</style>

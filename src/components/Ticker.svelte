@@ -3,7 +3,7 @@
 	export let targetText;
 	export let speed = 0.05;
 
-	let offset = 0;
+	let offset = -300;
 	let offsetHeight;
 
 	onMount(() => {
@@ -14,7 +14,6 @@
 
 			if (offset <= -offsetHeight / 2) {
 				offset = 0;
-				console.log("reset");
 			}
 
 			clock = performance.now();
@@ -40,14 +39,15 @@
 		overflow-y: clip;
 		height: 20ch;
 
-		border-top: 1px solid #ffffff;
-		border-bottom: 1px solid #ffffff;
-		border-radius: 0.5rem;
+		border-top: 2px solid #ffffff30;
+		border-bottom: 2px solid #ffffff30;
+		/* border-radius: 0.5rem; */
 	}
 
 	p,
 	#reference-text {
 		white-space: nowrap;
+		color: #ffffff30;
 	}
 
 	#reference-text {

@@ -1,0 +1,57 @@
+---
+import FlyZ from "./FlyZ.astro";
+import Rotate from "./Rotate.astro";
+import Reveal from "./Reveal.svelte";
+---
+
+<div id="parent">
+	<FlyZ delay={10}>
+		<Rotate delay={6} slot="flyz-1">
+			<div slot="rot-1" class="flexcol">
+				<h2>
+					<Reveal text="Hey!" />
+					<Reveal text="I'm Malted." initialDelay={1} />
+					<Reveal
+						text="I make things on the World Wide Web."
+						initialDelay={2}
+					/>
+				</h2>
+
+				<h2>
+					<Reveal
+						text="I like graphics programming, "
+						initialDelay={3.3}
+					/>
+					<Reveal
+						text="making groovy websites, "
+						initialDelay={4.15}
+					/>
+					<Reveal
+						text="and solving tricky problems in Rust."
+						initialDelay={5}
+					/>
+				</h2>
+			</div>
+			<div slot="rot-2" class="flexcol">
+				<h2>
+					<Reveal
+						text="I'm currently at Hack Club, making awesome banking infrastructure for nonprofits around the world."
+						initialDelay={0}
+					/>
+				</h2>
+				<a href="https://hackclub.com/bank">
+					<Reveal text="Check it out!" initialDelay={8} />
+				</a>
+			</div>
+		</Rotate>
+
+		<slot slot="flyz-2" />
+	</FlyZ>
+</div>
+
+<style>
+	#parent {
+		display: contents;
+		text-align: center;
+	}
+</style>
