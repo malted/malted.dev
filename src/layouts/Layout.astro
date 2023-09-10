@@ -1,5 +1,5 @@
 ---
-import Gradient from "../components/Gradient.svelte";
+import Gradient from "../components/Gradient.astro";
 
 import Closed from "../components/Closed.astro";
 import { isWorkingHours } from "../lib/utils";
@@ -7,7 +7,7 @@ import { isWorkingHours } from "../lib/utils";
 const tz = Astro.request.headers.get("x-vercel-ip-timezone");
 const open = tz ? isWorkingHours(tz) : true;
 
-import "./css.css";
+import "./globals.css";
 ---
 
 <!DOCTYPE html>
@@ -21,38 +21,8 @@ import "./css.css";
 		<title>malted{!open ? " - closed" : ""}</title>
 	</head>
 	<body>
-		<Gradient client:load />
+		<Gradient />
 
 		{open ? <slot /> : <Closed {tz} />}
 	</body>
 </html>
-<style is:global>
-	@font-face {
-		font-family: "Andika";
-		src: url("/fonts/Rejouice-Headline.woff2") format("woff2");
-	}
-
-	html,
-	body {
-		height: 100%;
-	}
-
-	:root {
-		--ease: cubic-bezier(0.87, 0, 0.13, 1);
-
-		font-family: "Andika";
-		background-color: black;
-		color: white;
-		text-rendering: optimizeLegibility;
-		-webkit-font-smoothing: antialiased;
-		overflow-x: hidden;
-	}
-	a {
-		color: inherit;
-		text-decoration: none;
-	}
-
-	* {
-		margin: 0;
-	}
-</style>

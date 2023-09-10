@@ -10,7 +10,8 @@
 
 <style>
 	#parent {
-		background-color: #ffffff10;
+		background-color: var(--translucent);
+
 		width: 1rem;
 		height: 6rem;
 
@@ -18,6 +19,8 @@
 		flex-direction: row;
 		justify-content: space-between;
 		padding: 0.5rem;
+
+		box-sizing:content-box;
 	}
 
 	@keyframes blink {
@@ -28,7 +31,7 @@
 
 	.bar {
 		width: 100%;
-		background-color: #ffffff30;
+		background-color: var(--translucenter);
 		height: 0.3rem;
 		animation: blink var(--interval) step-start 0s infinite;
 	}

@@ -1,0 +1,73 @@
+:root {
+	--ease: cubic-bezier(0.87, 0, 0.13, 1);
+
+	--black: #333;
+	--white: #fff;
+	--translucent: #ffffff20;
+	--translucenter: #ffffff30;
+
+	background-color: var(--black);
+	color: var(--white);
+
+	font-family: "Andika";
+	text-rendering: optimizeLegibility;
+	-webkit-font-smoothing: antialiased;
+	overflow-x: hidden;
+
+	@media (prefers-color-scheme: light) {
+		--translucent: #33333320;
+		--translucenter: #33333330;
+
+		background-color: var(--white);
+		color: var(--black);
+	}
+}
+
+@font-face {
+	font-family: "Andika";
+	src: url("/fonts/Rejouice-Headline.woff2") format("woff2");
+}
+html,
+body {
+	height: 100%;
+}
+* {
+	margin: 0;
+	box-sizing: border-box;
+}
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+.glass {
+	backdrop-filter: blur(0.5rem);
+	border-width: 1px;
+	border-style: solid;
+
+	background-color: var(--translucent);
+	border-color: var(--translucenter);
+}
+.flexcol {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+}
+
+.vercel-lookin-ass {
+	@media (prefers-color-scheme: dark) {
+		background: linear-gradient(180deg, #fff, hsla(0, 0%, 100%, 0.5));
+		background-clip: text;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}
+
+	/* @media (prefers-color-scheme: light) {
+		background: linear-gradient(0deg, black, hsla(0, 0%, 100%, 0.5));
+		background-clip: text;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+	}  */
+}

@@ -1,7 +1,7 @@
 {
 	"name": "malted.dev",
 	"type": "module",
-	"version": "0.0.1",
+	"version": "7.2.0",
 	"scripts": {
 		"dev": "astro dev",
 		"start": "astro dev",
@@ -11,11 +11,10 @@
 		"format": "prettier --write ."
 	},
 	"dependencies": {
-		"@astrojs/svelte": "^2.2.0",
-		"@astrojs/vercel": "^3.4.0",
-		"astro": "^2.5.0",
-		"barcode": "^0.1.0",
+		"@astrojs/svelte": "^4.0.2",
+		"@astrojs/vercel": "^4.0.5",
+		"astro": "^3.0.12",
 		"bwip-js": "^3.4.0",
-		"svelte": "^3.59.1"
+		"svelte": "^4.2.0"
 	}
 }
