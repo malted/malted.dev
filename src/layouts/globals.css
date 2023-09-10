@@ -1,7 +1,7 @@
 :root {
 	--ease: cubic-bezier(0.87, 0, 0.13, 1);
 
-	--black: #333;
+	--black: #000000bb;
 	--white: #fff;
 	--translucent: #ffffff20;
 	--translucenter: #ffffff30;
