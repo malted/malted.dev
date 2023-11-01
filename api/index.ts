@@ -18,10 +18,10 @@ const handler: Handler = async ({ headers }) => {
 
     const maltedLocationToken = Deno.env.get("location_token");
     const maltedLocationRes = await fetch(`https://internal.bank.engineering/malted/api/location?token=${maltedLocationToken}`).then((d) => d.json());
-    const [maltedLat, maltedLng] = maltedLocationRes.message.coords.split(",");
-    const maltedCity = maltedLocationRes.message.city;
-    const maltedCountry = maltedLocationRes.message.country;
-    const maltedLocationTimestamp = Date(maltedLocationRes.message.timestamp).getTime();
+    const [maltedLat, maltedLng] = maltedLocationRes.location.coords.split(",");
+    const maltedCity = maltedLocationRes.location.city;
+    const maltedCountry = maltedLocationRes.location.country;
+    const maltedLocationTimestamp = Date(maltedLocationRes.location.timestamp).getTime();
     const [visitorLat, visitorLng] = [headers.get("cf-iplatitude"), headers.get("cf-iplongitude")];
 
     let distance = haversine.distance(maltedLat, maltedLng, visitorLat, visitorLng); 
