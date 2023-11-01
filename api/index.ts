@@ -13,7 +13,7 @@ const handler: Handler = async ({ headers }) => {
         "Howdy 🤠"
     ];
 
-    const maltedLocationToken = process.env.location_token;
+    const maltedLocationToken = Deno.env().location_token;
     const maltedLocationRes = await fetch(`https://internal.bank.engineering/malted/api/location?token=${maltedLocationToken}`).then((d) => d.json());
     const [maltedCoords, maltedCity] = maltedLocationRes.message.split("$");
     const [maltedLat, maltedLng] = maltedCoords.split(",");
