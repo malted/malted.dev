@@ -20,10 +20,12 @@ const handler: Handler = async ({ headers }) => {
     const maltedLocationRes = await fetch(`https://internal.bank.engineering/malted/api/location?token=${maltedLocationToken}`).then((d) => d.json());
     const [maltedCoords, maltedCity] = maltedLocationRes.message.split("$");
     const [maltedLat, maltedLng] = maltedCoords.split(",");
-    const vercelLocation = [headers.get("x-vercel-ip-latitude"), headers.get("x-vercel-ip-longitude")];
-    let distance = haversine.distance(maltedLat, maltedLng, vercelLocation[0], vercelLocation[1]) || "a million";
+    const [visitorLat, visitorLng] = [headers.get("cf-iplatitude"), headers.get("cf-iplongitude")];
+
+    let distance = haversine.distance(maltedLat, maltedLng, visitorLat, visitorLng) || "a million";
     distance += " miles";
-    console.log(maltedCoords, vercelLocation, headers)
+
+    console.log(headers)
 
     const replacements = [
         { from: "greeting", to: greetings[Math.floor(Math.random() * greetings.length)] },
