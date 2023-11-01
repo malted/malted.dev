@@ -21,7 +21,7 @@ const handler: Handler = async ({ headers }) => {
     const [maltedLat, maltedLng] = maltedLocationRes.location.coords.split(",");
     const maltedCity = maltedLocationRes.location.city;
     const maltedCountry = maltedLocationRes.location.country;
-    const maltedLocationTimestamp = Date(maltedLocationRes.location.timestamp).getTime();
+    const maltedLocationTimestamp = new Date(maltedLocationRes.location.timestamp).getTime();
     const [visitorLat, visitorLng] = [headers.get("cf-iplatitude"), headers.get("cf-iplongitude")];
 
     let distance = haversine.distance(maltedLat, maltedLng, visitorLat, visitorLng); 
