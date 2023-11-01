@@ -17,10 +17,10 @@ const handler: Handler = async ({ headers }) => {
     ];
 
     const maltedLocationToken = Deno.env.get("location_token");
-    const maltedLocationRes = await fetch(`https://internal.bank.engineering/malted/api/location?token=${maltedLocationToken}`)
-        .then((d) => d.json());
-    const [maltedCoords, maltedCity] = maltedLocationRes.message.split("$");
-    const [maltedLat, maltedLng] = maltedCoords.split(",");
+    const maltedLocationRes = await fetch(`https://internal.bank.engineering/malted/api/location?token=${maltedLocationToken}`).then((d) => d.json());
+    const [maltedLat, maltedLng] = maltedLocationRes.message.coords.split(",");
+    const maltedCity = maltedLocationRes.message.city;
+    const maltedCountry = maltedLocationRes.message.country;
     const [visitorLat, visitorLng] = [headers.get("cf-iplatitude"), headers.get("cf-iplongitude")];
 
     let distance = haversine.distance(maltedLat, maltedLng, visitorLat, visitorLng); 
@@ -29,9 +29,9 @@ const handler: Handler = async ({ headers }) => {
     distance ||= "a million";
     distance += " miles";
 
-    console.log(headers);
+    console.log(maltedLat, maltedLng, maltedCity, maltedCountry, headers);
 
-    let locationSentence = `I'm in ${maltedCity}; so we're around ${distance} away from each other right now. Next time I'm around, we should hang out!`;
+    let locationSentence = `I'm in ${maltedCity}, in ${maltedCountry}; so we're around ${distance} away from each other right now. Next time I'm around, we should hang out!`;
     if (distanceRaw < 5) {
         locationSentence = `I'm in ${maltedCity}, just like you! This is awesome. Since we're so close, we should grab coffee.`;
     }
