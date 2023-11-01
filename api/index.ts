@@ -25,15 +25,20 @@ const handler: Handler = async ({ headers }) => {
 
     let distance = haversine.distance(maltedLat, maltedLng, visitorLat, visitorLng); 
     distance = Math.round(distance);
+    const distanceRaw = distance;
     distance ||= "a million";
     distance += " miles";
 
     console.log(headers);
 
+    let locationSentence = `I'm in ${maltedCity}; so we're around ${distance} away from each other right now. Next time I'm around, we should hang out!`;
+    if (distanceRaw < 5) {
+        locationSentence = `I'm in ${maltedCity}, just like you! This is awesome. Since we're so close, we should grab coffee.`;
+    }
+
     const replacements = [
         { from: "greeting", to: greetings[Math.floor(Math.random() * greetings.length)] },
-        { from: "city", to: maltedCity },
-        { from: "distance", to: distance },
+        { from: "location", to: locationSentence },
     ];
 
     replacements.forEach((replacement) => {
