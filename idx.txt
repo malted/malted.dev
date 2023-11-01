@@ -5,7 +5,7 @@ It's my job to;
 ☞ Design hypertext documents 
 ☞ Write hypertext documents
 ☞ Get the hypertext documents to show up on people's screens when they type the silly little uniform resource locator and hit carriage return new line
-☞ Write backend services & orchestrate the apropriate infrastructure to facilitate the aformentioned (invisible code to make the documents worth reading).
+☞ Write backend services & orchestrate the apropriate infrastructure to facilitate the aformentioned (invisible code to make the documents worth reading)
 
 It's not my job to;
 ☞ Write shaders (think GLSL, HLSL, Metal, ShaderGraph) yet I do it anyway.
