@@ -17,15 +17,18 @@ const handler: Handler = async ({ headers }) => {
     ];
 
     const maltedLocationToken = Deno.env.get("location_token");
-    const maltedLocationRes = await fetch(`https://internal.bank.engineering/malted/api/location?token=${maltedLocationToken}`).then((d) => d.json());
+    const maltedLocationRes = await fetch(`https://internal.bank.engineering/malted/api/location?token=${maltedLocationToken}`)
+        .then((d) => d.json());
     const [maltedCoords, maltedCity] = maltedLocationRes.message.split("$");
     const [maltedLat, maltedLng] = maltedCoords.split(",");
     const [visitorLat, visitorLng] = [headers.get("cf-iplatitude"), headers.get("cf-iplongitude")];
 
-    let distance = haversine.distance(maltedLat, maltedLng, visitorLat, visitorLng) || "a million";
+    let distance = haversine.distance(maltedLat, maltedLng, visitorLat, visitorLng); 
+    distance = Math.round((distance * 10)) / 10;
+    distance ||= "a million";
     distance += " miles";
 
-    console.log(headers)
+    console.log(headers);
 
     const replacements = [
         { from: "greeting", to: greetings[Math.floor(Math.random() * greetings.length)] },
@@ -39,7 +42,7 @@ const handler: Handler = async ({ headers }) => {
 
     const status = 200;
     return new Response(idx, { status });
-
 };
 
 export default handler;
+
