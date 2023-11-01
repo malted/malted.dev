@@ -8,9 +8,9 @@ const handler: Handler = async ({ headers }) => {
     let idx = await Deno.readTextFile("./idx.txt");
 
     const greetings = [
-        "Sappenin'",
+        "Sappenin'?",
         "Hi!",
-        "Howdy 🤠",
+        "Howdy 🤠.",
         "G'day!",
         "Salutations.",
         "How do you do?",
