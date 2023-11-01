@@ -20,12 +20,12 @@ const handler: Handler = async ({ headers }) => {
     const vercelLocation = [headers["x-vercel-ip-latitude"], headers["x-vercel-ip-longitude"]];
     let distance = haversine.distance(maltedLat, maltedLng, vercelLocation[0], vercelLocation[1]) || "a million";
     distance += " miles";
+    console.log(maltedCoords, vercelLocation)
 
     const replacements = [
         { from: "greeting", to: greetings[Math.floor(Math.random() * greetings.length)] },
         { from: "city", to: maltedCity },
         { from: "distance", to: distance },
-        { from: "cta", to: "We should get coffee!" },
     ];
 
     replacements.forEach((replacement) => {
