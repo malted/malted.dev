@@ -21,6 +21,7 @@ const handler: Handler = async ({ headers }) => {
     const [maltedLat, maltedLng] = maltedLocationRes.message.coords.split(",");
     const maltedCity = maltedLocationRes.message.city;
     const maltedCountry = maltedLocationRes.message.country;
+    const maltedLocationTimestamp = Date(maltedLocationRes.message.timestamp).getTime();
     const [visitorLat, visitorLng] = [headers.get("cf-iplatitude"), headers.get("cf-iplongitude")];
 
     let distance = haversine.distance(maltedLat, maltedLng, visitorLat, visitorLng); 
@@ -38,6 +39,7 @@ const handler: Handler = async ({ headers }) => {
 
     const replacements = [
         { from: "greeting", to: greetings[Math.floor(Math.random() * greetings.length)] },
+        { from: "timestamp", to: ms(maltedLocationTimestamp) },
         { from: "location", to: locationSentence },
     ];
 
