@@ -1,3 +1,5 @@
+#!/usr/bin/env deno run --include-files idx.txt
+
 import ms from "https://esm.sh/ms@2.1.3";
 import type { Handler } from "https://deno.land/std@0.177.0/http/server.ts";
 import * as haversine from "../utils/haversine.ts";
