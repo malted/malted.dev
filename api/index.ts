@@ -9,15 +9,18 @@ const handler: Handler = async ({ headers }) => {
 
     const greetings = [
         "Sappenin'",
-        "Hullo there",
-        "Howdy 🤠"
+        "Hi!",
+        "Howdy 🤠",
+        "G'day!",
+        "Salutations.",
+        "How do you do?",
     ];
 
     const maltedLocationToken = Deno.env.get("location_token");
     const maltedLocationRes = await fetch(`https://internal.bank.engineering/malted/api/location?token=${maltedLocationToken}`).then((d) => d.json());
     const [maltedCoords, maltedCity] = maltedLocationRes.message.split("$");
     const [maltedLat, maltedLng] = maltedCoords.split(",");
-    const vercelLocation = [headers["x-vercel-ip-latitude"], headers["x-vercel-ip-longitude"]];
+    const vercelLocation = [headers.get("x-vercel-ip-latitude"), headers.get("x-vercel-ip-longitude")];
     let distance = haversine.distance(maltedLat, maltedLng, vercelLocation[0], vercelLocation[1]) || "a million";
     distance += " miles";
     console.log(maltedCoords, vercelLocation, headers)

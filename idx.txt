@@ -1,5 +1,4 @@
-🥺 greeting 🥺. People call me Malted. I research computer graphics & trick them into crunching numbers just the right way. Most days, I push to github.com/hackclub. Other days, I force push to github.com/malted. I love open source but this site is not. Just to drive you nuts.
-
+🥺 greeting 🥺. People call me Malted. I research computer graphics & trick them into crunching numbers just the right way. Most days, I push to github.com/hackclub. Other days, I force push to github.com/malted.
 
 It's my job to;
 ☞ Design hypertext documents 
@@ -13,7 +12,7 @@ It's not my job to;
 You should read;
 ☞ Why the Future Doesn't Need Us - Bill Joy for WIRED
 ☞ docs.vulkan.org - KHRONOS Group
-☞ My Family and Other Animals - Gerald Durrell 
+☞ My Family and Other Animals - Gerald Durrell
 
 As of a couple of minutes ago, I'm in 🥺 city 🥺; so we're around 🥺 distance 🥺 apart from each other right now. We should grab coffee sometime! Message me @Malted on the Hack Club Slack (hackclub.com/slack) or email my name at this domain.
 
