@@ -24,7 +24,7 @@ const handler: Handler = async ({ headers }) => {
     const [visitorLat, visitorLng] = [headers.get("cf-iplatitude"), headers.get("cf-iplongitude")];
 
     let distance = haversine.distance(maltedLat, maltedLng, visitorLat, visitorLng); 
-    distance = Math.round((distance * 10)) / 10;
+    distance = Math.round(distance);
     distance ||= "a million";
     distance += " miles";
 
