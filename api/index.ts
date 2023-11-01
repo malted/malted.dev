@@ -39,7 +39,7 @@ const handler: Handler = async ({ headers }) => {
 
     const replacements = [
         { from: "greeting", to: greetings[Math.floor(Math.random() * greetings.length)] },
-        { from: "timestamp", to: ms(maltedLocationTimestamp) },
+        { from: "timestamp", to: ms(Date.now() - maltedLocationTimestamp) },
         { from: "location", to: locationSentence },
     ];
 
