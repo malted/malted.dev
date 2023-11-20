@@ -10,10 +10,9 @@ ssh-keygen -t ed25519 -a 128 -b 4096 -f $LOCAL_KEY_LOCATION -q -N "" -C "$DESIRE
 ssh-add $LOCAL_KEY_LOCATION
 
 PUB_KEY=$(cat $LOCAL_KEY_LOCATION.pub)
-
+# sed -i '/^#PermitRootLogin\|PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config &&
 REMOTE_COMMANDS="
 sed -i '/^#PubkeyAuthentication\|PubkeyAuthentication/s/^.*$/PubkeyAuthentication yes/' /etc/ssh/sshd_config &&
-sed -i '/^#PermitRootLogin\|PermitRootLogin/s/^.*$/PermitRootLogin no/' /etc/ssh/sshd_config &&
 useradd -m -d /home/$DESIRED_REMOTE_USERNAME -s /bin/bash $DESIRED_REMOTE_USERNAME &&
 mkdir -p /home/$DESIRED_REMOTE_USERNAME/.ssh &&
 touch /home/$DESIRED_REMOTE_USERNAME/.ssh/authorized_keys &&
@@ -21,9 +20,11 @@ echo \"$PUB_KEY\" >> /home/$DESIRED_REMOTE_USERNAME/.ssh/authorized_keys &&
 chown -R $DESIRED_REMOTE_USERNAME:$DESIRED_REMOTE_USERNAME /home/$DESIRED_REMOTE_USERNAME/.ssh &&
 chmod 700 /home/$DESIRED_REMOTE_USERNAME/.ssh &&
 chmod 600 /home/$DESIRED_REMOTE_USERNAME/.ssh/authorized_keys &&
-sudo usermod -a -G sudo $DESIRED_REMOTE_USERNAME &&
+usermod -a -G sudo $DESIRED_REMOTE_USERNAME &&
 systemctl restart ssh
 "
+
+echo $REMOTE_COMMANDS
 
 ssh $EXISTING_REMOTE_USER@$REMOTE_IP $REMOTE_COMMANDS
 
