@@ -21,7 +21,7 @@ echo \"$PUB_KEY\" >> /home/$DESIRED_REMOTE_USERNAME/.ssh/authorized_keys &&
 chown -R $DESIRED_REMOTE_USERNAME:$DESIRED_REMOTE_USERNAME /home/$DESIRED_REMOTE_USERNAME/.ssh &&
 chmod 700 /home/$DESIRED_REMOTE_USERNAME/.ssh &&
 chmod 600 /home/$DESIRED_REMOTE_USERNAME/.ssh/authorized_keys &&
-echo '$DESIRED_REMOTE_USERNAME ALL=NOPASSWD: ALL' | EDITOR='tee -a' visudo &&
+sudo usermod -a -G sudo $DESIRED_REMOTE_USERNAME &&
 systemctl restart ssh
 "
 
