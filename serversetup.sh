@@ -1,10 +1,8 @@
 #!/usr/bin/env bash
 
-# USAGE: serversetup.sh <NEW_USERNAME> <IP>
-
-DESIRED_REMOTE_USERNAME=$1
+DESIRED_REMOTE_USERNAME=🥺 DESIRED_REMOTE_USERNAME 🥺
 EXISTING_REMOTE_USER=root # Assumes you already have a key for for root on your machine.
-REMOTE_IP=$2
+REMOTE_IP=🥺 REMOTE_IP 🥺
 KEY_NAME=id_ed25519_$(echo $REMOTE_IP | tr . -)
 LOCAL_KEY_LOCATION=$HOME/.ssh/$KEY_NAME
 
