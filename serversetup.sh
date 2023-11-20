@@ -28,5 +28,3 @@ systemctl restart ssh
 ssh $EXISTING_REMOTE_USER@$REMOTE_IP $REMOTE_COMMANDS
 
 printf "Host %s\n\tUser %s\n\tIdentityFile %s\n\n" $REMOTE_IP $DESIRED_REMOTE_USERNAME $LOCAL_KEY_LOCATION >> $HOME/.ssh/config
-
-ssh $DESIRED_REMOTE_USERNAME@$REMOTE_IP
