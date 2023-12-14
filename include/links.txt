@@ -1,0 +1,380 @@
+Superficial Toxicity Is the Enemy of Curiosity-Driven Innovation in Science
+https://avi-loeb.medium.com/ashes-to-ashes-superficial-toxicity-is-the-enemy-of-curiosity-driven-innovation-in-science-9a2a4a85c564
+
+IP Guide
+https://ip.guide/
+
+Reality has a surprising amount of detail
+http://johnsalvatier.org/blog/2017/reality-has-a-surprising-amount-of-detail
+
+An esoteric colour palette generation library
+https://meodai.github.io/poline/?utm_source=ridd-tweet&utm_medium=ridd&utm_campaign=ridd
+
+Swizzling
+https://en.wikipedia.org/wiki/Swizzling_(computer_graphics)
+
+RFC 2119: Key words for use in RFCs to Indicate Requirement Levels
+https://www.rfc-editor.org/rfc/rfc2119
+
+PEP 336 – Make None Callable | peps.python.org
+https://peps.python.org/pep-0336/#bdfl-pronouncement
+
+RFC 1149 - Standard for the transmission of IP datagrams on avian carriers
+https://datatracker.ietf.org/doc/html/rfc1149
+
+Domainr · fast, free, domain name search, short URLs, new gTLDs, whois
+https://domainr.com/
+
+The truth about British stoicism - BBC Travel
+https://www.bbc.com/travel/article/20201101-the-truth-about-british-stoicism
+
+Easter 2023 strike dates: How passport office, Heathrow, easyJet and French strikes will affect
+https://inews.co.uk/inews-lifestyle/travel/easter-2023-strike-dates-how-passport-office-heathrow-easyjet-french-strikes-holiday-travel-2230245
+
+Index — TFTL
+https://thefirstthelast.agency/
+
+appleid-region-detector
+https://blog-apple-id-region-detection.vercel.app/
+
+Miis Daily - YouTube
+https://m.youtube.com/@IAmMiisDaily
+
+cdecl: C gibberish ↔ English
+https://cdecl.org/
+
+twitter.com
+https://twitter.com/0xca0a/status/1646633642427314177
+
+that time my manager spent $1M on a backup server that I never used
+https://blog.dijit.sh//that-time-my-manager-spend-1m-on-a-backup-server
+
+vice.com
+https://www.vice.com/en/article/k7z8be/torswats-computer-generated-ai-voice-swatting?utm_source=reddit.com
+
+GSS crime and justice statistics interactive database
+https://analysisfunction.civilservice.gov.uk/dashboard/tools/crime-and-justice-statistics/database.html
+
+The Murray Lab - Global CTX Mosaic of Mars (powered by Esri
+https://murray-lab.caltech.edu/CTX/V01/SceneView/MurrayLabCTXmosaic.html
+
+Vaporwave trans rights 8K 3D (video) - AI Generated Artwork - NightCafe Creator
+https://creator.nightcafe.studio/creation/zBOX24j5eI3qDilfowsC
+
+SPWN is a programming language that compiles to Geometry Dash levels
+https://spu7nix.net/spwn/#/
+
+subtls.pages.dev
+https://subtls.pages.dev/
+
+Testing a new encrypted messaging app's extraordinary claims
+https://crnkovic.dev/testing-converso/
+
+A (Relatively Easy To Understand) Primer on Elliptic Curve Cryptography
+https://blog.cloudflare.com/a-relatively-easy-to-understand-primer-on-elliptic-curve-cryptography/?ref=crnkovic.dev
+
+GitHub - fujiapple852/trippy: A network diagnostic tool
+https://github.com/fujiapple852/trippy
+
+tui-rs-revival/ratatui: tui-rs revival project
+https://github.com/tui-rs-revival/ratatui
+
+cabbi.bo
+http://cabbi.bo/nothing/
+
+Flight Control (video game) - Wikipedia
+https://en.m.wikipedia.org/wiki/Flight_Control_(video_game)
+
+Same Stop
+https://www.engineersneedart.com/blog/samestop/samestop.html
+
+SpaceBadgers
+https://badgers.space/
+
+speed | Apple Developer Documentation
+https://developer.apple.com/documentation/corelocation/cllocation/1423798-speed
+
+Signal Protocol - Wikipedia
+https://en.m.wikipedia.org/wiki/Signal_Protocol
+
+VAT rates - GOV.UK
+https://www.gov.uk/vat-rates
+
+The State of Secrets Sprawl 2023
+https://blog.gitguardian.com/the-state-of-secrets-sprawl-2023/
+
+GeneCodex
+https://codex-brandonsaldan.vercel.app/
+
+Get It Done
+https://boz.com/articles/get-it-done
+
+109] Data Falsificada (Part 1): "Clusterfake" - Data Colada
+https://datacolada.org/109
+
+Swing VPN app is a DDOS botnet | Greek geek
+https://lecromee.github.io/posts/swing_vpn_ddosing_sites/
+
+The shady world of Brave selling copyrighted data for AI training
+https://stackdiary.com/brave-selling-copyrighted-data-for-ai-training/
+
+The case of the supersized shebang LWN.net]
+https://lwn.net/Articles/779997/
+
+Ambient And Directional Lighting In Spherical Harmonics
+https://www.sjbrown.co.uk/posts/ambient-and-directional-lighting-in-spherical-harmonics/
+
+Sapienza | Hitman Wiki | Fandom
+https://hitman.fandom.com/wiki/Sapienza
+
+Boot screen components - Windows drivers | Microsoft Learn
+https://learn.microsoft.com/en-us/windows-hardware/drivers/bringup/boot-screen-components
+
+GitHub - NalinPlad/OuterFlightTracker: A flight tracker made in 6 hours on a flight home from OuterNet
+https://github.com/NalinPlad/OuterFlightTracker
+
+compatibility and connection - by Isabel - Mind Mine
+https://mindmine.substack.com/p/compatibility-and-connection
+
+Human Shader
+https://humanshader.com/
+
+Orthogonal polarization spectral imaging - Wikipedia
+https://en.m.wikipedia.org/wiki/Orthogonal_polarization_spectral_imaging
+
+Protobufs Explained, and why Google, Apple, and LinkedIn use it over JSON
+https://newsletter.devmoh.co/p/protobufs-explained-and-why-google?utm_source=tldrwebdev
+
+HACK-A-SAT 4
+https://hackasat.com/
+
+Downfall
+https://downfall.page/
+
+How to add Metal shaders to SwiftUI views using layer effects - a free SwiftUI by Example tutorial
+https://www.hackingwithswift.com/quick-start/swiftui/how-to-add-metal-shaders-to-swiftui-views-using-layer-effects
+
+I built a garbage collector for a language that doesn’t need one | clayt
+https://claytonwramsey.github.io/2023/08/14/dumpster.html
+
+Anna Karenina principle - Wikipedia
+https://en.m.wikipedia.org/wiki/Anna_Karenina_principle
+
+Wall of Sheep
+https://www.wallofsheep.com/pages/wall-of-sheep
+
+DNA Lounge
+https://www.dnalounge.com/
+
+dns0.eu — The European public DNS that makes your Internet safer
+https://www.dns0.eu/
+
+Ira Glass and What Every Successful Person Knows, But Never Says
+https://jamesclear.com/ira-glass-failure
+
+The Arm Manga Guide to the Mali GPU
+https://interactive.arm.com/story/the-arm-manga-guide-to-the-mali-gpu/page/3/1
+
+Bypass Two-Factor Authentication of Facebook Accounts ($25,300) | by Bassem M Bazzoun | Aug, 2023 | Medium
+https://medium.com/@bazzounbassem/bypass-two-factor-authentication-of-facebook-accounts-25-300-7ae152d7836a
+
+Securing the Wireless Emergency Alerts System | October 2021 | Communications of the ACM
+https://m-cacm.acm.org/magazines/2021/10/255719-securing-the-wireless-emergency-alerts-system/fulltext
+
+GitHub - ReshotAI/gaussian-painters: Gaussian Painters using 3D Gaussian Splatting
+https://github.com/ReshotAI/gaussian-painters?utm_source=tldrai
+
+WhatDoTheyKnow
+https://www.whatdotheyknow.com/request/cctv_equipment#incoming-2396173
+
+It's Official: Cars Are the Worst Product Category We Have Ever Reviewed for Privacy
+https://foundation.mozilla.org/en/privacynotincluded/articles/its-official-cars-are-the-worst-product-category-we-have-ever-reviewed-for-privacy/
+
+media.defcon.org
+https://media.defcon.org/DEF%20CON%2031/DEF%20CON%2031%20video%20and%20slides/DEF%20CON%2031%20-%20An%20Audacious%20Plan%20to%20Halt%20the%20Internet%27s%20Enshittification%20-%20Cory%20Doctorow.mp4
+
+Results of Major Technical Investigations for Storm-0558 Key Acquisition | MSRC Blog | Microsoft Security Response Center
+https://msrc.microsoft.com/blog/2023/09/results-of-major-technical-investigations-for-storm-0558-key-acquisition/
+
+When do the clocks change? - GOV.UK
+https://www.gov.uk/when-do-the-clocks-change
+
+Next.js, just why?
+https://pilcrow.vercel.app/blog/nextjs-why?s
+
+Mashing Enter to bypass full disk encryption with TPM, Clevis, dracut and systemd
+https://pulsesecurity.co.nz/advisories/tpm-luks-bypass
+
+SexualActivityRecord  |  Android Developers
+<https://developer.android.com/reference/androidx/health/connect/client/records/SexualActivityRecord#PROTECTION_USED_PROTECTED()>
+
+When do the clocks change? - GOV.UK
+https://www.gov.uk/when-do-the-clocks-change
+
+The million-dollar reporter How attackers hijacked the phone of Meduza co-founder Galina Timchenko, making her the first Russian journalist to be infected with Pegasus spyware — Meduza
+https://meduza.io/en/feature/2023/09/13/the-million-dollar-reporter?utm_source=tldrinfosec
+
+Implementing Wordle in the Firefox address bar | eieio.games
+https://eieio.games/nonsense/implementing-wordle-in-the-firefox-address-bar/
+
+An open letter to our community | Unity Blog
+https://blog.unity.com/news/open-letter-on-runtime-fee?utm_source=twitter&utm_medium=social&utm_campaign=company_global_generalpromo_2023-09-22_penguinblogupdate
+
+The 5 most common arguments against user testing
+https://dataanddesign.substack.com/p/the-5-most-common-arguments-against?utm_source=tldrdesign
+
+A Mobile-Only Grid - Chris Coyier
+https://chriscoyier.net/2023/09/22/a-mobile-only-grid/?utm_source=tldrdesign
+
+DT 770 PRO: Closed studio headphones | beyerdynamic
+https://europe.beyerdynamic.com/dt-770-pro.html?nosto=headsets_pro_ourtip
+
+Neural Patterns
+https://neuralpatterns.io/
+
+a sidechannel attack by way of GPU texture compression which translates to a timing attack, exploitable as an untrusted page in the browser
+https://cohost.org/lifning/post/2976824-empty
+
+Interoperability: Swift’s Super Power
+https://speakinginswift.substack.com/p/interoperability-swifts-super-power?r=devo2
+
+Was async fn a mistake? - seanmonstar
+https://seanmonstar.com/post/66832922686/was-async-fn-a-mistake
+
+Data on Covid-19 and Mpox Wastewater Monitoring | Biobot Analytics
+https://biobot.io/data/
+
+Cambridge hospital’s mask upgrade appears to eliminate Covid risk to staff | Coronavirus | The Guardian
+https://www.theguardian.com/world/2021/jun/29/cambridge-hospitals-mask-upgrade-appears-to-eliminate-covid-19-risk-to-staff
+
+A Private Equity Firm Drove the Company that Makes Pyrex and Instant Pots Into Bankruptcy
+https://www.pajiba.com/miscellaneous/a-private-equity-firm-drove-the-company-that-makes-pyrex-and-instant-pots-into-bankruptcy.php
+
+Molly White's newsletter
+https://newsletter.mollywhite.net/p/issue-39
+
+Champagne for my real friends
+http://jeremybmerrill.com/documents/champagnerealpain.html#a-more-robust-rubric-for-champagne-phrases
+
+Database Migrations
+https://vadimkravcenko.com/shorts/database-migrations/?utm_source=tldrnewsletter
+
+CSS Solves Auto-Expanding Textareas (Probably, Eventually) - Chris Coyier
+https://chriscoyier.net/2023/09/29/css-solves-auto-expanding-textareas-probably-eventually/?utm_source=tldrnewsletter
+
+New Labels On Petrol And Diesel Pumps 2019 | AA
+https://www.theaa.com/driving-advice/fuels-environment/new-labels-on-petrol-and-diesel-pumps-2019
+
+Subtraction Is Functionally Complete | orlp.net
+https://orlp.net/blog/subtraction-is-functionally-complete/
+
+GradIEEEnt half decent
+http://tom7.org/grad/
+
+NaN Gates and Flip FLOPS
+http://tom7.org/nand/
+
+Why NASA Chose WordPress for Revamping Its Flagship Website – WP Tavern
+https://wptavern.com/why-nasa-chose-wordpress-for-revamping-its-flagship-website
+
+Alameda had a $65B line of credit and ‘unlimited withdrawals’ | TechCrunch
+https://techcrunch.com/2023/10/05/sbf-trial-gary-wang/?utm_source=tldrnewsletter&guccounter=1
+
+Why HTTP/3 is eating the world | APNIC Blog
+https://blog.apnic.net/2023/09/25/why-http-3-is-eating-the-world/?utm_source=tldrwebdev
+
+No More Vendor Lock-In? The Rise of Sky Computing
+https://blog.bytebytego.com/p/no-more-vendor-lock-in-the-rise-of?utm_source=tldrwebdev
+
+The Ultimate Low-Quality Image Placeholder Technique – Harry Roberts – Web Performance Consultant
+https://csswizardry.com/2023/09/the-ultimate-lqip-lcp-technique/?utm_source=tldrdesign
+
+CSS God Rays
+https://codepen.io/TWilson/pen/jOdWqbZ
+
+How to draw beautiful software architecture diagrams
+https://terrastruct.com/blog/post/draw-software-architecture-diagrams/
+
+How Figma’s data science and user research teams weave together insights that count | Figma Blog
+https://www.figma.com/blog/cross-functional-data-science-user-research-figma/?utm_source=tldrdesign
+
+A Journey Into Shaders
+https://www.mayerowitz.io/blog/a-journey-into-shaders?utm_source=tldrwebdev
+
+Seeing like a Bank
+https://www.bitsaboutmoney.com/archive/seeing-like-a-bank/
+
+why do pilots full thrust when landing at DuckDuckGo
+https://duckduckgo.com/?q=why+do+pilots+full+thrust+when+landing&t=iphone&ia=web
+
+Interesting bugs caught by no-constant-binary-expression - ESLint - Pluggable JavaScript Linter
+https://eslint.org/blog/2022/07/interesting-bugs-caught-by-no-constant-binary-expression/
+
+A VSCode Extension to Clarify Operator Precedence in JS / Jordan Eldredge
+https://jordaneldredge.com/blog/a-vs-code-extension-to-combat-js-precedence-confusion/
+
+FDA Approves Lilly's Zepbound™ (tirzepatide) for Chronic Weight Management, a Powerful New Option for the Treatment of Obesity or Overweight with Weight-Related Medical Problems | Eli Lilly and Company
+https://investor.lilly.com/news-releases/news-release-details/fda-approves-lillys-zepboundtm-tirzepatide-chronic-weight
+
+Shortcat: Universal command palette for your Mac | Shortcat
+https://shortcat.app/
+
+kindaVim
+https://kindavim.app/
+
+OCaml: A Rust developer’s first impressions - Inside thoughts
+https://pthorpe92.github.io/ocaml/ocaml-first-thoughts/
+
+shots.so
+https://shots.so
+
+Sweeping Raids and Mass Deportations: Inside Trump’s 2025 Immigration Plans - The New York Times
+https://www.nytimes.com/2023/11/11/us/politics/trump-2025-immigration-agenda.html
+
+1 Bit 1Hz CPU – CW&T
+https://cwandt.com/products/1-bit-1hz-cpu
+
+Why NASA uses two logos
+https://www.fastcompany.com/90979557/nasa-is-breaking-a-cardinal-rule-of-branding?utm_source=tldrdesign
+
+Womp: Free 3D design software
+https://womp.com/
+
+The real realtime preemption end game LWN.net]
+https://lwn.net/SubscriberLink/951337/e9139cdb65a9cb93/
+
+From email to phone number, a new OSINT approach - Martin Vigo
+https://www.martinvigo.com/email2phonenumber/
+
+Disks from the Perspective of a File System | ACM
+https://dl.acm.org/doi/pdf/10.1145/2367376.2367378
+
+How to write a cold email
+https://sriramk.com/coldemail
+
+Greg Brockman's Home Page
+http://gregbrockman.com/
+
+Cryptographers Solve Decades-Old Privacy Problem - Nautilus
+https://nautil.us/cryptographers-solve-decades-old-privacy-problem-444899/
+
+Suddenly, I Understand Software
+https://johnwhiles.com/posts/programming-as-theory
+
+Back to Lisp — Paolo Amoroso's Journal
+https://journal.paoloamoroso.com/back-to-lisp
+
+The Evolution of Trust
+https://ncase.me/trust/
+
+MIT Restroom Directory
+https://fisgis.maps.arcgis.com/apps/webappviewer/index.html?id=5a682467ded44d8597c5d7d1d517055d/
+
+Tuning the Linux kernel with AI, according to ByteDance | ZDNET
+https://www.zdnet.com/article/tuning-the-linux-kernel-with-ai-according-to-bytedance/
+
+US economy: The jobs market is strong. Why don’t people care? - Vox
+https://www.vox.com/2023/11/20/23964535/labor-market-employment-inflation-sentiment-economy-bad-polls
+
+WPA-WPA2 Wi-Fi Hacking: A Step-by-Step Guide. | by Kamalesh D | Nov, 2023 | Medium
+https://medium.com/@kkamalesh117/wpa-wpa2-wi-fi-hacking-a-step-by-step-guide-148f5c251163
