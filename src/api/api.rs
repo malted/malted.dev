@@ -28,12 +28,12 @@ pub fn patch_location(
     timestamp: String,
     battery: i8,
 ) -> Json<ApiResponse> {
-    // if token != std::env::var("secret_token").unwrap() {
-    //     return Json(ApiResponse {
-    //         success: false,
-    //         message: "Invalid token".to_string(),
-    //     });
-    // }
+    if token != std::env::var("secret_token").unwrap() {
+        return Json(ApiResponse {
+            success: false,
+            message: "Invalid token".to_string(),
+        });
+    }
 
     *malted_state.write() = Some(MaltedState {
         lat,

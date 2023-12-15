@@ -29,15 +29,23 @@ pub async fn index(
             return;
         }
 
-        let req = reqwest::get(format!("http://ip-api.com/line/{remote_ip}?fields=lat,lon"))
-            .await
-            .unwrap()
-            .error_for_status()
-            .unwrap()
-            .text()
-            .await
-            .unwrap();
+        println!("Remote IP: {:#?}", remote_ip);
 
+        let req = reqwest::get(format!(
+            "https://ip-api.com/line/{remote_ip}?fields=lat,lon"
+        ))
+        .await
+        .unwrap()
+        .error_for_status()
+        .unwrap()
+        .text()
+        .await
+        .unwrap();
+
+        println!(
+            "{}",
+            format!("https://ip-api.com/line/{remote_ip}?fields=lat,lon")
+        );
         println!("{:#?}", req);
 
         let loc: (&str, &str) = req.split_once('\n').unwrap();
@@ -155,7 +163,7 @@ pub async fn index(
         if let Some((lat, lon)) = remote_loc.lock().await.clone() {
             typewr!(format!("{lat} {lon}"));
         } else {
-            typewr!("\nHm. I was going to tell you where I am, but apparently my server doesn't know, or doesn't want to tell you.\n\n");
+            typewr!("Hm. I was going to tell you where I am, but apparently my server doesn't know, or doesn't want to tell you.\n\n");
         }
         // Check if malted_state is some
         // if let Some(state) = malted_state.clone().read() {
