@@ -1,10 +1,13 @@
 use super::*;
 use crate::MaltedState;
+use rocket::http::Status;
+use rocket::request::{self, FromRequest, Outcome};
 use rocket::response::{stream::TextStream, Redirect};
 use rocket::tokio::sync::Mutex;
 use rocket::tokio::time::{self, Duration};
-use rocket::{request, State};
-use std::net::SocketAddr;
+use rocket::Request;
+use rocket::State;
+
 use std::sync::Arc;
 
 #[get("/???")]
@@ -12,17 +15,32 @@ pub fn random_site() -> Redirect {
     Redirect::temporary(random_link())
 }
 
+#[derive(Debug, FromForm)]
+pub struct RealIp(String);
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for RealIp {
+    type Error = ();
+
+    async fn from_request(request: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
+        match request.headers().get_one("X-Real-IP") {
+            Some(ip) => Outcome::Success(RealIp(ip.to_string())),
+            None => Outcome::Error((Status::BadRequest, ())),
+        }
+    }
+}
+
 #[get("/")]
 pub async fn index(
     malted_state: &State<Arc<parking_lot::RwLock<Option<MaltedState>>>>,
-    remote_addr: SocketAddr,
+    real_ip: RealIp,
 ) -> TextStream![String] {
     let default_interval = Duration::from_millis(4);
     let long_interval = Duration::from_millis(50);
 
     let remote_loc: Arc<Mutex<Option<(f64, f64)>>> = Arc::new(Mutex::new(None));
     let thread_remote_loc = remote_loc.clone();
-    let remote_ip = remote_addr.ip();
+    let remote_ip = real_ip.0.parse::<std::net::IpAddr>().unwrap();
     rocket::tokio::task::spawn(async move {
         if remote_ip.is_loopback() {
             println!("Loopback IP, skipping IP lookup");
