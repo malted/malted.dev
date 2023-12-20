@@ -18,7 +18,9 @@ pub struct MaltedState {
 #[launch]
 fn rocket() -> _ {
     let mut config = rocket::config::Config::release_default();
-    config.address = std::net::IpAddr::from([0, 0, 0, 0]);
+    if !cfg!(debug_assertions) {
+        config.address = std::net::IpAddr::from([0, 0, 0, 0]);
+    }
 
     rocket::custom(config)
         .manage(Arc::new(RwLock::new(None::<MaltedState>)))

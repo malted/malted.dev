@@ -16,15 +16,18 @@ pub fn random_site() -> Redirect {
 }
 
 #[derive(Debug, FromForm)]
-pub struct RealIp(String);
+pub struct RequesterIp(Option<String>);
 
 #[rocket::async_trait]
-impl<'r> FromRequest<'r> for RealIp {
+impl<'r> FromRequest<'r> for RequesterIp {
     type Error = ();
 
     async fn from_request(request: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
-        match request.headers().get_one("X-Real-IP") {
-            Some(ip) => Outcome::Success(RealIp(ip.to_string())),
+        if cfg!(debug_assertions) {
+            return Outcome::Success(RequesterIp(None));
+        }
+        match request.headers().get_one("X-Forwarded-For") {
+            Some(ip) => Outcome::Success(RequesterIp(Some(ip.to_string()))),
             None => Outcome::Error((Status::BadRequest, ())),
         }
     }
@@ -33,48 +36,50 @@ impl<'r> FromRequest<'r> for RealIp {
 #[get("/")]
 pub async fn index(
     malted_state: &State<Arc<parking_lot::RwLock<Option<MaltedState>>>>,
-    real_ip: RealIp,
+    real_ip: RequesterIp,
 ) -> TextStream![String] {
     let default_interval = Duration::from_millis(4);
     let long_interval = Duration::from_millis(50);
 
     let remote_loc: Arc<Mutex<Option<(f64, f64)>>> = Arc::new(Mutex::new(None));
     let thread_remote_loc = remote_loc.clone();
-    let remote_ip = real_ip.0.parse::<std::net::IpAddr>().unwrap();
-    rocket::tokio::task::spawn(async move {
-        if remote_ip.is_loopback() {
-            println!("Loopback IP, skipping IP lookup");
-            return;
-        }
 
-        println!("Remote IP: {:#?}", remote_ip);
+    if let Some(req_ip_raw) = real_ip.0 {
+        let req_ip = req_ip_raw.parse::<std::net::IpAddr>().unwrap();
 
-        let req = reqwest::get(format!(
-            "https://ip-api.com/line/{remote_ip}?fields=lat,lon"
-        ))
-        .await
-        .unwrap()
-        .error_for_status()
-        .unwrap()
-        .text()
-        .await
-        .unwrap();
+        rocket::tokio::task::spawn(async move {
+            if req_ip.is_loopback() {
+                println!("Loopback IP, skipping IP lookup");
+                return;
+            }
 
-        println!(
-            "{}",
-            format!("https://ip-api.com/line/{remote_ip}?fields=lat,lon")
-        );
-        println!("{:#?}", req);
+            println!("Remote IP: {:#?}", req_ip);
 
-        let loc: (&str, &str) = req.split_once('\n').unwrap();
+            let req = reqwest::get(format!("https://ip-api.com/line/{req_ip}?fields=lat,lon"))
+                .await
+                .unwrap()
+                .error_for_status()
+                .unwrap()
+                .text()
+                .await
+                .unwrap();
 
-        println!("{:#?}", loc);
+            println!(
+                "{}",
+                format!("https://ip-api.com/line/{req_ip}?fields=lat,lon")
+            );
+            println!("{:#?}", req);
 
-        thread_remote_loc
-            .lock()
-            .await
-            .replace((loc.0.parse::<f64>().unwrap(), loc.1.parse::<f64>().unwrap()));
-    });
+            let loc: (&str, &str) = req.split_once('\n').unwrap();
+
+            println!("{:#?}", loc);
+
+            thread_remote_loc
+                .lock()
+                .await
+                .replace((loc.0.parse::<f64>().unwrap(), loc.1.parse::<f64>().unwrap()));
+        });
+    }
 
     let body = [
         "🐢---------------------",
@@ -181,7 +186,7 @@ pub async fn index(
         if let Some((lat, lon)) = remote_loc.lock().await.clone() {
             typewr!(format!("{lat} {lon}"));
         } else {
-            typewr!("Hm. I was going to tell you where I am, but apparently my server doesn't know, or doesn't want to tell you.\n\n");
+            typewr!("🐢Hm. I was going to tell you where I am, but apparently my server doesn't know, or doesn't want to tell you.🐇\n\n");
         }
         // Check if malted_state is some
         // if let Some(state) = malted_state.clone().read() {
