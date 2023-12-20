@@ -37,7 +37,7 @@ impl<'r> FromRequest<'r> for RequesterIp {
 #[get("/")]
 pub async fn index(
     malted_state: &State<Arc<parking_lot::RwLock<Option<MaltedState>>>>,
-    mut real_ip: RequesterIp,
+    real_ip: RequesterIp,
 ) -> TextStream![String] {
     let default_interval = Duration::from_millis(4);
     let long_interval = Duration::from_millis(50);
@@ -45,7 +45,6 @@ pub async fn index(
     let remote_loc: Arc<Mutex<Option<(f64, f64)>>> = Arc::new(Mutex::new(None));
     let thread_remote_loc = remote_loc.clone();
 
-    real_ip = RequesterIp(Some(String::from("109.144.214.218")));
     if let Some(req_ip_raw) = real_ip.0 {
         let req_ip = req_ip_raw.parse::<std::net::IpAddr>().unwrap();
 
