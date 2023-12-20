@@ -1,14 +1,10 @@
 use super::*;
 use crate::MaltedState;
-use rocket::http::Status;
-use rocket::request::{self, FromRequest, Outcome};
-use rocket::response::{stream::TextStream, Redirect};
-use rocket::tokio::sync::Mutex;
-use rocket::tokio::time::{self, Duration};
-use rocket::Request;
-use rocket::State;
-
-use std::net::Ipv4Addr;
+use rocket::{
+    response::{stream::TextStream, Redirect},
+    tokio::time::{self, Duration},
+    State,
+};
 use std::sync::Arc;
 
 #[get("/???")]
@@ -16,75 +12,20 @@ pub fn random_site() -> Redirect {
     Redirect::temporary(random_link())
 }
 
-#[derive(Debug, FromForm)]
-pub struct RequesterIp(Option<String>);
-
-#[rocket::async_trait]
-impl<'r> FromRequest<'r> for RequesterIp {
-    type Error = ();
-
-    async fn from_request(request: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
-        if cfg!(debug_assertions) {
-            return Outcome::Success(RequesterIp(None));
-        }
-        match request.headers().get_one("X-Forwarded-For") {
-            Some(ip) => Outcome::Success(RequesterIp(Some(ip.to_string()))),
-            None => Outcome::Error((Status::BadRequest, ())),
-        }
-    }
-}
-
 #[get("/")]
 pub async fn index(
     malted_state: &State<Arc<parking_lot::RwLock<Option<MaltedState>>>>,
-    real_ip: RequesterIp,
+    req_info: RequesterInfo,
 ) -> TextStream![String] {
     let default_interval = Duration::from_millis(4);
     let long_interval = Duration::from_millis(50);
-
-    let remote_loc: Arc<Mutex<Option<(f64, f64)>>> = Arc::new(Mutex::new(None));
-    let thread_remote_loc = remote_loc.clone();
-
-    if let Some(req_ip_raw) = real_ip.0 {
-        let req_ip = req_ip_raw.parse::<std::net::IpAddr>().unwrap();
-
-        rocket::tokio::task::spawn(async move {
-            if req_ip.is_loopback() {
-                println!("Loopback IP, skipping IP lookup");
-                return;
-            }
-
-            println!("Remote IP: {:#?}", req_ip);
-
-            let url = format!("http://ip-api.com/line/{req_ip}?fields=lat,lon");
-            println!("{}", url);
-
-            let req = reqwest::get(url)
-                .await
-                .unwrap()
-                .error_for_status()
-                .unwrap()
-                .text()
-                .await
-                .unwrap();
-
-            println!("{:#?}", req);
-
-            let loc: (&str, &str) = req.split_once('\n').unwrap();
-
-            thread_remote_loc.lock().await.replace((
-                loc.0.trim().parse::<f64>().unwrap(),
-                loc.1.trim().parse::<f64>().unwrap(),
-            ));
-        });
-    }
 
     let body = [
         "🐢---------------------",
         "START OF TRANSMISSION",
         "---------------------",
         "🐇",
-        &format!("{} People call me Malted.", utils::random_greeting()),
+        &format!("{} People call me Malted.", random_greeting()),
         "I research computer graphics, write systems software, do funky 501(c)(3) stuff, and make computers crunch numbers in just the right way.",
         "",
         "Most days, I push to github.com/hackclub. Other days, I force push to github.com/malted. This site is open source; go and find it, and give me a follow while you're at it.",
@@ -113,7 +54,7 @@ pub async fn index(
         .max()
         .unwrap_or(0);
 
-    let body = utils::justify(false, &body, max_length);
+    let body = justify(false, &body, max_length);
 
     let battery_message = if let Some(state) = malted_state.read().clone() {
         let battery = state.battery;
@@ -126,7 +67,7 @@ pub async fn index(
         ", but my phone is dead right now, so I won't get your call.".to_string()
     };
 
-    let contact = utils::justify(
+    let contact = justify(
         false,
         &[
             &format!("Message me @Malted on the Hack Club Slack, or email me at this domain. If you're in a pinch, call me at malted at malted dot dev (but only for the pinchiest of pinches){battery_message}"),
@@ -164,7 +105,7 @@ pub async fn index(
                             yield c.to_string();
                             line_length = 0;
                         } else if line_length >= line_max && c == ' ' {
-                            yield "\n".to_string();
+                            yield '\n'.to_string();
                             line_length = 0;
                         } else {
                             line_length += 1;
@@ -181,11 +122,13 @@ pub async fn index(
 
         typewr!(body);
 
-        if let Some((lat, lon)) = remote_loc.lock().await.clone() {
-            typewr!(format!("{lat} {lon}"));
-        } else {
-            typewr!("🐢Hm. I was going to tell you where I am, but apparently my server doesn't know, or doesn't want to tell you.🐇\n\n");
-        }
+        typewr!(format!("{:#?}\n\n", req_info));
+
+        // if let Some((lat, lon)) = req.lock().await.clone() {
+        //     typewr!(format!("{lat} {lon}"));
+        // } else {
+        //     typewr!("🐢Hm. I was going to tell you where I am, but apparently my server doesn't know, or doesn't want to tell you.🐇\n\n");
+        // }
         // Check if malted_state is some
         // if let Some(state) = malted_state.clone().read() {
         //     // interval = time::interval(long_interval);
@@ -195,7 +138,7 @@ pub async fn index(
         //     let remote_loc = remote_loc.lock();
         // }
 
-        // typewr!(utils::location_section(malted_state));
+        // typewr!(location_section(malted_state));
         // interval = time::interval(default_interval);
 
         typewr!(contact);

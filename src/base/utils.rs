@@ -1,6 +1,47 @@
-use parking_lot::Mutex;
 use rand::prelude::{thread_rng, SliceRandom};
-use std::sync::Arc;
+use rocket::{
+    request::{self, FromRequest, Outcome},
+    Request,
+};
+
+#[derive(Debug, Default, FromForm)]
+pub struct RequesterInfo {
+    pub coords: (f64, f64),
+    pub city: String,
+    pub region: String,
+    pub timezone: String,
+}
+
+#[rocket::async_trait]
+impl<'r> FromRequest<'r> for RequesterInfo {
+    type Error = ();
+
+    async fn from_request(request: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
+        if cfg!(debug_assertions) {
+            return Outcome::Success(RequesterInfo::default());
+        }
+
+        let header_as_string = |header: &str| -> String {
+            request
+                .headers()
+                .get_one(header)
+                .expect(&format!("Missing header: {header}"))
+                .to_string()
+        };
+        let lat: f64 = header_as_string("Cf-Iplatitude").parse().unwrap();
+        let lon: f64 = header_as_string("Cf-Iplongitude").parse().unwrap();
+        let city = header_as_string("Cf-Ipcity");
+        let region = header_as_string("Cf-Region");
+        let timezone = header_as_string("Cf-Timezone");
+
+        return Outcome::Success(RequesterInfo {
+            coords: (lat, lon),
+            city,
+            region,
+            timezone,
+        });
+    }
+}
 
 pub fn random_greeting() -> &'static str {
     let greetings: Vec<&str> = include_str!("../../include/greetings.txt")
