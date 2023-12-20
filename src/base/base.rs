@@ -8,6 +8,7 @@ use rocket::tokio::time::{self, Duration};
 use rocket::Request;
 use rocket::State;
 
+use std::net::Ipv4Addr;
 use std::sync::Arc;
 
 #[get("/???")]
@@ -36,7 +37,7 @@ impl<'r> FromRequest<'r> for RequesterIp {
 #[get("/")]
 pub async fn index(
     malted_state: &State<Arc<parking_lot::RwLock<Option<MaltedState>>>>,
-    real_ip: RequesterIp,
+    mut real_ip: RequesterIp,
 ) -> TextStream![String] {
     let default_interval = Duration::from_millis(4);
     let long_interval = Duration::from_millis(50);
@@ -44,6 +45,7 @@ pub async fn index(
     let remote_loc: Arc<Mutex<Option<(f64, f64)>>> = Arc::new(Mutex::new(None));
     let thread_remote_loc = remote_loc.clone();
 
+    real_ip = RequesterIp(Some(String::from("109.144.214.218")));
     if let Some(req_ip_raw) = real_ip.0 {
         let req_ip = req_ip_raw.parse::<std::net::IpAddr>().unwrap();
 
@@ -55,7 +57,10 @@ pub async fn index(
 
             println!("Remote IP: {:#?}", req_ip);
 
-            let req = reqwest::get(format!("https://ip-api.com/line/{req_ip}?fields=lat,lon"))
+            let url = format!("http://ip-api.com/line/{req_ip}?fields=lat,lon");
+            println!("{}", url);
+
+            let req = reqwest::get(url)
                 .await
                 .unwrap()
                 .error_for_status()
@@ -64,20 +69,14 @@ pub async fn index(
                 .await
                 .unwrap();
 
-            println!(
-                "{}",
-                format!("https://ip-api.com/line/{req_ip}?fields=lat,lon")
-            );
             println!("{:#?}", req);
 
             let loc: (&str, &str) = req.split_once('\n').unwrap();
 
-            println!("{:#?}", loc);
-
-            thread_remote_loc
-                .lock()
-                .await
-                .replace((loc.0.parse::<f64>().unwrap(), loc.1.parse::<f64>().unwrap()));
+            thread_remote_loc.lock().await.replace((
+                loc.0.trim().parse::<f64>().unwrap(),
+                loc.1.trim().parse::<f64>().unwrap(),
+            ));
         });
     }
 
