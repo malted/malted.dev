@@ -1,7 +1,7 @@
 use crate::MaltedState;
 use parking_lot::RwLock;
+use rocket::http::RawStr;
 use rocket::{serde::json::Json, State};
-use std::sync::Arc;
 
 #[derive(serde::Serialize)]
 pub struct ApiResponse {
@@ -25,15 +25,27 @@ pub fn patch_location(
     lon: f64,
     city: String,
     country: String,
-    timestamp: String,
+    timestamp: &str,
     battery: i8,
 ) -> Json<ApiResponse> {
-    if token != std::env::var("secret_token").unwrap() {
-        return Json(ApiResponse {
+    let err = |msg: &str| -> Json<ApiResponse> {
+        Json(ApiResponse {
             success: false,
-            message: "Invalid token".to_string(),
-        });
+            message: msg.to_string(),
+        })
+    };
+
+    if token != std::env::var("secret_token").unwrap() {
+        return err("Invalid token");
     }
+
+    let timestamp: &RawStr = timestamp.into();
+    let timestamp = match timestamp.url_decode() {
+        Ok(timestamp) => timestamp,
+        Err(_) => {
+            return err("Coud not URL decode timestamp");
+        }
+    };
 
     if let Ok(timestamp) =
         chrono::DateTime::parse_from_rfc3339(&timestamp).map(|x| x.with_timezone(&chrono::Utc))
