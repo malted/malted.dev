@@ -1,7 +1,5 @@
 #[macro_use]
 extern crate rocket;
-use parking_lot::RwLock;
-use std::sync::Arc;
 mod api;
 mod base;
 
@@ -11,7 +9,7 @@ pub struct MaltedState {
     pub lon: f64,
     pub city: String,
     pub country: String,
-    pub timestamp: String,
+    pub timestamp: chrono::DateTime<chrono::Utc>,
     pub battery: i8,
 }
 
@@ -23,7 +21,7 @@ fn rocket() -> _ {
     }
 
     rocket::custom(config)
-        .manage(Arc::new(RwLock::new(None::<MaltedState>)))
+        .manage(parking_lot::RwLock::new(MaltedState::default()))
         .mount("/", routes![base::index, base::random_site])
         .mount("/api", routes![api::index, api::patch_location])
 }

@@ -19,7 +19,7 @@ pub fn index() -> Json<ApiResponse> {
 
 #[rocket::patch("/status?<token>&<lat>&<lon>&<city>&<country>&<timestamp>&<battery>")]
 pub fn patch_location(
-    malted_state: &State<Arc<RwLock<Option<MaltedState>>>>,
+    malted_state: &State<RwLock<MaltedState>>,
     token: String,
     lat: f64,
     lon: f64,
@@ -35,14 +35,23 @@ pub fn patch_location(
         });
     }
 
-    *malted_state.write() = Some(MaltedState {
-        lat,
-        lon,
-        city,
-        country,
-        timestamp,
-        battery,
-    });
+    if let Ok(timestamp) =
+        chrono::DateTime::parse_from_rfc3339(&timestamp).map(|x| x.with_timezone(&chrono::Utc))
+    {
+        *malted_state.write() = MaltedState {
+            lat,
+            lon,
+            city,
+            country,
+            timestamp,
+            battery,
+        };
+    } else {
+        return Json(ApiResponse {
+            success: false,
+            message: "Invalid timestamp".to_string(),
+        });
+    }
 
     Json(ApiResponse {
         success: true,

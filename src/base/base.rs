@@ -1,11 +1,13 @@
+use std::sync::Arc;
+
 use super::*;
 use crate::MaltedState;
+use parking_lot::RwLock;
 use rocket::{
     response::{stream::TextStream, Redirect},
     tokio::time::{self, Duration},
     State,
 };
-use std::sync::Arc;
 
 #[get("/???")]
 pub fn random_site() -> Redirect {
@@ -14,7 +16,7 @@ pub fn random_site() -> Redirect {
 
 #[get("/")]
 pub async fn index(
-    malted_state: &State<Arc<parking_lot::RwLock<Option<MaltedState>>>>,
+    malted_state: &State<RwLock<MaltedState>>,
     req_info: RequesterInfo,
 ) -> TextStream![String] {
     let default_interval = Duration::from_millis(4);
@@ -56,27 +58,44 @@ pub async fn index(
 
     let body = justify(false, &body, max_length);
 
-    let battery_message = if let Some(state) = malted_state.read().clone() {
-        let battery = state.battery;
-        match battery {
-            ..=10 => format!(", but my phone is extremely low on battery ({battery}%), so I might not answer your call."),
-            11..=40 => format!(". I'm running low on battery ({battery}%), but I should be able to answer your call."),
-            41.. => format!(". I've got plenty of battery right now ({battery}%), so I'll probably answer your call."),
-        }
+    let location = if malted_state.read().battery == 0 {
+        let loc_in = if !req_info.city.is_empty() {
+            format!("in {} ", req_info.city)
+        } else {
+            String::new()
+        };
+
+        format!("🐢Hm. I was going to tell you where I am, but apparently my server doesn't know, or doesn't want to tell you. I hope to visit you {loc_in}soon though!🐇")
     } else {
-        ", but my phone is dead right now, so I won't get your call.".to_string()
+        location_section(malted_state, &req_info)
+    };
+
+    let location = justify(false, &[&location, ""], max_length);
+
+    let battery_message = match malted_state.read().battery {
+        ..=0 => format!(", but my phone is dead right now, so I won't get your call."),
+        b @ 1..=10 => {
+            format!(", but my phone is extremely low on battery ({b}%), so I might not answer.")
+        }
+        b @ 11..=40 => format!(
+            ". I'm running low on battery ({b}%), but I should be able to answer your call."
+        ),
+        b @ 41.. => format!(
+            ". I've got plenty of battery right now ({b}%), so I'll probably answer your call."
+        ),
     };
 
     let contact = justify(
         false,
         &[
+            "",
             &format!("Message me @Malted on the Hack Club Slack, or email me at this domain. If you're in a pinch, call me at malted at malted dot dev (but only for the pinchiest of pinches){battery_message}"),
             "",
         ],
         max_length,
     );
 
-    let epilogue = utils::justify(
+    let epilogue = justify(
         false,
         &[
             "🐢",
@@ -122,24 +141,7 @@ pub async fn index(
 
         typewr!(body);
 
-        typewr!(format!("{:#?}\n\n", req_info));
-
-        // if let Some((lat, lon)) = req.lock().await.clone() {
-        //     typewr!(format!("{lat} {lon}"));
-        // } else {
-        //     typewr!("🐢Hm. I was going to tell you where I am, but apparently my server doesn't know, or doesn't want to tell you.🐇\n\n");
-        // }
-        // Check if malted_state is some
-        // if let Some(state) = malted_state.clone().read() {
-        //     // interval = time::interval(long_interval);
-        //     //     typewr!("\nHm. I was going to tell you where I am, but apparently my server doesn't know, or doesn't want to tell you.\n\n".to_string());
-        // } else {
-        //     let malted_state = malted_state.read();
-        //     let remote_loc = remote_loc.lock();
-        // }
-
-        // typewr!(location_section(malted_state));
-        // interval = time::interval(default_interval);
+        typewr!(location);
 
         typewr!(contact);
 
