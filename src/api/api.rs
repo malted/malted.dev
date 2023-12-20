@@ -1,6 +1,5 @@
 use crate::MaltedState;
 use parking_lot::RwLock;
-use rocket::http::RawStr;
 use rocket::{serde::json::Json, State};
 
 #[derive(serde::Serialize)]
@@ -35,17 +34,16 @@ pub fn patch_location(
         })
     };
 
-    if token != std::env::var("secret_token").unwrap() {
-        return err("Invalid token");
+    if !cfg!(debug_assertions) {
+        if token != std::env::var("secret_token").unwrap() {
+            return err("Invalid token");
+        }
     }
 
-    let timestamp: &RawStr = timestamp.into();
-    let timestamp = match timestamp.url_decode() {
-        Ok(timestamp) => timestamp,
-        Err(_) => {
-            return err("Coud not URL decode timestamp");
-        }
-    };
+    let timestamp = timestamp.trim().replace(' ', "+");
+    if timestamp.chars().filter(|&c| c == '+').count() != 1 {
+        return err("Invalid timestamp; too many spaces (or +'s)");
+    }
 
     if let Ok(timestamp) =
         chrono::DateTime::parse_from_rfc3339(&timestamp).map(|x| x.with_timezone(&chrono::Utc))
@@ -59,10 +57,7 @@ pub fn patch_location(
             battery,
         };
     } else {
-        return Json(ApiResponse {
-            success: false,
-            message: "Invalid timestamp".to_string(),
-        });
+        return err("Invalid timestamp");
     }
 
     Json(ApiResponse {
