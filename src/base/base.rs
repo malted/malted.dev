@@ -1,5 +1,3 @@
-
-
 use super::*;
 use crate::MaltedState;
 use parking_lot::RwLock;
@@ -112,6 +110,14 @@ pub async fn index(
             ($text:expr) => {
                 let line_max = 50;
                 let mut line_length = 0;
+
+                /* Safari does not display streamed content realtime
+                 * if the first chunk is too small. To get around this,
+                 * I send 200 zero-width spaces beforehand. "Safari is
+                 * a perfectly executed implementation of the modern web
+                 * browser" and other statements uttered by the derranged. */
+                yield "​".repeat(200).to_string();
+
                 for c in $text.chars() {
                     if c == '🐢' {
                         interval = time::interval(long_interval);
