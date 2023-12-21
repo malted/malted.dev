@@ -67,20 +67,30 @@ pub fn location_section(
     req_info: &RequesterInfo,
 ) -> String {
     let malted_state = malted_state.read();
+
     let relative = chrono::Utc::now() - malted_state.timestamp;
-    let human = humantime::format_duration(
+    let relative = std::time::Duration::from_secs(
         relative
             .to_std()
-            .expect("A relative time greater than zero."),
+            .expect("Time should be positive")
+            .as_secs(),
     );
-    let ago = format!("As of {human} ago,");
+
+    let ago = format!("As of {} ago,", humantime::format_duration(relative));
 
     // Compute haversine distance
     let me = geo::point!(x: malted_state.lat, y: malted_state.lon);
     let you = geo::point!(x: req_info.coords.0, y: req_info.coords.1);
     let distance = me.haversine_distance(&you) as isize / 1_000; // kilometres
 
-    let starter = format!(
+    let starter_near = format!(
+        "{ago} I'm in {}, which is {distance}km away from {}.",
+        malted_state.city,
+        req_info.city,
+        distance = distance
+    );
+
+    let starter_far = format!(
         "{ago} I'm in {}, {}, which is {distance}km away from {}, {}.",
         malted_state.city,
         malted_state.country,
@@ -91,10 +101,10 @@ pub fn location_section(
 
     match distance {
         d if d < 10 => format!("{ago} we're both in {city} - {distance}km is practically on top of each other. Let's grab a coffee!", city = req_info.city),
-        d if d < 100 => format!("{starter} It's a doable drive; let's meet up!"),
-        d if d < 500 => format!("{starter} That's a chonky drive, so let's coordinate & meet up sometime!"),
-        d if d < 5000 => format!("{starter} When we're closer, let's meet up!"),
-        _ => format!("{starter}. That's like, a whole world away. Why are you so far away? Why am I so far away??\n🛫 Questions that could be rendered moot with a flight :) 🛬️️️"),
+        d if d < 100 => format!("{starter_near} It's a doable drive; let's meet up!"),
+        d if d < 500 => format!("{starter_far} That's a chonky drive, so let's coordinate & meet up sometime!"),
+        d if d < 5000 => format!("{starter_far} When we're closer, let's meet up!"),
+        _ => format!("{starter_far}. That's like, a whole world away. Why are you so far away? Why am I so far away??\n🛫 Questions that could be rendered moot with a flight :) 🛬️️️"),
     }
 }
 
