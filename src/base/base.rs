@@ -30,7 +30,7 @@ pub async fn index(
         &format!("{} People call me Malted.", random_greeting()),
         "I research computer graphics, write systems software, do funky 501(c)(3) stuff, and make computers crunch numbers in just the right way.",
         "",
-        "Most days, I push to github.com/hackclub. Other days, I force push to github.com/malted. This site is open source; go and find it, and give me a follow while you're at it.",
+        "Most days, I push to github.com/hackclub. Other days, I force push to github.com/malted. This site is open source; go and find it, and follow me while you're at it.",
         "",
         "It's my job to;",
         "Design hypertext documents",
