@@ -1,5 +1,3 @@
-
-
 use geo::algorithm::haversine_distance::HaversineDistance;
 
 use rand::prelude::{thread_rng, SliceRandom};
@@ -104,7 +102,7 @@ pub fn location_section(
         d if d < 100 => format!("{starter_near} It's a doable drive; let's meet up!"),
         d if d < 500 => format!("{starter_far} That's a chonky drive, so let's coordinate & meet up sometime!"),
         d if d < 5000 => format!("{starter_far} When we're closer, let's meet up!"),
-        _ => format!("{starter_far}. That's like, a whole world away. Why are you so far away? Why am I so far away??\n🛫 Questions that could be rendered moot with a flight :) 🛬️️️"),
+        _ => format!("{starter_far} That's like, a whole world away. Why are you so far away? Why am I so far away?? Questions that could be rendered moot with a flight :)"),
     }
 }
 
