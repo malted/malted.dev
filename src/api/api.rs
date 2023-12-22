@@ -41,7 +41,7 @@ pub fn patch_location(
     }
 
     let timestamp = timestamp.trim().replace(' ', "+");
-    if timestamp.chars().filter(|&c| c == '+').count() != 1 {
+    if timestamp.chars().filter(|&c| c == '+').count() > 1 {
         return err("Invalid timestamp; too many spaces (or +'s)");
     }
 
