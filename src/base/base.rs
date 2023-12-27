@@ -40,6 +40,7 @@ pub async fn index(
         "",
         "You should read;",
         "☞ Why the Future Doesn't Need Us - Bill Joy for WIRED",
+        "☞ The Year of Living Danishly - Helen Russell",
         "☞ docs.vulkan.org - KHRONOS Group",
         "☞ My Family and Other Animals - Gerald Durrell",
         "",
