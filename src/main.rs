@@ -1,5 +1,7 @@
 #[macro_use]
 extern crate rocket;
+use rocket::fs::{relative, FileServer};
+
 mod api;
 mod base;
 
@@ -23,5 +25,6 @@ fn rocket() -> _ {
     rocket::custom(config)
         .manage(parking_lot::RwLock::new(MaltedState::default()))
         .mount("/", routes![base::index, base::random_site])
+        .mount("/", FileServer::from(relative!("static")))
         .mount("/api", routes![api::index, api::patch_location])
 }
