@@ -11,22 +11,22 @@ CREATE TEMPORARY TABLE vector3 (
 );
 
 -- Image
-INSERT INTO constants (name, value) VALUES ("aspect ratio", 16.0/9.0);
-INSERT INTO constants (name, value) VALUES ("width", 400);
-INSERT INTO constants (name, value) VALUES ("height", CAST((SELECT value FROM constants WHERE name = "width") / (SELECT value FROM constants WHERE name = "aspect ratio") AS INTEGER));
+INSERT INTO constants (name, value) VALUES ('aspect ratio', 16.0/9.0);
+INSERT INTO constants (name, value) VALUES ('width', 400);
+INSERT INTO constants (name, value) VALUES ('height', CAST((SELECT value FROM constants WHERE name = 'width') / (SELECT value FROM constants WHERE name = 'aspect ratio') AS INTEGER));
 
 --Camera
-INSERT INTO constants (name, value) VALUES ("viewport height", 2.0);
-INSERT INTO constants (name, value) VALUES ("viewport width", (SELECT value FROM constants WHERE name = "aspect ratio") * (SELECT value FROM constants WHERE name = "viewport height"));
-INSERT INTO constants (name, value) VALUES ("focal length", 1.0);
+INSERT INTO constants (name, value) VALUES ('viewport height', 2.0);
+INSERT INTO constants (name, value) VALUES ('viewport width', (SELECT value FROM constants WHERE name = 'aspect ratio') * (SELECT value FROM constants WHERE name = 'viewport height'));
+INSERT INTO constants (name, value) VALUES ('focal length', 1.0);
 
-INSERT INTO vector3 (id, x, y, z) VALUES ("origin", 0.0, 0.0, 0.0);
-INSERT INTO vector3 (id, x, y, z) VALUES ("horizontal", (SELECT value FROM constants WHERE name = "viewport width"), 0.0, 0.0);
-INSERT INTO vector3 (id, x, y, z) VALUES ("vertical", 0.0, (SELECT value FROM constants WHERE name = "viewport height"), 0.0);
-INSERT INTO vector3 (id, x, y, z) VALUES ("lower left corner",
-	(SELECT x FROM vector3 WHERE id = "origin") - (SELECT x FROM vector3 WHERE id = "horizontal") / 2.0 - (SELECT x FROM vector3 WHERE id = "vertical") / 2.0,
-	(SELECT y FROM vector3 WHERE id = "origin") - (SELECT y FROM vector3 WHERE id = "horizontal") / 2.0 - (SELECT y FROM vector3 WHERE id = "vertical") / 2.0,
-	(SELECT z FROM vector3 WHERE id = "origin") - (SELECT z FROM vector3 WHERE id = "horizontal") / 2.0 - (SELECT z FROM vector3 WHERE id = "vertical") / 2.0 - (SELECT value FROM constants WHERE name = "focal length")
+INSERT INTO vector3 (id, x, y, z) VALUES ('origin', 0.0, 0.0, 0.0);
+INSERT INTO vector3 (id, x, y, z) VALUES ('horizontal', (SELECT value FROM constants WHERE name = 'viewport width'), 0.0, 0.0);
+INSERT INTO vector3 (id, x, y, z) VALUES ('vertical', 0.0, (SELECT value FROM constants WHERE name = 'viewport height'), 0.0);
+INSERT INTO vector3 (id, x, y, z) VALUES ('lower left corner',
+	(SELECT x FROM vector3 WHERE id = 'origin') - (SELECT x FROM vector3 WHERE id = 'horizontal') / 2.0 - (SELECT x FROM vector3 WHERE id = 'vertical') / 2.0,
+	(SELECT y FROM vector3 WHERE id = 'origin') - (SELECT y FROM vector3 WHERE id = 'horizontal') / 2.0 - (SELECT y FROM vector3 WHERE id = 'vertical') / 2.0,
+	(SELECT z FROM vector3 WHERE id = 'origin') - (SELECT z FROM vector3 WHERE id = 'horizontal') / 2.0 - (SELECT z FROM vector3 WHERE id = 'vertical') / 2.0 - (SELECT value FROM constants WHERE name = 'focal length')
 );
 
 CREATE TEMPORARY TABLE sphere (
@@ -36,13 +36,13 @@ CREATE TEMPORARY TABLE sphere (
 	z REAL,
 	radius REAL
 );
-INSERT INTO sphere (id, x, y, z, radius) VALUES ("big", 0.0, 0.0, -1.0, 0.5);
+INSERT INTO sphere (id, x, y, z, radius) VALUES ('big', 0.0, 0.0, -1.0, 0.5);
 
-SELECT "P3";
-SELECT PRINTF("%i %i",
-    (SELECT value FROM constants WHERE name = "width"),
-    (SELECT value FROM constants WHERE name = "height"));
-SELECT "255";
+SELECT 'P3';
+SELECT PRINTF('%i %i',
+    (SELECT value FROM constants WHERE name = 'width'),
+    (SELECT value FROM constants WHERE name = 'height'));
+SELECT '255';
 
 .headers off
 .mode tabs
@@ -50,27 +50,27 @@ WITH RECURSIVE numbers(x, y) AS (
 	SELECT 0, 0
 	UNION ALL
 	SELECT
-	   	(x + 1) % (SELECT value FROM constants WHERE name = "width"),
-		y + CASE WHEN x = (SELECT value FROM constants WHERE name = "width") - 1 THEN 1 ELSE 0 END
+	   	(x + 1) % (SELECT value FROM constants WHERE name = 'width'),
+		y + CASE WHEN x = (SELECT value FROM constants WHERE name = 'width') - 1 THEN 1 ELSE 0 END
 	FROM numbers 
-	WHERE y < (SELECT value FROM constants WHERE name = "height")
+	WHERE y < (SELECT value FROM constants WHERE name = 'height')
 ),
 uv(x, y, u, v) AS (
 	SELECT
 		x, y,
-		CAST(x AS REAL) / ((SELECT value FROM constants WHERE name = "width") - 1),
-		1.0 - CAST(y AS REAL) / ((SELECT value FROM constants WHERE name = "height") - 1)
+		CAST(x AS REAL) / ((SELECT value FROM constants WHERE name = 'width') - 1),
+		1.0 - CAST(y AS REAL) / ((SELECT value FROM constants WHERE name = 'height') - 1)
 	FROM numbers
 ),
 rays(x, y, ox, oy, oz, dx, dy, dz) AS (
 	SELECT
 		x, y,
-		(SELECT x FROM vector3 WHERE id = "origin"),
-		(SELECT y FROM vector3 WHERE id = "origin"),
-		(SELECT z FROM vector3 WHERE id = "origin"),
-		(SELECT x FROM vector3 WHERE id = "lower left corner") + u * (SELECT x FROM vector3 WHERE id = "horizontal") + v * (SELECT x FROM vector3 WHERE id = "vertical") - (SELECT x FROM vector3 WHERE id = "origin"),
-		(SELECT y FROM vector3 WHERE id = "lower left corner") + u * (SELECT y FROM vector3 WHERE id = "horizontal") + v * (SELECT y FROM vector3 WHERE id = "vertical") - (SELECT y FROM vector3 WHERE id = "origin"),
-		(SELECT z FROM vector3 WHERE id = "lower left corner") + u * (SELECT z FROM vector3 WHERE id = "horizontal") + v * (SELECT z FROM vector3 WHERE id = "vertical") - (SELECT z FROM vector3 WHERE id = "origin")
+		(SELECT x FROM vector3 WHERE id = 'origin'),
+		(SELECT y FROM vector3 WHERE id = 'origin'),
+		(SELECT z FROM vector3 WHERE id = 'origin'),
+		(SELECT x FROM vector3 WHERE id = 'lower left corner') + u * (SELECT x FROM vector3 WHERE id = 'horizontal') + v * (SELECT x FROM vector3 WHERE id = 'vertical') - (SELECT x FROM vector3 WHERE id = 'origin'),
+		(SELECT y FROM vector3 WHERE id = 'lower left corner') + u * (SELECT y FROM vector3 WHERE id = 'horizontal') + v * (SELECT y FROM vector3 WHERE id = 'vertical') - (SELECT y FROM vector3 WHERE id = 'origin'),
+		(SELECT z FROM vector3 WHERE id = 'lower left corner') + u * (SELECT z FROM vector3 WHERE id = 'horizontal') + v * (SELECT z FROM vector3 WHERE id = 'vertical') - (SELECT z FROM vector3 WHERE id = 'origin')
 	FROM uv
 ),
 rays_unit(x, y, ox, oy, oz, dx, dy, dz, ndx, ndy, ndz) AS (
@@ -98,8 +98,8 @@ hit_raw AS (
 		-- h is d > 0
 
 		(POW(dx, 2) + POW(dy, 2) + POW(dz, 2)) as ha,
-		(2.0 * ((ox - (SELECT x FROM sphere WHERE id = "big")) * dx + (oy - (SELECT y FROM sphere WHERE id = "big")) * dy + (oz - (SELECT z FROM sphere WHERE id = "big")) * dz)) as hb,
-		((POW((ox - (SELECT x FROM sphere WHERE id = "big")), 2) + POW((oy - (SELECT y FROM sphere WHERE id = "big")), 2) + POW((oz - (SELECT z FROM sphere WHERE id = "big")), 2)) - POW((SELECT radius FROM sphere WHERE id = "big"), 2)) as hc
+		(2.0 * ((ox - (SELECT x FROM sphere WHERE id = 'big')) * dx + (oy - (SELECT y FROM sphere WHERE id = 'big')) * dy + (oz - (SELECT z FROM sphere WHERE id = 'big')) * dz)) as hb,
+		((POW((ox - (SELECT x FROM sphere WHERE id = 'big')), 2) + POW((oy - (SELECT y FROM sphere WHERE id = 'big')), 2) + POW((oz - (SELECT z FROM sphere WHERE id = 'big')), 2)) - POW((SELECT radius FROM sphere WHERE id = 'big'), 2)) as hc
 	FROM rays_unit
 ),
 hits AS (
@@ -155,7 +155,7 @@ final(x, y, r, g, b, u, v, ndx, ndy, ndz, h) AS (
 	JOIN rays_unit r ON c.x = r.x AND c.y = r.y
 )
 SELECT PRINTF(
-	"%3s %3s %3s      # %3f %3f      %3f %3f %3f 	%s",
+	'%3s %3s %3s      # %3f %3f      %3f %3f %3f 	%s',
 	CAST(r * 255 AS INT),
 	CAST(g * 255 AS INT),
 	CAST(b * 255 AS INT),
@@ -164,7 +164,7 @@ SELECT PRINTF(
 	h
 )
 FROM final
-WHERE y < (SELECT value FROM constants WHERE name = "height");
+WHERE y < (SELECT value FROM constants WHERE name = 'height');
 
 
 -- .headers off
@@ -173,16 +173,16 @@ WHERE y < (SELECT value FROM constants WHERE name = "height");
 -- 	SELECT 0, 0
 -- 	UNION ALL
 -- 	SELECT 
--- 	   	(x + 1) % (SELECT value FROM constants WHERE name = "width"),
--- 		y + CASE WHEN x = (SELECT value FROM constants WHERE name = "width") - 1 THEN 1 ELSE 0 END
+-- 	   	(x + 1) % (SELECT value FROM constants WHERE name = 'width'),
+-- 		y + CASE WHEN x = (SELECT value FROM constants WHERE name = 'width') - 1 THEN 1 ELSE 0 END
 -- 	FROM numbers 
--- 	WHERE y < (SELECT value FROM constants WHERE name = "height")
+-- 	WHERE y < (SELECT value FROM constants WHERE name = 'height')
 -- ),
 -- rays AS (
 -- 	SELECT 
 -- 		x, y, 
--- 		(x - (SELECT value FROM constants WHERE name = "width") / 2.0) / (SELECT value FROM constants WHERE name = "width") * 2.0,
--- 		(y - (SELECT value FROM constants WHERE name = "height") / 2.0) / (SELECT value FROM constants WHERE name = "height") * 2.0,
+-- 		(x - (SELECT value FROM constants WHERE name = 'width') / 2.0) / (SELECT value FROM constants WHERE name = 'width') * 2.0,
+-- 		(y - (SELECT value FROM constants WHERE name = 'height') / 2.0) / (SELECT value FROM constants WHERE name = 'height') * 2.0,
 -- 		-1.0
 -- 	FROM numbers
 -- ),
@@ -215,4 +215,4 @@ WHERE y < (SELECT value FROM constants WHERE name = "height");
 -- 	JOIN materials m
 -- 	ON c.material = m.name
 -- )
--- SELECT PRINTF("%3s %3s %3s # %3i %3i", r, g, b, x, y) FROM colors WHERE y < (SELECT value FROM constants WHERE name = "height");
+-- SELECT PRINTF('%3s %3s %3s # %3i %3i', r, g, b, x, y) FROM colors WHERE y < (SELECT value FROM constants WHERE name = 'height');
