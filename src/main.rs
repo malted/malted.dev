@@ -24,5 +24,6 @@ fn rocket() -> _ {
     rocket::custom(config)
         .manage(parking_lot::RwLock::new(MaltedState::default()))
         .mount("/", routes![base::index, base::random_site, base::raytrace])
+        // .mount("/", FileServer::from(relative!("include")))
         .mount("/api", routes![api::index, api::patch_location])
 }
