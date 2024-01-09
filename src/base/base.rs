@@ -156,3 +156,8 @@ pub async fn index(
         typewr!(epilogue);
     }
 }
+
+#[get("/raytrace.sql")]
+pub async fn raytrace() -> &'static str {
+    include_str!("../../include/raytrace.sql")
+}
