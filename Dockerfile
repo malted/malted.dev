@@ -16,7 +16,6 @@ FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y libssl-dev
 
 COPY --from=build /tmp/malted-dev/target/release/malted-dev /
-COPY --from=build /tmp/malted-dev/static /static
 
 RUN mkdir /tmp/malted-dev
 
