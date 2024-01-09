@@ -19,7 +19,6 @@ COPY --from=build /tmp/malted-dev/target/release/malted-dev /
 COPY --from=build /tmp/malted-dev/static /static
 
 RUN mkdir /tmp/malted-dev
-RUN ln -s /static /tmp/malted-dev/static
 
 USER root
 
