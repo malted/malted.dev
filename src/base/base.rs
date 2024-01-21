@@ -88,7 +88,7 @@ pub async fn index(
         false,
         &[
             "",
-            &format!("Message me @Malted on the Hack Club Slack, or email me at this domain. If you're in a pinch, call me at malted at malted dot dev (but only for the pinchiest of pinches){battery_message}"),
+            &format!("Message me @Malted on the Hack Club Slack, or email me at this domain. If you're in a pinch, call me at malted at malted dot dev{battery_message}"),
             "",
         ],
         max_length,
