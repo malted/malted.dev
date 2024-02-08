@@ -13,7 +13,7 @@ RUN cargo build --release
 # Copy the binary into a new container for a smaller docker image
 FROM debian:bookworm-slim
 
-RUN apt-get update && apt-get install -y libssl-dev
+RUN apt-get update && apt-get install -y libssl-dev ca-certificates
 
 COPY --from=build /tmp/malted-dev/target/release/malted-dev /
 
