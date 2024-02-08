@@ -1,6 +1,6 @@
 use crate::MaltedState;
 use parking_lot::RwLock;
-use reqwest::header::{ACCEPT, AUTHORIZATION};
+use reqwest::header::{ACCEPT, AUTHORIZATION, USER_AGENT};
 use rocket::{serde::json::Json, State};
 
 #[derive(serde::Serialize)]
@@ -65,6 +65,7 @@ pub fn patch_location(
     let res = match reqwest::blocking::Client::new()
         .patch("https://api.github.com/user")
         .header(ACCEPT, "application/vnd.github+json")
+        .header(USER_AGENT, "malted/malted.dev")
         .header(AUTHORIZATION, format!("Bearer {}", github_pat))
         .header("X-GitHub-Api-Version", "2022-11-28")
         .json(&serde_json::json!({ "location": format!("{}, {}", city, country) }))
