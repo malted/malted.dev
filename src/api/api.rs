@@ -1,5 +1,6 @@
 use crate::MaltedState;
 use parking_lot::RwLock;
+use reqwest::header::{ACCEPT, AUTHORIZATION};
 use rocket::{serde::json::Json, State};
 
 #[derive(serde::Serialize)]
@@ -51,14 +52,23 @@ pub fn patch_location(
         *malted_state.write() = MaltedState {
             lat,
             lon,
-            city,
-            country,
+            city: city.clone(),
+            country: country.clone(),
             timestamp,
             battery,
         };
     } else {
         return err("Invalid timestamp");
     }
+
+    let github_pat = std::env::var("github_pat").unwrap();
+    let _ = reqwest::blocking::Client::new()
+        .patch("https://api.github.com/user")
+        .header(ACCEPT, "application/vnd.github+json")
+        .header(AUTHORIZATION, format!("Bearer {}", github_pat))
+        .header("X-GitHub-Api-Version", "2022-11-28")
+        .json(&serde_json::json!({ "location": format!("{}, {}", city, country) }))
+        .send();
 
     Json(ApiResponse {
         success: true,
