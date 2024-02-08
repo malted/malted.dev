@@ -92,6 +92,6 @@ pub fn patch_location(
 
     Json(ApiResponse {
         success: true,
-        message: format!("Location saved: {res_text}"),
+        message: format!("Location saved & location updated on GitHub!"),
     })
 }
