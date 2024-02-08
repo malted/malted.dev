@@ -62,16 +62,35 @@ pub fn patch_location(
     }
 
     let github_pat = std::env::var("github_pat").unwrap();
-    let _ = reqwest::blocking::Client::new()
+    let res = match reqwest::blocking::Client::new()
         .patch("https://api.github.com/user")
         .header(ACCEPT, "application/vnd.github+json")
         .header(AUTHORIZATION, format!("Bearer {}", github_pat))
         .header("X-GitHub-Api-Version", "2022-11-28")
         .json(&serde_json::json!({ "location": format!("{}, {}", city, country) }))
-        .send();
+        .send()
+    {
+        Ok(res) => res,
+        Err(err) => {
+            return Json(ApiResponse {
+                success: true,
+                message: format!("Location saved, but the request to GitHub failed: {err}"),
+            })
+        }
+    };
+
+    let res_text = match res.text() {
+        Ok(res_text) => res_text,
+        Err(err) => {
+            return Json(ApiResponse {
+                success: true,
+                message: format!("Location saved, reading the response from GitHub failed: {err}"),
+            })
+        }
+    };
 
     Json(ApiResponse {
         success: true,
-        message: "Location saved".to_string(),
+        message: format!("Location saved: {res_text}"),
     })
 }
