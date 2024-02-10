@@ -3,6 +3,7 @@ extern crate rocket;
 
 mod api;
 mod base;
+mod content;
 
 #[derive(Debug, Default, Clone)]
 pub struct MaltedState {
@@ -16,6 +17,8 @@ pub struct MaltedState {
 
 #[launch]
 fn rocket() -> _ {
+    dotenv::dotenv().ok();
+
     let mut config = rocket::config::Config::release_default();
     if !cfg!(debug_assertions) {
         config.address = std::net::IpAddr::from([0, 0, 0, 0]);
@@ -26,4 +29,5 @@ fn rocket() -> _ {
         .mount("/", routes![base::index, base::random_site, base::raytrace])
         // .mount("/", FileServer::from(relative!("include")))
         .mount("/api", routes![api::index, api::patch_location])
+        .mount("/content", routes![content::map_light, content::map_dark])
 }

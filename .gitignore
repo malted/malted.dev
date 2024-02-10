@@ -1,6 +1,3 @@
 .vercel
-
-
-# Added by cargo
-
+.env
 /target
