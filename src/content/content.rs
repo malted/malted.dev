@@ -19,7 +19,7 @@ fn img(malted_state: &State<RwLock<MaltedState>>, colour_scheme: &str) -> Redire
     let path = format!("/api/v1/snapshot?{query}&teamId={team_id}&keyId={key_id}");
 
     let signature: Signature = SigningKey::from_pkcs8_pem(&private_key)
-        .unwrap()
+        .expect(&format!("FOR DEBUGGING: {}", private_key))
         .sign(&path.as_bytes());
     let signature: String = URL_SAFE.encode(signature.to_bytes());
 
