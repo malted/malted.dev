@@ -11,6 +11,7 @@ fn img(malted_state: &State<RwLock<MaltedState>>, colour_scheme: &str) -> Redire
     let team_id = env::var("mk_team_id").expect("mapkit team id");
     let key_id = env::var("mk_key_id").expect("mapkit key id");
     let private_key = env::var("mk_private_key").expect("mapkit private key");
+    let private_key = private_key.replace("\\n", "\n");
 
     let s = malted_state.read();
     let query = format!("{},{}", s.city, s.country);
