@@ -20,6 +20,7 @@ fn rocket() -> _ {
     let mut config = rocket::config::Config::release_default();
     if !cfg!(debug_assertions) {
         config.address = std::net::IpAddr::from([0, 0, 0, 0]);
+    } else {
         dotenv::dotenv().ok();
     }
 
