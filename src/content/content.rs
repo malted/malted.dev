@@ -16,13 +16,11 @@ fn img(malted_state: &State<RwLock<MaltedState>>, colour_scheme: &str) -> Redire
     let s = malted_state.read();
     let query = format!("{},{}", s.city, s.country);
     let query = urlencoding::encode(&query);
-    let query = format!("center={query}&z=8&scale=2&colorScheme={colour_scheme}");
+    let query = format!("center={query}&z=10&scale=2&colorScheme={colour_scheme}");
     let path = format!("/api/v1/snapshot?{query}&teamId={team_id}&keyId={key_id}");
 
-    println!("pk len: {}", private_key.len());
-
     let signature: Signature = SigningKey::from_pkcs8_pem(&private_key)
-        .expect(&format!("FOR DEBUGGING: {}", private_key.len()))
+        .expect("a valid signature from the private key")
         .sign(&path.as_bytes());
     let signature: String = URL_SAFE.encode(signature.to_bytes());
 
