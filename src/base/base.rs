@@ -15,7 +15,7 @@ pub fn random_site() -> Redirect {
 #[get("/")]
 pub async fn index(
     malted_state: &State<RwLock<MaltedState>>,
-    req_info: RequesterInfo,
+    req_info: RequesterInfo<'_>,
 ) -> TextStream![String] {
     let default_interval = Duration::from_millis(4);
     let long_interval = Duration::from_millis(50);
@@ -58,10 +58,9 @@ pub async fn index(
     let body = justify(false, &body, max_length);
 
     let location = if malted_state.read().battery == 0 {
-        let loc_in = if !req_info.city.is_empty() {
-            format!("in {} ", req_info.city)
-        } else {
-            String::new()
+        let loc_in = match req_info.city {
+            Some(city) if !city.trim().is_empty() => format!("in {city} "),
+            _ => String::from("wherever you are "),
         };
 
         format!("🐢Hm. I was going to tell you where I am, but apparently my server doesn't know, or doesn't want to tell you. I hope to visit you {loc_in}soon though!🐇")

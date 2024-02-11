@@ -7,15 +7,15 @@ use rocket::{
 };
 
 #[derive(Debug, Default, FromForm)]
-pub struct RequesterInfo {
-    pub coords: (f64, f64),
-    pub city: String,
-    pub region: String,
-    pub timezone: String,
+pub struct RequesterInfo<'r> {
+    pub coords: Option<(f64, f64)>,
+    pub city: Option<&'r str>,
+    pub region: Option<&'r str>,
+    pub timezone: Option<&'r str>,
 }
 
 #[rocket::async_trait]
-impl<'r> FromRequest<'r> for RequesterInfo {
+impl<'r> FromRequest<'r> for RequesterInfo<'r> {
     type Error = ();
 
     async fn from_request(request: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
@@ -23,25 +23,29 @@ impl<'r> FromRequest<'r> for RequesterInfo {
             return Outcome::Success(RequesterInfo::default());
         }
 
-        let header_as_string = |header: &str| -> String {
-            request
-                .headers()
-                .get_one(header)
-                .expect(&format!("Missing header: {header}"))
-                .to_string()
-        };
-        let lat: f64 = header_as_string("Cf-Iplatitude").parse().unwrap();
-        let lon: f64 = header_as_string("Cf-Iplongitude").parse().unwrap();
-        let city = header_as_string("Cf-Ipcity");
-        let region = header_as_string("Cf-Region");
-        let timezone = header_as_string("Cf-Timezone");
+        let headers = request.headers();
 
-        return Outcome::Success(RequesterInfo {
-            coords: (lat, lon),
+        let lat: Option<f64> = headers
+            .get_one("Cf-Iplatitude")
+            .and_then(|x| x.parse().ok());
+        let lon = headers
+            .get_one("Cf-Iplongitude")
+            .and_then(|x| x.parse().ok());
+        let city = headers.get_one("Cf-Ipcity");
+        let region = headers.get_one("Cf-Region");
+        let timezone = headers.get_one("Cf-Timezone");
+
+        let coords = match (lat, lon) {
+            (Some(lat), Some(lon)) => Some((lat, lon)),
+            _ => None,
+        };
+
+        Outcome::Success(RequesterInfo {
+            coords,
             city,
             region,
             timezone,
-        });
+        })
     }
 }
 
@@ -76,33 +80,34 @@ pub fn location_section(
 
     let ago = format!("As of {} ago,", humantime::format_duration(relative));
 
-    // Compute haversine distance
-    let me = geo::point!(x: malted_state.lat, y: malted_state.lon);
-    let you = geo::point!(x: req_info.coords.0, y: req_info.coords.1);
-    let distance = me.haversine_distance(&you) as isize / 1_000; // kilometres
+    match (req_info.coords, req_info.city, req_info.region) {
+        (Some(req_coords), Some(req_city), Some(req_region)) => {
+            let me = geo::point!(x: malted_state.lat, y: malted_state.lon);
+            let you = geo::point!(x: req_coords.0, y: req_coords.1);
+            let distance = me.haversine_distance(&you) as isize / 1_000; // In kilometres
 
-    let starter_near = format!(
-        "{ago} I'm in {}, which is {distance}km away from {}.",
-        malted_state.city,
-        req_info.city,
-        distance = distance
-    );
+            let starter_near = format!(
+                "{ago} I'm in {}, which is {distance}km away from {req_city}.",
+                malted_state.city
+            );
 
-    let starter_far = format!(
-        "{ago} I'm in {}, {}, which is {distance}km away from {}, {}.",
-        malted_state.city,
-        malted_state.country,
-        req_info.city,
-        req_info.region,
-        distance = distance
-    );
+            let starter_far = format!(
+                "{ago} I'm in {}, {}, which is {distance}km away from {req_city}, {req_region}.",
+                malted_state.city, malted_state.country
+            );
 
-    match distance {
-        d if d < 10 => format!("{ago} we're both in {city} - {distance}km is practically on top of each other. Let's grab a coffee!", city = req_info.city),
-        d if d < 100 => format!("{starter_near} It's a doable drive; let's meet up!"),
-        d if d < 500 => format!("{starter_far} That's a chonky drive, so let's coordinate & meet up sometime!"),
-        d if d < 5000 => format!("{starter_far} When we're closer, let's meet up!"),
-        _ => format!("{starter_far} That's like, a whole world away. Why are you so far away? Why am I so far away?? Questions that could be rendered moot with a flight :)"),
+            match distance {
+                d if d < 10 => format!("{ago} we're both in {req_city} - {distance}km is practically on top of each other. Let's grab a coffee!"),
+                d if d < 100 => format!("{starter_near} It's a doable drive; let's meet up!"),
+                d if d < 500 => format!("{starter_far} That's a chonky drive, so let's coordinate & meet up sometime!"),
+                d if d < 5000 => format!("{starter_far} When we're closer, let's meet up!"),
+                _ => format!("{starter_far} That's like, a whole world away. Why are you so far away? Why am I so far away?? Questions that could be rendered moot with a flight :)"),
+            }
+        }
+        _ => format!(
+            "{ago} I'm in {}. I can't tell where you are from your IP address, but I hope to see you soon!",
+            malted_state.city
+        ),
     }
 }
 
