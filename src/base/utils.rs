@@ -6,8 +6,9 @@ use rocket::{
     Request,
 };
 
-#[derive(Debug, Default, FromForm)]
+#[derive(Debug, Default, Clone, FromForm)]
 pub struct RequesterInfo<'r> {
+    pub user_agent: Option<&'r str>,
     pub coords: Option<(f64, f64)>,
     pub city: Option<&'r str>,
     pub region: Option<&'r str>,
@@ -20,11 +21,14 @@ impl<'r> FromRequest<'r> for RequesterInfo<'r> {
 
     async fn from_request(request: &'r Request<'_>) -> request::Outcome<Self, Self::Error> {
         if cfg!(debug_assertions) {
-            return Outcome::Success(RequesterInfo::default());
+            let mut info = RequesterInfo::default();
+            info.user_agent = request.headers().get_one("User-Agent");
+            return Outcome::Success(info);
         }
 
         let headers = request.headers();
 
+        let user_agent = headers.get_one("User-Agent");
         let lat: Option<f64> = headers
             .get_one("Cf-Iplatitude")
             .and_then(|x| x.parse().ok());
@@ -41,6 +45,7 @@ impl<'r> FromRequest<'r> for RequesterInfo<'r> {
         };
 
         Outcome::Success(RequesterInfo {
+            user_agent,
             coords,
             city,
             region,
@@ -109,17 +114,4 @@ pub fn location_section(
             malted_state.city
         ),
     }
-}
-
-pub fn justify(should_justify: bool, text: &[&str], max_length: usize) -> String {
-    text.iter()
-        .map(|x| {
-            if should_justify {
-                format!("{:^width$}", x, width = max_length)
-            } else {
-                x.to_string()
-            }
-        })
-        .collect::<Vec<String>>()
-        .join("\n")
 }

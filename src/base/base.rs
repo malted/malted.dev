@@ -48,14 +48,7 @@ pub async fn index(
         "https://malted.dev/???",
         "",
         "",
-    ];
-    let max_length = body
-        .iter()
-        .map(|s| s.replace(['🐢', '🐇'], "").len())
-        .max()
-        .unwrap_or(0);
-
-    let body = justify(false, &body, max_length);
+        ].join("\n");
 
     let location = if malted_state.read().battery == 0 {
         let loc_in = match req_info.city {
@@ -63,12 +56,10 @@ pub async fn index(
             _ => String::from("wherever you are "),
         };
 
-        format!("🐢Hm. I was going to tell you where I am, but apparently my server doesn't know, or doesn't want to tell you. I hope to visit you {loc_in}soon though!🐇")
+        format!("🐢Hm. I was going to tell you where I am, but apparently my server doesn't know, or doesn't want to tell you. I hope to visit you {loc_in}soon though!🐇\n\n")
     } else {
         location_section(malted_state, &req_info)
     };
-
-    let location = justify(false, &[&location, ""], max_length);
 
     let battery_message = match malted_state.read().battery {
         ..=0 => format!(", but my phone is dead right now, so I won't get your call."),
@@ -83,32 +74,28 @@ pub async fn index(
         ),
     };
 
-    let contact = justify(
-        false,
-        &[
-            "",
-            &format!("Message me @Malted on the Hack Club Slack, or email me at this domain. If you're in a pinch, call me at malted at malted dot dev{battery_message}"),
-            "",
-        ],
-        max_length,
-    );
+    let contact = format!("Message me @Malted on the Hack Club Slack, or email me at this domain. Otherwise, call me at malted at malted dot dev{battery_message}");
 
-    let epilogue = justify(
-        false,
-        &[
-            "🐢",
-            "-------------------",
-            "END OF TRANSMISSION",
-            "-------------------",
-        ],
-        max_length,
-    );
+    let epilogue = [
+        "🐢",
+        "-------------------",
+        "END OF TRANSMISSION",
+        "-------------------",
+    ]
+    .join("\n");
+
+    let agent = req_info.user_agent.map(|ua| ua.to_string());
 
     TextStream! {
         let mut interval = time::interval(long_interval);
         macro_rules! typewr {
             ($text:expr) => {
-                let line_max = 50;
+                let mut line_max = 50;
+                if let Some(ref ua) = agent {
+                    if ua.to_lowercase().contains("mobile") {
+                        line_max = i32::MAX;
+                    }
+                }
                 let mut line_length = 0;
 
                 /* Safari does not display streamed content realtime
