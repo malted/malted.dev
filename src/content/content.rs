@@ -7,7 +7,7 @@ use rocket::response::Redirect;
 use rocket::State;
 use std::env;
 
-fn img(malted_state: &State<RwLock<MaltedState>>, colour_scheme: &str) -> Redirect {
+fn img(malted_state: &State<RwLock<MaltedState>>, colour_scheme: &str, zoom: &str) -> Redirect {
     let team_id = env::var("mk_team_id").expect("mapkit team id");
     let key_id = env::var("mk_key_id").expect("mapkit key id");
     let private_key = env::var("mk_private_key").expect("mapkit private key");
@@ -16,7 +16,7 @@ fn img(malted_state: &State<RwLock<MaltedState>>, colour_scheme: &str) -> Redire
     let s = malted_state.read();
     let query = format!("{},{}", s.city, s.country);
     let query = urlencoding::encode(&query);
-    let query = format!("center={query}&z=10&scale=2&colorScheme={colour_scheme}");
+    let query = format!("center={query}&z={zoom}&scale=2&colorScheme={colour_scheme}");
     let path = format!("/api/v1/snapshot?{query}&teamId={team_id}&keyId={key_id}");
 
     let signature: Signature = SigningKey::from_pkcs8_pem(&private_key)
@@ -29,12 +29,12 @@ fn img(malted_state: &State<RwLock<MaltedState>>, colour_scheme: &str) -> Redire
     Redirect::to(url)
 }
 
-#[rocket::get("/map/light")]
-pub fn map_light(malted_state: &State<RwLock<MaltedState>>) -> Redirect {
-    img(malted_state, "light")
+#[rocket::get("/map/light?<zoom>")]
+pub fn map_light(malted_state: &State<RwLock<MaltedState>>, zoom: &str) -> Redirect {
+    img(malted_state, "light", zoom)
 }
 
-#[rocket::get("/map/dark")]
-pub fn map_dark(malted_state: &State<RwLock<MaltedState>>) -> Redirect {
-    img(malted_state, "dark")
+#[rocket::get("/map/dark?<zoom>")]
+pub fn map_dark(malted_state: &State<RwLock<MaltedState>>, zoom: &str) -> Redirect {
+    img(malted_state, "dark", zoom)
 }
