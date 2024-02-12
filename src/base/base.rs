@@ -74,7 +74,7 @@ pub async fn index(
         ),
     };
 
-    let contact = format!("Message me @Malted on the Hack Club Slack, or email me at this domain. Otherwise, call me at malted at malted dot dev{battery_message}");
+    let contact = format!("Message me @Malted on the Hack Club Slack, or email me at this domain. Otherwise, call me at malted at malted dot dev{battery_message}\n");
 
     let epilogue = [
         "🐢",
