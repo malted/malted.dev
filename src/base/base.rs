@@ -56,7 +56,7 @@ pub async fn index(
             _ => String::from("wherever you are "),
         };
 
-        format!("🐢Hm. I was going to tell you where I am, but apparently my server doesn't know, or doesn't want to tell you. I hope to visit you {loc_in}soon though!🐇\n\n")
+        format!("🐢Hm. I was going to tell you where I am, but apparently my server doesn't know, or doesn't want to tell you. I hope to visit you {loc_in}soon though!🐇")
     } else {
         location_section(malted_state, &req_info)
     };
@@ -74,7 +74,7 @@ pub async fn index(
         ),
     };
 
-    let contact = format!("Message me @Malted on the Hack Club Slack, or email me at this domain. Otherwise, call me at malted at malted dot dev{battery_message}\n");
+    let contact = format!("\n\nMessage me @Malted on the Hack Club Slack, or email me at this domain. Otherwise, call me at malted at malted dot dev{battery_message}\n");
 
     let epilogue = [
         "🐢",
