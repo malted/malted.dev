@@ -23,8 +23,8 @@ fn img(
 
     let s = malted_state.read();
 
-    let query = if s.city.trim().is_empty() || s.country.trim().is_empty() {
-        String::from("burlington,vt")
+    let query = if s.city.trim().is_empty() || s.country.trim().is_empty() || s.city.trim().to_lowercase() == "burlington" {
+        String::from("burlington,vermont,usa")
     } else {
         format!("{},{}", s.city, s.country)
     };
