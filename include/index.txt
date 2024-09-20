@@ -7,7 +7,7 @@ I research computer graphics, do funky 501(c)(3) stuff, write system software (a
 
 Most days, I push to github.com/hackclub. Other days, I force push to github.com/malted. This site is open source; go and find it, and follow me while you're at it.
 
-At Hack Club, I've
+I'm at Hack Club, where I've
 ☞ Designed hypertext documents
 ☞ Written hypertext documents
 ☞ 💸 Given internet money wiiings 💸 (💵 so far)
