@@ -23,7 +23,7 @@ pub async fn index(
     malted_state: &State<RwLock<MaltedState>>,
     req_info: RequesterInfo<'_>,
 ) -> TextStream![String] {
-    let default_interval = Duration::from_millis(4);
+    let short_interval = Duration::from_millis(4);
     let long_interval = Duration::from_millis(50);
 
     let (tx_hcb, rx_hcb) = tokio::sync::oneshot::channel();
@@ -49,7 +49,7 @@ pub async fn index(
     TextStream! {
         let mut interval = time::interval(long_interval);
 
-        let mut line_max = 80;
+        let mut line_max = 60;
         if let Some(ref ua) = agent {
             if ua.to_lowercase().contains("mobile") {
                 line_max = i32::MAX;
@@ -67,7 +67,7 @@ pub async fn index(
         while let Some(char) = body.next() {
             match char {
                 '🐢' => interval = time::interval(long_interval),
-                '🐇' => interval = time::interval(default_interval),
+                '🐇' => interval = time::interval(short_interval),
                 '👋' => body.push_str(random_greeting()),
                 '💵' => {
                     let msg = rx_hcb.take().expect("only one 💵 in index.txt").await.ok().flatten().map(|d| {
