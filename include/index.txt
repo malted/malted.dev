@@ -1,0 +1,36 @@
+🐢---------------------
+START OF TRANSMISSION
+---------------------
+🐇
+👋 People call me Malted.
+I research computer graphics, do funky 501(c)(3) stuff, write system software (a euphemism for Rust...), and make computers crunch numbers in just the right way.
+
+Most days, I push to github.com/hackclub. Other days, I force push to github.com/malted. This site is open source; go and find it, and follow me while you're at it.
+
+At Hack Club, I've
+☞ Designed hypertext documents
+☞ Written hypertext documents
+☞ 💸 Given internet money wiiings 💸 (💵 so far)
+☞ Saved 📁 teens' files from b̶i̶g̶ medium tech
+
+It's not my job to;
+Write shaders, yet I do it anyway
+
+You should read;
+☞ Why the Future Doesn't Need Us - Bill Joy for WIRED
+☞ The Year of Living Danishly - Helen Russell
+☞ docs.vulkan.org - KHRONOS Group
+☞ My Family and Other Animals - Gerald Durrell
+☞ How ACH works: A developer perspective - Gusto Engineering
+
+A random, awesome website I think you should visit;
+https://malted.dev/???
+
+📍
+Message me @Malted on the Hack Club Slack, or email me at this domain. Otherwise, call me at malted at malted dot dev🔋
+
+Btw, this website is just streamed plaintext - try curling it :)
+🐇
+-------------------
+END OF TRANSMISSION
+-------------------
