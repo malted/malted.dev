@@ -62,7 +62,7 @@ pub async fn index(
          * I send 200 zero-width spaces beforehand. "Safari is
          * a perfectly executed implementation of the modern web
          * browser" and other statements uttered by the derranged. */
-        yield "​".repeat(200).to_string();
+        yield "​".repeat(1_025).to_string();
 
         while let Some(char) = body.next() {
             match char {
