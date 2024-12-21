@@ -2,6 +2,7 @@ use std::sync::Arc;
 
 use super::*;
 use crate::MaltedState;
+use chrono::Utc;
 use parking_lot::RwLock;
 use rocket::{
     response::{stream::TextStream, Redirect},
@@ -166,4 +167,45 @@ pub async fn index(
 #[get("/raytrace.sql")]
 pub async fn raytrace() -> &'static str {
     include_str!("../../include/raytrace.sql")
+}
+
+use chrono_tz::US::Pacific;
+
+#[get("/<3")]
+pub async fn snow() -> TextStream![String] {
+    let utc_time = Utc::now();
+    let pst_time = utc_time.with_timezone(&Pacific);
+    let time = pst_time.format("%H%M").to_string();
+
+    let target = format!(
+        r#"-------------------------
+❄︎ START OF TRANSMISSION ❄︎
+-------------------------
+
+TRAVEL ADVISORY STATEMENT
+ISSUED {time} PST 25 DEC 24
+
+TRAVEL ADVISORY IN EFFECT
+05/01/25 THROUGH 09/01/24
+WARM CLOTHING REQ. BRRRRR
+HOT COCOA ADVISED. MMMMMM
+DEPARTURE FROM YYZ @~0600
+ARRIVAL IN ██████████████
+
+SEE YOU THE MOST SOON ILY
+
+-------------------------
+ ❄︎ END OF TRANSMISSION ❄︎
+-------------------------
+"#
+    );
+    let mut body = ExtendableIterator::new(target.chars().collect());
+
+    TextStream! {
+        yield "​".repeat(1_025).to_string();
+        while let Some(char) = body.next() {
+            yield char.to_string();
+            time::interval(Duration::from_millis(25)).tick().await;
+        }
+    }
 }

@@ -28,7 +28,12 @@ fn rocket() -> _ {
         .manage(parking_lot::RwLock::new(MaltedState::default()))
         .mount(
             "/",
-            routes![index::index, index::random_site, index::raytrace],
+            routes![
+                index::index,
+                index::random_site,
+                index::raytrace,
+                index::snow
+            ],
         )
         .mount("/api", routes![api::index, api::patch_location])
         .mount("/content", routes![content::map_light, content::map_dark])
