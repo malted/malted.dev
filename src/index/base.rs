@@ -186,7 +186,7 @@ TRAVEL ADVISORY STATEMENT
 ISSUED {time} PST 25 DEC 24
 
 TRAVEL ADVISORY IN EFFECT
-05/01/25 THROUGH 09/01/24
+05/01/25 THROUGH 09/01/25
 WARM CLOTHING REQ. BRRRRR
 HOT COCOA ADVISED. MMMMMM
 DEPARTURE FROM YYZ @~0600
@@ -205,7 +205,7 @@ SEE YOU THE MOST SOON ILY
         yield "​".repeat(1_025).to_string();
         while let Some(char) = body.next() {
             yield char.to_string();
-            time::interval(Duration::from_millis(25)).tick().await;
+            time::interval(Duration::from_millis(50)).tick().await;
         }
     }
 }
