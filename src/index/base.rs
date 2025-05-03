@@ -168,3 +168,8 @@ pub async fn index(
 pub async fn raytrace() -> &'static str {
     include_str!("../../include/raytrace.sql")
 }
+
+#[get("/news")]
+pub fn newsletter() -> Redirect {
+    Redirect::to("https://malted.recuremail.com")
+}
