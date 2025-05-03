@@ -12,6 +12,7 @@ chrono-tz = "0.10.0"
 dotenv = "0.15.0"
 geo = "0.27.0"
 humantime = "2.1.0"
+once_cell = "1.21.3"
 openssl = { version = "0.10.61", features = ["vendored"] }
 p256 = { version = "0.13.2", features = ["ecdsa-core", "pem"] }
 parking_lot = "0.12.1"
