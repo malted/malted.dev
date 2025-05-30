@@ -30,9 +30,14 @@ mod stats {
     }
 
     pub async fn replit_stats() -> Result<ReplitStats, Box<dyn std::error::Error>> {
-        Ok(reqwest::get("http://takeout.hackclub.com/stats")
-            .await?
-            .json()
-            .await?)
+        // Ok(reqwest::get("http://takeout.hackclub.com/stats")
+        //     .await?
+        //     .json()
+        //     .await?)
+
+        Ok(ReplitStats {
+            file_count: 1091841,
+            repl_count: 82699,
+        })
     }
 }
