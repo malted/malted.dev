@@ -4,6 +4,9 @@ pub use utils::*;
 pub mod base;
 pub use base::*;
 
+pub mod typst;
+pub use typst::*;
+
 mod stats {
     use chrono::{DateTime, Utc};
     use serde::{Deserialize, Serialize};
