@@ -11,6 +11,7 @@
 #let personal-site = "malted.dev"
 
 #show link: set underline(offset: 2pt)
+#show raw: set text(font: "IBM Plex Mono")
 
 #show: resume.with(
   author: name,
@@ -21,7 +22,7 @@
   phone: phone,
   personal-site: personal-site,
   accent-color: "#1e3a8a",
-  font: "New Computer Modern",
+  font: "IBM Plex Serif",
   font-size: 11.4pt,
   paper: "us-letter",
   author-position: left,
@@ -57,7 +58,7 @@
 )
 - Owned reliability and feature velocity across a suite serving 50k+ teenage hackers.
 - *#link("https://highseas.hackclub.com")[High Seas]:* (Next.js) Online hackathon where 20k students logged 18.5 years of coding time in 3 months in exchange for \$350k+ in prizes; responsible for platform engineering, site reliability, and infrastructure. Announced at GitHub Universe 2024.
-- *#link("https://github.com/hackclub/ai")[ai.hackclub.com]:* (Rust, Actix, Groq) Created a free OpenAI-schema-compatible #text(font: ("IBMPlexMono", "IBM Plex Mono", "monospace"))[`/chat/completions`] service; \~0.5B tokens processed since Jan 2025.
+- *#link("https://github.com/hackclub/ai")[ai.hackclub.com]:* (Rust, Actix, Groq) Created a free OpenAI-schema-compatible #raw("/chat/completions") service; \~0.5B tokens processed since Jan 2025.
 - *#link("https://hackclub.com/fiscal-sponsorship")[HCB (Hack Club Bank)]:* (Ruby on Rails, Stripe) Added fine-grained permissions, spending controls, check reminders, new-IP login alerts, export formats; supported bank-backend migration & Stripe webhook ledgering, hundreds of bug fixes + UX improvements for an open source neobank for 501(c)(3) fiscal sponsorship.
 - *#link("https://github.com/hackclub/replit-lifeboat")[Replit Lifeboat]*: (Rust, K8s, S3) Reverse engineered Replit internals to build the only tool converting Replit history to timed Git commits; 1.09M files across 82k projects exported. Built in a \~weekend.
 - Spun up *#link("https://ip.hackclub.com")[ip.hackclub.com]* (Bun) & *#link("https://ships.hackclub.com")[ships.hackclub.com]* (Three.js + GLSL) in \<72h each for events and congressional demos.
