@@ -16,6 +16,7 @@ FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y libssl-dev ca-certificates
 
 COPY --from=build /tmp/malted-dev/target/release/malted-dev /
+COPY --from=build /tmp/malted-dev/include ./include
 
 RUN mkdir /tmp/malted-dev
 
