@@ -32,7 +32,8 @@ fn rocket() -> _ {
                 index::index,
                 index::random_site,
                 index::raytrace,
-                index::newsletter
+                index::newsletter,
+                index::cv
             ],
         )
         .mount("/api", routes![api::index, api::patch_location])
