@@ -52,13 +52,6 @@ impl<'r> Responder<'r, 'static> for PdfResponse {
 pub fn cv(
     malted_state: &rocket::State<parking_lot::RwLock<crate::MaltedState>>,
 ) -> Result<PdfResponse, Status> {
-    // Check if the resume file exists at runtime (for debugging)
-    let resume_path = Path::new("include/resume.typ");
-    if !resume_path.exists() {
-        eprintln!("Resume file not found at: {:?}", resume_path);
-        return Err(Status::NotFound);
-    }
-
     let template = std::fs::read_to_string(Path::new("include/hi.typ")).map_err(|e| {
         eprintln!("Typst template not found: {:?}", e);
         Status::InternalServerError
