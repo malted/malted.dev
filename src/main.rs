@@ -41,8 +41,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     });
 
-    let server = tiny_http::Server::http("0.0.0.0:8000").unwrap();
-    println!("Started at http://0.0.0.0:8000");
+    let server = tiny_http::Server::http("0.0.0.0:3000").unwrap();
+    println!("Started at http://0.0.0.0:3000");
 
     for request in server.incoming_requests() {
         let url_string = format!("http://localhost{}", request.url());
