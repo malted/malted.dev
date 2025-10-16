@@ -7,6 +7,7 @@ use std::time::Duration;
 use tiny_http::Request;
 use url::Url;
 
+use crate::base::location::start_image_save_job;
 use crate::base::music::SongInfo;
 
 mod api;
@@ -23,6 +24,8 @@ struct State {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     dotenv::dotenv().ok();
+
+    start_image_save_job();
 
     let state = Arc::new(RwLock::new(State {
         song_info: base::music::now_playing().await?,
@@ -55,10 +58,13 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
             .unwrap_or_default();
 
         let state_clone = state.clone();
-        thread::spawn(move || match service.as_str() {
-            "spotify" => spotify(request),
-            "api" => api::api(request),
-            _ => root(request, state_clone),
+        tokio::spawn(async move {
+            match service.as_str() {
+                "spotify" => spotify(request),
+                "location" => crate::base::location::image(request).await,
+                "api" => api::api(request),
+                _ => root(request, state_clone),
+            }
         });
     }
 
