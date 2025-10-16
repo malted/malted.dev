@@ -1,11 +1,10 @@
 use geo::algorithm::haversine_distance::HaversineDistance;
 use parking_lot::RwLock;
 use std::io::Write;
-use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
 use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
-use tiny_http::{Request, Response};
+use tiny_http::Request;
 use url::Url;
 
 use crate::base::music::SongInfo;
@@ -14,6 +13,7 @@ mod api;
 mod base;
 
 static LINE_MAX: usize = 60;
+static MAIN_BODY: &str = include_str!("main.txt");
 
 #[derive(Debug)]
 struct State {
@@ -155,8 +155,7 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
         time, si.track, si.artist, si.month_artist
     );
 
-    let body = std::fs::read_to_string("src/main.txt")
-        .unwrap()
+    let body = MAIN_BODY
         .replace("🎵", &song_string)
         .replace("📌", &location_string);
 
