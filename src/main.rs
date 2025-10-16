@@ -335,6 +335,9 @@ fn stream_http(stream: &mut Box<dyn Write + Send + 'static>, finish: bool) {
     stream.write_all(b"HTTP/1.1 200 OK\r\n").unwrap();
     stream.write_all(b"Transfer-Encoding: chunked\r\n").unwrap();
     stream
+        .write_all(b"Content-Type: text/event-stream\r\n")
+        .unwrap();
+    stream
         .write_all(b"Content-Type: text/plain; charset=utf-8\r\n")
         .unwrap();
 
