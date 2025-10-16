@@ -1,12 +1,13 @@
 #![feature(int_roundings)]
 
+use geo::algorithm::haversine_distance::HaversineDistance;
 use parking_lot::RwLock;
 use std::io::Write;
 use std::net::{Ipv4Addr, SocketAddr, SocketAddrV4};
 use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
-use tiny_http::Request;
+use tiny_http::{Request, Response};
 use url::Url;
 
 use crate::base::music::SongInfo;
@@ -14,7 +15,7 @@ use crate::base::music::SongInfo;
 mod api;
 mod base;
 
-static LINE_MAX: usize = 80;
+static LINE_MAX: usize = 60;
 
 #[derive(Debug)]
 struct State {
@@ -57,7 +58,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
         let state_clone = state.clone();
         thread::spawn(move || match service.as_str() {
-            "investigations" => investigation(request),
+            "spotify" => spotify(request),
             "api" => api::api(request),
             _ => root(request, state_clone),
         });
@@ -66,27 +67,112 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-fn investigation(request: Request) {
-    let choice = request
-        .url()
-        .split("/")
-        .nth(2)
-        .expect("a second url component");
+fn spotify(request: Request) {
+    let mut stream = request.into_writer();
+    stream
+        .write_all(b"HTTP/1.1 301 Moved Permanently\r\n")
+        .unwrap();
+    stream
+        .write_all(b"Location: https://open.spotify.com/user/zm7avhpuqzbcauht5xygz6ai9ers\r\n")
+        .unwrap();
+    stream.write_all(b"Content-Length: 0\r\n").unwrap();
+    stream.write_all(b"\r\n").unwrap();
+    stream.flush().unwrap();
+}
 
-    let body = std::fs::read_to_string(format!("./src/investigations/{choice}.txt")).unwrap();
+fn root(request: Request, state: Arc<RwLock<State>>) {
+    let headers = request.headers();
+    let lat: Option<f64> = headers
+        .iter()
+        .find(|h| h.field.as_str() == "Cf-Iplatitude")
+        .map(|h| h.value.as_str().parse().ok())
+        .flatten();
+    let lng: Option<f64> = headers
+        .iter()
+        .find(|h| h.field.as_str() == "Cf-Iplongitude")
+        .map(|h| h.value.as_str().parse().ok())
+        .flatten();
+    let city = headers
+        .iter()
+        .find(|h| h.field.as_str() == "Cf-Ipcity")
+        .map(|h| h.value.as_str());
+    let region = headers
+        .iter()
+        .find(|h| h.field.as_str() == "Cf-Region")
+        .map(|h| h.value.as_str());
+    let timezone = headers
+        .iter()
+        .find(|h| h.field.as_str() == "Cf-Timezone")
+        .map(|h| h.value.as_str());
+
+    let location_string = match (lat, lng, city, region) {
+        (Some(lat), Some(lng), Some(city), Some(region)) => {
+            let me = geo::point!(x: 51.50722, y: -0.1275);
+            let you = geo::point!(x: lat, y: lng);
+            let distance = me.haversine_distance(&you) as isize / 1_000; // In kilometres
+
+            let starter_near =
+                format!("Right now I'm at home, which is {distance}km away from you in ({city}).");
+
+            let starter_far = format!(
+                "Right now I'm at home, which is {distance}km away from you ({city}, {region})."
+            );
+
+            match distance {
+                d if d < 10 => format!(
+                    "we're both in {city} - {distance}km is practically on top of each other. Let's grab a coffee!"
+                ),
+                d if d < 100 => format!("{starter_near} It's a doable drive; let's meet up!"),
+                d if d < 500 => format!(
+                    "{starter_far} That's a chonky drive, so let's coordinate & meet up sometime!"
+                ),
+                d if d < 5000 => format!("{starter_far} When we're closer, let's meet up!"),
+                _ => format!(
+                    "{starter_far} That's like, a whole world away. Why are you so far away? Why am I so far away?? Questions that could be rendered moot with a flight :)"
+                ),
+            }
+        }
+        _ => format!(
+            "I'm at home. I can't tell where you are from your IP address, but I hope to see you soon!"
+        ),
+    };
 
     let mut stream = request.into_writer();
     stream_http(&mut stream, true);
     stream_header(&mut stream);
 
-    let title = "A Little Walk On The Prairie";
+    let si = &state.read().song_info;
+    let time = if si.now_playing {
+        "I'm currently"
+    } else {
+        if let Some(ago) = &si.ago {
+            &format!("{} I was", ago)
+        } else {
+            "a bit ago I was"
+        }
+    };
+
+    let song_string = format!(
+        ", and {} listening to {} by {}. This month I've been listening to lots of {}!!",
+        time, si.track, si.artist, si.month_artist
+    );
+
+    let body = std::fs::read_to_string("src/main.txt")
+        .unwrap()
+        .replace("🎵", &song_string)
+        .replace("📌", &location_string);
+
+    let title = "PROFILE CIRCULAR REV 10";
     let title_length = title.chars().count();
+
+    let month_abbr = chrono::Utc::now().format("%b").to_string().to_uppercase();
 
     let title_px = (LINE_MAX - title_length).div_floor(2);
 
-    let body = "\n\nMALTED.DEV\nINVESTIGATION CIRCULAR 1                            SEP 2025\n\n\n"
-        .to_owned()
-        + &" ".repeat(title_px - 2)
+    let body = format!(
+        "\n\nMALTED.DEV{}{month_abbr} 2025\n\n\n",
+        " ".repeat(LINE_MAX - 18)
+    ) + &" ".repeat(title_px - 2)
         + "┌"
         + &"─".repeat(title_length + 2)
         + "┐\n"
@@ -101,7 +187,8 @@ fn investigation(request: Request) {
         + "\n\n"
         + &"═".repeat(LINE_MAX)
         + "\n\n"
-        + &body;
+        + &body
+        + "\n\n";
 
     let broken_lines: String = body
         .lines()
@@ -153,10 +240,10 @@ fn investigation(request: Request) {
         let line = margin + &line + "\n";
 
         for c in line.chars() {
-            stream_line(&mut stream, &c.to_string());
+            stream_writable(&mut stream, &c.to_string());
 
-            if c != '\n' || c != ' ' {
-                thread::sleep(Duration::from_micros(20_000));
+            if c != '\n' && c != ' ' {
+                thread::sleep(Duration::from_micros(5_000));
             }
         }
     }
@@ -165,88 +252,73 @@ fn investigation(request: Request) {
     stream.flush().unwrap();
 }
 
-fn root(request: Request, state: Arc<RwLock<State>>) {
-    // let ip = "1.1.1.1"; // Replace with your target IP
-    // let hops = traceroute::Traceroute::new(ip).unwrap().collect::<Vec<_>>();
-    // for hop in hops {
-    //     println!("{:?}", hop);
-    // }
+// fn root(request: Request, state: Arc<RwLock<State>>) {
+//     // let ip = "1.1.1.1"; // Replace with your target IP
+//     // let hops = traceroute::Traceroute::new(ip).unwrap().collect::<Vec<_>>();
+//     // for hop in hops {
+//     //     println!("{:?}", hop);
+//     // }
 
-    let si = &state.read().song_info;
-    let time = if si.now_playing {
-        "I'm currently"
-    } else {
-        if let Some(ago) = &si.ago {
-            &format!("{} I was", ago)
-        } else {
-            "a bit ago I was"
-        }
-    };
+//     let body = BODY_RAW
+//         .replace(
+//             "🏠",
+//             &request
+//                 .remote_addr()
+//                 .unwrap_or(&SocketAddr::V4(SocketAddrV4::new(
+//                     Ipv4Addr::new(127, 0, 0, 1),
+//                     8080,
+//                 )))
+//                 .ip()
+//                 .to_string(),
+//         )
+//         .replace("🎵", &song_string);
 
-    let song_string = format!(", and {} listening to {} by {}", time, si.track, si.artist);
+//     let is_terminal = if let Some(ua) = &request
+//         .headers()
+//         .iter()
+//         .find(|h| h.field.as_str() == "User-Agent")
+//     {
+//         ua.value.as_str().contains("crlus")
+//     } else {
+//         false
+//     };
 
-    let body = BODY_RAW
-        .replace(
-            "🏠",
-            &request
-                .remote_addr()
-                .unwrap_or(&SocketAddr::V4(SocketAddrV4::new(
-                    Ipv4Addr::new(127, 0, 0, 1),
-                    8080,
-                )))
-                .ip()
-                .to_string(),
-        )
-        .replace("🎵", &song_string);
+//     let mut stream = request.into_writer();
 
-    let is_terminal = if let Some(ua) = &request
-        .headers()
-        .iter()
-        .find(|h| h.field.as_str() == "User-Agent")
-    {
-        ua.value.as_str().contains("crlus")
-    } else {
-        false
-    };
+//     stream_http(&mut stream, false);
 
-    let mut stream = request.into_writer();
+//     if is_terminal {
+//         let t = std::env::var("SECRET_2").unwrap();
+//         let mut bin = "".to_string();
+//         for character in t.clone().into_bytes() {
+//             bin += &format!("0{:b} ", character);
+//         }
+//         let bin = bin.replace("0", ":").replace("1", "：");
+//         let bin = bin + "\r\n";
 
-    stream_http(&mut stream, false);
+//         stream.write_all(bin.as_bytes()).unwrap();
+//         stream.write_all(b"\r\n").unwrap(); // End the header section.
 
-    if is_terminal {
-        let t = std::env::var("SECRET_2").unwrap();
-        let mut bin = "".to_string();
-        for character in t.clone().into_bytes() {
-            bin += &format!("0{:b} ", character);
-        }
-        let bin = bin.replace("0", ":").replace("1", "：");
-        let bin = bin + "\r\n";
+//         for c in std::env::var("SECRET_1").unwrap().lines() {
+//             stream_writable(&mut stream, "\u{001b}[2J\u{001b}[H");
+//             stream_writable(&mut stream, &c.to_string());
+//             stream_writable(&mut stream, "\n");
+//             thread::sleep(Duration::from_millis(700));
+//         }
+//     } else {
+//         stream.write_all(b"\r\n").unwrap(); // End the header section
+//         stream_header(&mut stream);
+//         for c in body.chars() {
+//             stream_writable(&mut stream, &c.to_string());
+//             thread::sleep(Duration::from_micros(1_000));
+//         }
+//     };
 
-        stream.write_all(bin.as_bytes()).unwrap();
-        stream.write_all(b"\r\n").unwrap(); // End the header section.
+//     stream.write_all(b"0\r\n\r\n").unwrap(); // End
+//     stream.flush().unwrap();
+// }
 
-        for c in std::env::var("SECRET_1").unwrap().lines() {
-            stream_line(&mut stream, "\u{001b}[2J\u{001b}[H");
-            stream_line(&mut stream, &c.to_string());
-            stream_line(&mut stream, "\n");
-            thread::sleep(Duration::from_millis(700));
-        }
-    } else {
-        stream.write_all(b"\r\n").unwrap(); // End the header section
-        stream_header(&mut stream);
-        for c in body.chars() {
-            stream_line(&mut stream, &c.to_string());
-            thread::sleep(Duration::from_micros(1_000));
-        }
-    };
-
-    stream.write_all(b"0\r\n\r\n").unwrap(); // End
-    stream.flush().unwrap();
-}
-
-static BODY_RAW: &str = include_str!("./main.txt");
-
-fn stream_line(stream: &mut Box<dyn Write + Send + 'static>, content: &str) {
+fn stream_writable(stream: &mut Box<dyn Write + Send + 'static>, content: &str) {
     stream
         .write_all(format!("{:x}\r\n{}\r\n", content.len(), content).as_bytes())
         .unwrap();
