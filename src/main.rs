@@ -1,5 +1,3 @@
-#![feature(int_roundings)]
-
 use geo::algorithm::haversine_distance::HaversineDistance;
 use parking_lot::RwLock;
 use std::io::Write;
@@ -167,7 +165,7 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
 
     let month_abbr = chrono::Utc::now().format("%b").to_string().to_uppercase();
 
-    let title_px = (LINE_MAX - title_length).div_floor(2);
+    let title_px = (LINE_MAX - title_length) / 2;
 
     let body = format!(
         "\n\nMALTED.DEV{}{month_abbr} 2025\n\n\n",
