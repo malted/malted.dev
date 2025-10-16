@@ -337,9 +337,9 @@ fn stream_http(stream: &mut Box<dyn Write + Send + 'static>, finish: bool) {
     stream
         .write_all(b"Content-Type: text/event-stream\r\n")
         .unwrap();
-    stream
-        .write_all(b"Content-Type: text/plain; charset=utf-8\r\n")
-        .unwrap();
+    // stream
+    //     .write_all(b"Content-Type: text/plain; charset=utf-8\r\n")
+    //     .unwrap();
 
     if finish {
         stream.write_all(b"\r\n").unwrap();
