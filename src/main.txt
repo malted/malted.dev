@@ -1,0 +1,15 @@
+Hi! People call me Malted.
+
+
+I like writing shaders, travelling to strange places, tinkering in Rust, and doing casual investigative journalism.
+
+I used to work at Hack Club (hackclub.com), working on 501(c)(3) financial infrastructure and building the world's biggest hackathons. Now I'm bobbing around the world crunching big data :o
+
+I'm reading Why Nations Fail right now🎵
+
+I move around a lot but right now 📌 DM me on Spotify (malted.dev/spotify) if you want to meet up!
+
+This website is streamed plaintext from a custom Rust webserver - source at github.com/malted. There are secrets hidden between these lines...
+
+
+See you around!
