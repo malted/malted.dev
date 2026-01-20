@@ -152,12 +152,12 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
         if let Some(ago) = &si.ago {
             &format!("{} I was", ago)
         } else {
-            "a bit ago I was"
+            "A bit ago I was"
         }
     };
 
     let song_string = format!(
-        ", and {} listening to {} by {}. This month I've been listening to lots of {}!!",
+        "{} listening to {} by {}. This month I've been listening to lots of {}!!",
         time, si.track, si.artist, si.month_artist
     );
 
