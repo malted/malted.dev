@@ -13,7 +13,6 @@ use crate::base::music::SongInfo;
 mod api;
 mod base;
 
-static LINE_MAX: usize = 60;
 static MAIN_BODY: &str = include_str!("main.txt");
 
 #[derive(Debug)]
@@ -85,7 +84,15 @@ fn spotify(request: Request) {
 }
 
 fn root(request: Request, state: Arc<RwLock<State>>) {
+    let mut LINE_MAX = 60;
+
     let headers = request.headers();
+
+    let user_agent = headers
+        .iter()
+        .find(|h| h.field.as_str() == "User-Agent")
+        .map(|h| h.value.as_str());
+    dbg!(user_agent);
     let lat: Option<f64> = headers
         .iter()
         .find(|h| h.field.as_str() == "Cf-Iplatitude")
@@ -108,6 +115,14 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
         .iter()
         .find(|h| h.field.as_str() == "Cf-Timezone")
         .map(|h| h.value.as_str());
+
+    if let Some(ua) = user_agent {
+        let is_mobile = ua.to_lowercase().contains("mobile");
+
+        if is_mobile {
+            LINE_MAX = 38;
+        }
+    }
 
     let location_string = match (lat, lng, city, region) {
         (Some(lat), Some(lng), Some(city), Some(region)) => {
