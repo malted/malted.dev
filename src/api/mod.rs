@@ -1,3 +1,5 @@
+pub mod map;
+
 use std::collections::HashMap;
 use std::env;
 use tiny_http::{Header, Request, Response};
