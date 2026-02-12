@@ -1,4 +1,4 @@
-use geo::algorithm::haversine_distance::HaversineDistance;
+use geo::{Distance, Haversine};
 use parking_lot::RwLock;
 use std::io::Write;
 use std::sync::Arc;
@@ -7,7 +7,7 @@ use std::time::Duration;
 use tiny_http::Request;
 use url::Url;
 
-use crate::base::location::start_image_save_job;
+use crate::base::location::{start_image_save_job, LOCATION_STATE};
 use crate::base::music::SongInfo;
 
 mod api;
@@ -189,7 +189,7 @@ Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed 
 }
 
 fn root(request: Request, state: Arc<RwLock<State>>) {
-    let mut LINE_MAX = 60;
+    let mut line_max = 60;
 
     let headers = request.headers();
 
@@ -216,50 +216,78 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
         .iter()
         .find(|h| h.field.as_str() == "Cf-Region")
         .map(|h| h.value.as_str());
-    let timezone = headers
+    let visitor_country = headers
         .iter()
-        .find(|h| h.field.as_str() == "Cf-Timezone")
+        .find(|h| h.field.as_str() == "Cf-Ipcountry")
         .map(|h| h.value.as_str());
 
     if let Some(ua) = user_agent {
         let is_mobile = ua.to_lowercase().contains("mobile");
 
         if is_mobile {
-            LINE_MAX = 38;
+            line_max = 38;
         }
     }
 
-    let location_string = match (lat, lng, city, region) {
-        (Some(lat), Some(lng), Some(city), Some(region)) => {
-            let me = geo::point!(x: 51.50722, y: -0.1275);
+    let my_location = LOCATION_STATE.lock().unwrap();
+    let location_string = match (my_location.as_ref(), lat, lng, visitor_country) {
+        (Some(me_loc), Some(lat), Some(lng), Some(their_country)) => {
+            let me = geo::point!(x: me_loc.lat, y: me_loc.lng);
             let you = geo::point!(x: lat, y: lng);
-            let distance = me.haversine_distance(&you) as isize / 1_000; // In kilometres
+            let distance = Haversine.distance(me, you) as isize / 1_000;
 
-            let starter_near =
-                format!("Right now I'm at home, which is {distance}km away from you in ({city}).");
+            let is_uk = me_loc.country.eq_ignore_ascii_case("UK")
+                || me_loc.country.eq_ignore_ascii_case("United Kingdom")
+                || me_loc.country.eq_ignore_ascii_case("GB");
+            let same_country = me_loc.country.eq_ignore_ascii_case(their_country);
 
-            let starter_far = format!(
-                "Right now I'm at home, which is {distance}km away from you ({city}, {region})."
+            let where_i_am = if is_uk {
+                "at home in the UK".to_string()
+            } else if same_country {
+                format!("in {}, {}", me_loc.city, me_loc.state)
+            } else {
+                format!("in {}, {}", me_loc.city, me_loc.country)
+            };
+
+            let visitor_loc = match (city, region) {
+                (Some(c), Some(r)) => format!(" ({c}, {r})"),
+                (Some(c), None) => format!(" ({c})"),
+                _ => String::new(),
+            };
+            let starter = format!(
+                "Right now I'm {where_i_am}, which is {distance}km away from you{visitor_loc}."
             );
 
             match distance {
                 d if d < 10 => format!(
-                    "we're both in {city} - {distance}km is practically on top of each other. Let's grab a coffee!"
+                    "I'm {where_i_am} - we're {distance}km apart, practically on top of each other. Let's grab a coffee!"
                 ),
-                d if d < 100 => format!("{starter_near} It's a doable drive; let's meet up!"),
+                d if d < 100 => format!("{starter} It's a doable drive; let's meet up!"),
                 d if d < 500 => format!(
-                    "{starter_far} That's a chonky drive, so let's coordinate & meet up sometime!"
+                    "{starter} That's a chonky drive, so let's coordinate & meet up sometime!"
                 ),
-                d if d < 5000 => format!("{starter_far} When we're closer, let's meet up!"),
+                d if d < 5000 => format!("{starter} When we're closer, let's meet up!"),
                 _ => format!(
-                    "{starter_far} That's like, a whole world away. Why are you so far away? Why am I so far away?? Questions that could be rendered moot with a flight :)"
+                    "{starter} That's like, a whole world away. Why are you so far away? Why am I so far away?? Questions that could be rendered moot with a flight :)"
                 ),
             }
         }
-        _ => format!(
-            "I'm at home. I can't tell where you are from your IP address, but I hope to see you soon!"
-        ),
+        (Some(me_loc), _, _, _) => {
+            let is_uk = me_loc.country.eq_ignore_ascii_case("UK")
+                || me_loc.country.eq_ignore_ascii_case("United Kingdom")
+                || me_loc.country.eq_ignore_ascii_case("GB");
+
+            let where_i_am = if is_uk {
+                "at home in the UK".to_string()
+            } else {
+                format!("in {}, {}", me_loc.city, me_loc.country)
+            };
+
+            format!("I'm {where_i_am}.")
+        }
+        _ => "I can't tell where either of us are right now, but I hope to see you soon!".to_string(),
     };
+    drop(my_location);
 
     let mut stream = request.into_writer();
     stream_http(&mut stream, true);
@@ -270,7 +298,7 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
         "I'm currently"
     } else {
         if let Some(ago) = &si.ago {
-            &format!("{} I was", ago)
+            &format!("{}{} I was", ago[..1].to_uppercase(), &ago[1..])
         } else {
             "A bit ago I was"
         }
@@ -290,11 +318,11 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
 
     let month_abbr = chrono::Utc::now().format("%b").to_string().to_uppercase();
 
-    let title_px = (LINE_MAX - title_length) / 2;
+    let title_px = (line_max - title_length) / 2;
 
     let body = format!(
         "\n\nMALTED.DEV{}{month_abbr} 2025\n\n\n",
-        " ".repeat(LINE_MAX - 18)
+        " ".repeat(line_max - 18)
     ) + &" ".repeat(title_px - 2)
         + "┌"
         + &"─".repeat(title_length + 2)
@@ -308,7 +336,7 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
         + &"─".repeat(title_length + 2)
         + "┘"
         + "\n\n"
-        + &"═".repeat(LINE_MAX)
+        + &"═".repeat(line_max)
         + "\n\n"
         + &body
         + "\n\n";
@@ -320,7 +348,7 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
             let mut remaining = line;
 
             while !remaining.is_empty() {
-                if remaining.chars().count() <= LINE_MAX {
+                if remaining.chars().count() <= line_max {
                     // Line fits, add it and we're done
                     result.push_str(remaining);
                     break;
@@ -329,9 +357,9 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
                 // Line is too long, need to break it
                 let chars: Vec<char> = remaining.chars().collect();
 
-                // Look for the last space within LINE_MAX characters
-                let mut break_point = LINE_MAX;
-                for i in (0..LINE_MAX).rev() {
+                // Look for the last space within line_max characters
+                let mut break_point = line_max;
+                for i in (0..line_max).rev() {
                     if chars[i] == ' ' {
                         break_point = i;
                         break;

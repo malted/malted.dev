@@ -1,3 +1,4 @@
+use std::sync::{Arc, Mutex};
 use std::time::Duration;
 
 use tiny_http::Request;
@@ -11,6 +12,10 @@ pub struct LocationInfo {
     pub city: String,
     pub state: String,
     pub country: String,
+}
+
+lazy_static::lazy_static! {
+    pub static ref LOCATION_STATE: Arc<Mutex<Option<LocationInfo>>> = Arc::new(Mutex::new(None));
 }
 
 pub fn start_image_save_job() {

@@ -1,10 +1,9 @@
 use std::collections::HashMap;
 use std::env;
-use std::sync::{Arc, Mutex};
 use tiny_http::{Header, Request, Response};
 use url::Url;
 
-use crate::base::location::LocationInfo;
+use crate::base::location::{LocationInfo, LOCATION_STATE};
 
 // /api
 pub fn api(request: Request) {
@@ -12,7 +11,10 @@ pub fn api(request: Request) {
         .url()
         .split("/")
         .nth(2)
-        .expect("a second url component");
+        .expect("a second url component")
+        .split('?')
+        .next()
+        .unwrap();
 
     match choice {
         "location" => handle_location(request),
@@ -22,10 +24,6 @@ pub fn api(request: Request) {
             let _ = request.respond(response);
         }
     }
-}
-
-lazy_static::lazy_static! {
-    static ref LOCATION_STATE: Arc<Mutex<Option<LocationInfo>>> = Arc::new(Mutex::new(None));
 }
 
 fn handle_location(request: Request) {
