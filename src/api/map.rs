@@ -14,7 +14,9 @@ pub fn generate_url(isDark: bool) -> String {
 
     let apple_team_id = std::env::var("APPLE_DEVELOPER_TEAM_ID").expect("an APPLE_DEVELOPER_TEAM_ID env var");
     let mapkit_key_id = std::env::var("APPLE_MAPKIT_KEY_ID").expect("an APPLE_MAPKIT_KEY_ID env var");
-    let mapkit_key_private = std::env::var("APPLE_MAPKIT_KEY_PRIVATE").expect("an APPLE_MAPKIT_KEY_PRIVATE env var");
+    let mapkit_key_private = std::env::var("APPLE_MAPKIT_KEY_PRIVATE")
+        .expect("an APPLE_MAPKIT_KEY_PRIVATE env var")
+        .replace("\\n", "\n"); // fixes newlines in docker compose file env section.
 
     if let Some(loc) = LOCATION_STATE.lock().unwrap().as_ref() {
         let center = format!("{}, {}, {}", loc.city, loc.state, loc.country);
