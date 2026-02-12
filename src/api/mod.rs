@@ -4,6 +4,8 @@ use std::sync::{Arc, Mutex};
 use tiny_http::{Header, Request, Response};
 use url::Url;
 
+use crate::base::location::LocationInfo;
+
 // /api
 pub fn api(request: Request) {
     let choice = request
@@ -22,9 +24,8 @@ pub fn api(request: Request) {
     }
 }
 
-// Global state to store location data
 lazy_static::lazy_static! {
-    static ref LOCATION_STATE: Arc<Mutex<HashMap<String, String>>> = Arc::new(Mutex::new(HashMap::new()));
+    static ref LOCATION_STATE: Arc<Mutex<Option<LocationInfo>>> = Arc::new(Mutex::new(None));
 }
 
 fn handle_location(request: Request) {
@@ -41,11 +42,8 @@ fn handle_location(request: Request) {
     // Parse query parameters
     let query_pairs: HashMap<String, String> = parsed_url.query_pairs().into_owned().collect();
 
-    let lat = query_pairs.get("lat").unwrap_or(&String::new()).clone();
-    let lng = query_pairs.get("lng").unwrap_or(&String::new()).clone();
     let provided_key = query_pairs.get("key").unwrap_or(&String::new()).clone();
 
-    // Get secret key from environment
     let secret_key = match env::var("SECRET_KEY") {
         Ok(key) => key,
         Err(_) => {
@@ -56,31 +54,47 @@ fn handle_location(request: Request) {
         }
     };
 
-    // Validate the provided key
     if provided_key != secret_key {
         let response = Response::from_string("Unauthorized").with_status_code(401);
         let _ = request.respond(response);
         return;
     }
 
-    // Validate lat and lng are not empty
-    if lat.is_empty() || lng.is_empty() {
-        let response =
-            Response::from_string("Missing latitude or longitude parameters").with_status_code(400);
-        let _ = request.respond(response);
-        return;
-    }
+    let lat: f64 = match query_pairs.get("lat").and_then(|s| s.parse().ok()) {
+        Some(v) => v,
+        None => {
+            let response = Response::from_string("Missing or invalid lat").with_status_code(400);
+            let _ = request.respond(response);
+            return;
+        }
+    };
+    let lng: f64 = match query_pairs.get("lng").and_then(|s| s.parse().ok()) {
+        Some(v) => v,
+        None => {
+            let response = Response::from_string("Missing or invalid lng").with_status_code(400);
+            let _ = request.respond(response);
+            return;
+        }
+    };
+    let city = query_pairs.get("city").cloned().unwrap_or_default();
+    let state_name = query_pairs.get("state").cloned().unwrap_or_default();
+    let country = query_pairs.get("country").cloned().unwrap_or_default();
 
-    // Save the location state
     {
         let mut state = LOCATION_STATE.lock().unwrap();
-        state.insert("latitude".to_string(), lat.clone());
-        state.insert("longitude".to_string(), lng.clone());
-        state.insert("timestamp".to_string(), chrono::Utc::now().to_rfc3339());
+        *state = Some(LocationInfo {
+            lat,
+            lng,
+            city: city.clone(),
+            state: state_name.clone(),
+            country: country.clone(),
+        });
     }
 
-    // Return success response
-    let response_body = format!("Location saved: lat={}, lng={}", lat, lng);
+    let response_body = format!(
+        "Location saved: lat={}, lng={}, city={}, state={}, country={}",
+        lat, lng, city, state_name, country
+    );
     let response = Response::from_string(response_body)
         .with_header(Header::from_bytes(&b"Content-Type"[..], &b"text/plain"[..]).unwrap());
 
@@ -90,28 +104,19 @@ fn handle_location(request: Request) {
 fn get_location(request: Request) {
     let state = LOCATION_STATE.lock().unwrap();
 
-    if state.is_empty() {
-        let response = Response::from_string("No location data available").with_status_code(404);
-        let _ = request.respond(response);
-        return;
-    }
-
-    let lat = state
-        .get("latitude")
-        .map(|s| s.as_str())
-        .unwrap_or("unknown");
-    let lng = state
-        .get("longitude")
-        .map(|s| s.as_str())
-        .unwrap_or("unknown");
-    let timestamp = state
-        .get("timestamp")
-        .map(|s| s.as_str())
-        .unwrap_or("unknown");
+    let loc = match state.as_ref() {
+        Some(loc) => loc,
+        None => {
+            let response =
+                Response::from_string("No location data available").with_status_code(404);
+            let _ = request.respond(response);
+            return;
+        }
+    };
 
     let response_body = format!(
-        "Current location:\nLatitude: {}\nLongitude: {}\nLast updated: {}",
-        lat, lng, timestamp
+        "Current location:\nLatitude: {}\nLongitude: {}\nCity: {}\nState: {}\nCountry: {}",
+        loc.lat, loc.lng, loc.city, loc.state, loc.country
     );
 
     let response = Response::from_string(response_body)

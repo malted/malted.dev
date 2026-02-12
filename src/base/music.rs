@@ -12,26 +12,14 @@ pub struct SongInfo {
 }
 
 static LASTFM_URL_BASE: &str = "https://ws.audioscrobbler.com/2.0";
+static LASTFM_USERNAME: &str = "ma1ted";
 
-pub async fn now_playing() -> Result<SongInfo, Box<dyn std::error::Error>> {
+pub async fn now_playing() -> Result<SongInfo, Box<dyn std::error::Error + Send + Sync>> {
     let lastfm_api_key = var("LASTFM_API_KEY")?;
 
-    let now_response: serde_json::Value = reqwest::get(format!("{LASTFM_URL_BASE}/?method=user.getrecenttracks&user=ma1ted&api_key={lastfm_api_key}&format=json&limit=1"))
-        .await?
-        .json()
-        .await?;
-
-    let month_artist: String = reqwest::get(format!(
-        "{LASTFM_URL_BASE}/?method=user.gettopartists&user=ma1ted&api_key={lastfm_api_key}&format=json&period=1month&limit=1"
-    ))
-    .await?
-    .json::<serde_json::Value>()
-    .await?
-    .pointer("/topartists/artist/0/name")
-    .map(|o| o.as_str())
-    .flatten()
-    .ok_or("artist not a valid str")?
-    .to_string();
+    let (now_response, month_artist) = tokio::join!(fetch_now_playing(&lastfm_api_key), fetch_month_artist(&lastfm_api_key));
+    let now_response = now_response?;
+    let month_artist = month_artist?;
 
     let now_playing = now_response
         .pointer("/recenttracks/track/0/@attr/nowplaying")
@@ -73,4 +61,25 @@ pub async fn now_playing() -> Result<SongInfo, Box<dyn std::error::Error>> {
         ago,
         month_artist,
     })
+}
+
+async fn fetch_now_playing(lastfm_api_key: &str) -> Result<serde_json::Value, Box<dyn std::error::Error + Send + Sync>> {
+    Ok(reqwest::get(format!("{LASTFM_URL_BASE}/?method=user.getrecenttracks&user={LASTFM_USERNAME}&api_key={lastfm_api_key}&format=json&limit=1"))
+        .await?
+        .json()
+        .await?)
+}
+
+async fn fetch_month_artist(lastfm_api_key: &str) -> Result<String, Box<dyn std::error::Error + Send + Sync>> {
+    Ok(reqwest::get(format!(
+        "{LASTFM_URL_BASE}/?method=user.gettopartists&user={LASTFM_USERNAME}&api_key={lastfm_api_key}&format=json&period=1month&limit=1"
+    ))
+    .await?
+    .json::<serde_json::Value>()
+    .await?
+    .pointer("/topartists/artist/0/name")
+    .map(|o| o.as_str())
+    .flatten()
+    .ok_or("artist not a valid str")?
+    .to_string())
 }

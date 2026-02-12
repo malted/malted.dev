@@ -4,6 +4,15 @@ use tiny_http::Request;
 use tokio::io::AsyncWriteExt;
 use url::Url;
 
+#[derive(Debug)]
+pub struct LocationInfo {
+    pub lat: f64,
+    pub lng: f64,
+    pub city: String,
+    pub state: String,
+    pub country: String,
+}
+
 pub fn start_image_save_job() {
     let mapbox_token = std::env::var("MAPBOX_TOKEN").unwrap();
 

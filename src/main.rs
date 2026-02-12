@@ -21,7 +21,7 @@ struct State {
 }
 
 #[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
+async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     dotenv::dotenv().ok();
 
     start_image_save_job();
@@ -62,6 +62,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "spotify" => spotify(request),
                 "location" => crate::base::location::image(request).await,
                 "api" => api::api(request),
+                "foo" => foo(request),
                 _ => root(request, state_clone),
             }
         });
@@ -80,6 +81,110 @@ fn spotify(request: Request) {
         .unwrap();
     stream.write_all(b"Content-Length: 0\r\n").unwrap();
     stream.write_all(b"\r\n").unwrap();
+    stream.flush().unwrap();
+}
+
+fn foo(request: Request) {
+    let mut line_max = 60;
+
+    let headers = request.headers();
+    let user_agent = headers
+        .iter()
+        .find(|h| h.field.as_str() == "User-Agent")
+        .map(|h| h.value.as_str());
+
+    if let Some(ua) = user_agent {
+        let is_mobile = ua.to_lowercase().contains("mobile");
+        if is_mobile {
+            line_max = 38;
+        }
+    }
+
+    let mut stream = request.into_writer();
+    stream_http(&mut stream, true);
+    stream_header(&mut stream);
+
+    let body = r#"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+
+Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
+
+Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem."#;
+
+    let title = "FOO";
+    let title_length = title.chars().count();
+    let title_px = (line_max - title_length) / 2;
+
+    let formatted_body = format!("\n\n")
+        + &" ".repeat(title_px - 2)
+        + "┌"
+        + &"─".repeat(title_length + 2)
+        + "┐\n"
+        + &" ".repeat(title_px - 2)
+        + "│ "
+        + title
+        + " │\n"
+        + &" ".repeat(title_px - 2)
+        + "└"
+        + &"─".repeat(title_length + 2)
+        + "┘"
+        + "\n\n"
+        + &"═".repeat(line_max)
+        + "\n\n"
+        + body
+        + "\n\n";
+
+    let broken_lines: String = formatted_body
+        .lines()
+        .map(|line| {
+            let mut result = String::new();
+            let mut remaining = line;
+
+            while !remaining.is_empty() {
+                if remaining.chars().count() <= line_max {
+                    result.push_str(remaining);
+                    break;
+                }
+
+                let chars: Vec<char> = remaining.chars().collect();
+                let mut break_point = line_max;
+                for i in (0..line_max).rev() {
+                    if chars[i] == ' ' {
+                        break_point = i;
+                        break;
+                    }
+                }
+
+                let byte_index = remaining
+                    .char_indices()
+                    .nth(break_point)
+                    .map(|(byte_idx, _)| byte_idx)
+                    .unwrap_or(remaining.len());
+
+                let (current_part, rest) = remaining.split_at(byte_index);
+                result.push_str(current_part.trim_end());
+                result.push('\n');
+                remaining = rest.trim_start();
+            }
+
+            result.push('\n');
+            result
+        })
+        .collect();
+
+    for (line_idx, line) in broken_lines.lines().enumerate() {
+        let margin = format!(" {} |  ", if line_idx % 3 == 1 { "◯" } else { " " });
+        let line = margin + line + "\n";
+
+        for c in line.chars() {
+            stream_writable(&mut stream, &c.to_string());
+
+            if c != '\n' && c != ' ' {
+                thread::sleep(Duration::from_micros(5_000));
+            }
+        }
+    }
+
+    stream.write_all(b"0\r\n\r\n").unwrap();
     stream.flush().unwrap();
 }
 
