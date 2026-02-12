@@ -46,6 +46,7 @@ pub fn location(request: Request) {
     stream
         .write_all(format!("Location: {snapshot_url}\r\n").as_bytes())
         .unwrap();
+    stream.write_all(b"Cache-Control: no-cache, no-store, must-revalidate\r\n").unwrap();
     stream.write_all(b"Content-Length: 0\r\n").unwrap();
     stream.write_all(b"\r\n").unwrap();
     stream.flush().unwrap();
