@@ -60,7 +60,7 @@ fn handle_location(request: Request) {
         return;
     }
 
-    let lat: f64 = match query_pairs.get("lat").and_then(|s| s.parse().ok()) {
+    let mut lat: f64 = match query_pairs.get("lat").and_then(|s| s.parse().ok()) {
         Some(v) => v,
         None => {
             let response = Response::from_string("Missing or invalid lat").with_status_code(400);
@@ -68,7 +68,7 @@ fn handle_location(request: Request) {
             return;
         }
     };
-    let lng: f64 = match query_pairs.get("lng").and_then(|s| s.parse().ok()) {
+    let mut lng: f64 = match query_pairs.get("lng").and_then(|s| s.parse().ok()) {
         Some(v) => v,
         None => {
             let response = Response::from_string("Missing or invalid lng").with_status_code(400);
@@ -76,9 +76,18 @@ fn handle_location(request: Request) {
             return;
         }
     };
-    let city = query_pairs.get("city").cloned().unwrap_or_default();
-    let state_name = query_pairs.get("state").cloned().unwrap_or_default();
+    let mut city = query_pairs.get("city").cloned().unwrap_or_default();
+    let mut state_name = query_pairs.get("state").cloned().unwrap_or_default();
     let country = query_pairs.get("country").cloned().unwrap_or_default();
+
+    if let Ok(hidden_city) = env::var("LOCATION_HIDDEN_CITY") {
+        if city.eq_ignore_ascii_case(&hidden_city) {
+            city = "London".to_string();
+            state_name = "England".to_string();
+            lat = 51.5074;
+            lng = -0.1278;
+        }
+    }
 
     {
         let mut state = LOCATION_STATE.lock().unwrap();

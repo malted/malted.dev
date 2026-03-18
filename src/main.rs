@@ -61,6 +61,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                 "location" => crate::base::location::location(request),
                 "api" => api::api(request),
                 "foo" => foo(request),
+                "linkedin" => linkedin(request),
                 _ => root(request, state_clone),
             }
         });
@@ -83,152 +84,58 @@ fn spotify(request: Request) {
 }
 
 fn foo(request: Request) {
-    let mut line_max = 60;
-
-    let headers = request.headers();
-    let user_agent = headers
-        .iter()
-        .find(|h| h.field.as_str() == "User-Agent")
-        .map(|h| h.value.as_str());
-
-    if let Some(ua) = user_agent {
-        let is_mobile = ua.to_lowercase().contains("mobile");
-        if is_mobile {
-            line_max = 38;
-        }
-    }
-
-    let mut stream = request.into_writer();
-    stream_http(&mut stream, true);
-    stream_header(&mut stream);
-
     let body = r#"Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
 
 Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
 
 Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem."#;
 
-    let title = "FOO";
-    let title_length = title.chars().count();
-    let title_px = (line_max - title_length) / 2;
+    paper_page(request, "FOO", body, None);
+}
 
-    let formatted_body = format!("\n\n")
-        + &" ".repeat(title_px - 2)
-        + "┌"
-        + &"─".repeat(title_length + 2)
-        + "┐\n"
-        + &" ".repeat(title_px - 2)
-        + "│ "
-        + title
-        + " │\n"
-        + &" ".repeat(title_px - 2)
-        + "└"
-        + &"─".repeat(title_length + 2)
-        + "┘"
-        + "\n\n"
-        + &"═".repeat(line_max)
-        + "\n\n"
-        + body
-        + "\n\n";
+fn linkedin(request: Request) {
+    let body = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
 
-    let broken_lines: String = formatted_body
-        .lines()
-        .map(|line| {
-            let mut result = String::new();
-            let mut remaining = line;
-
-            while !remaining.is_empty() {
-                if remaining.chars().count() <= line_max {
-                    result.push_str(remaining);
-                    break;
-                }
-
-                let chars: Vec<char> = remaining.chars().collect();
-                let mut break_point = line_max;
-                for i in (0..line_max).rev() {
-                    if chars[i] == ' ' {
-                        break_point = i;
-                        break;
-                    }
-                }
-
-                let byte_index = remaining
-                    .char_indices()
-                    .nth(break_point)
-                    .map(|(byte_idx, _)| byte_idx)
-                    .unwrap_or(remaining.len());
-
-                let (current_part, rest) = remaining.split_at(byte_index);
-                result.push_str(current_part.trim_end());
-                result.push('\n');
-                remaining = rest.trim_start();
-            }
-
-            result.push('\n');
-            result
-        })
-        .collect();
-
-    for (line_idx, line) in broken_lines.lines().enumerate() {
-        let margin = format!(" {} |  ", if line_idx % 3 == 1 { "◯" } else { " " });
-        let line = margin + line + "\n";
-
-        for c in line.chars() {
-            stream_writable(&mut stream, &c.to_string());
-
-            if c != '\n' && c != ' ' {
-                thread::sleep(Duration::from_micros(5_000));
-            }
-        }
-    }
-
-    stream.write_all(b"0\r\n\r\n").unwrap();
-    stream.flush().unwrap();
+    paper_page(request, "LINKEDIN", body, None);
 }
 
 fn root(request: Request, state: Arc<RwLock<State>>) {
-    let mut line_max = 60;
-
-    let headers = request.headers();
-
-    let user_agent = headers
+    let user_agent: Option<String> = request
+        .headers()
         .iter()
         .find(|h| h.field.as_str() == "User-Agent")
-        .map(|h| h.value.as_str());
-    dbg!(user_agent);
-    let lat: Option<f64> = headers
+        .map(|h| h.value.as_str().to_owned());
+    dbg!(&user_agent);
+    let lat: Option<f64> = request
+        .headers()
         .iter()
         .find(|h| h.field.as_str() == "Cf-Iplatitude")
         .map(|h| h.value.as_str().parse().ok())
         .flatten();
-    let lng: Option<f64> = headers
+    let lng: Option<f64> = request
+        .headers()
         .iter()
         .find(|h| h.field.as_str() == "Cf-Iplongitude")
         .map(|h| h.value.as_str().parse().ok())
         .flatten();
-    let city = headers
+    let city: Option<String> = request
+        .headers()
         .iter()
         .find(|h| h.field.as_str() == "Cf-Ipcity")
-        .map(|h| h.value.as_str());
-    let region = headers
+        .map(|h| h.value.as_str().to_owned());
+    let region: Option<String> = request
+        .headers()
         .iter()
         .find(|h| h.field.as_str() == "Cf-Region")
-        .map(|h| h.value.as_str());
-    let visitor_country = headers
+        .map(|h| h.value.as_str().to_owned());
+    let visitor_country: Option<String> = request
+        .headers()
         .iter()
         .find(|h| h.field.as_str() == "Cf-Ipcountry")
-        .map(|h| h.value.as_str());
-
-    if let Some(ua) = user_agent {
-        let is_mobile = ua.to_lowercase().contains("mobile");
-
-        if is_mobile {
-            line_max = 38;
-        }
-    }
+        .map(|h| h.value.as_str().to_owned());
 
     let my_location = LOCATION_STATE.lock().unwrap();
-    let location_string = match (my_location.as_ref(), lat, lng, visitor_country) {
+    let location_string = match (my_location.as_ref(), lat, lng, visitor_country.as_deref()) {
         (Some(me_loc), Some(lat), Some(lng), Some(their_country)) => {
             let me = geo::point!(x: me_loc.lat, y: me_loc.lng);
             let you = geo::point!(x: lat, y: lng);
@@ -247,7 +154,7 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
                 format!("in {}, {}", me_loc.city, me_loc.country)
             };
 
-            let visitor_loc = match (city, region) {
+            let visitor_loc = match (city.as_deref(), region.as_deref()) {
                 (Some(c), Some(r)) => format!(" ({c}, {r})"),
                 (Some(c), None) => format!(" ({c})"),
                 _ => String::new(),
@@ -287,10 +194,6 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
     };
     drop(my_location);
 
-    let mut stream = request.into_writer();
-    stream_http(&mut stream, true);
-    stream_header(&mut stream);
-
     let si = &state.read().song_info;
     let time = if si.now_playing {
         "I'm currently"
@@ -311,94 +214,10 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
         .replace("🎵", &song_string)
         .replace("📌", &location_string);
 
-    let title = "PROFILE CIRCULAR REV 10";
-    let title_length = title.chars().count();
-
     let month_abbr = chrono::Utc::now().format("%b").to_string().to_uppercase();
+    let top_right = format!("{month_abbr} 2025");
 
-    let title_px = (line_max - title_length) / 2;
-
-    let body = format!(
-        "\n\nMALTED.DEV{}{month_abbr} 2025\n\n\n",
-        " ".repeat(line_max - 18)
-    ) + &" ".repeat(title_px - 2)
-        + "┌"
-        + &"─".repeat(title_length + 2)
-        + "┐\n"
-        + &" ".repeat(title_px - 2)
-        + "│ "
-        + title
-        + " │\n"
-        + &" ".repeat(title_px - 2)
-        + "└"
-        + &"─".repeat(title_length + 2)
-        + "┘"
-        + "\n\n"
-        + &"═".repeat(line_max)
-        + "\n\n"
-        + &body
-        + "\n\n";
-
-    let broken_lines: String = body
-        .lines()
-        .map(|line| {
-            let mut result = String::new();
-            let mut remaining = line;
-
-            while !remaining.is_empty() {
-                if remaining.chars().count() <= line_max {
-                    // Line fits, add it and we're done
-                    result.push_str(remaining);
-                    break;
-                }
-
-                // Line is too long, need to break it
-                let chars: Vec<char> = remaining.chars().collect();
-
-                // Look for the last space within line_max characters
-                let mut break_point = line_max;
-                for i in (0..line_max).rev() {
-                    if chars[i] == ' ' {
-                        break_point = i;
-                        break;
-                    }
-                }
-
-                // Convert character index back to byte index for splitting
-                let byte_index = remaining
-                    .char_indices()
-                    .nth(break_point)
-                    .map(|(byte_idx, _)| byte_idx)
-                    .unwrap_or(remaining.len());
-
-                let (current_part, rest) = remaining.split_at(byte_index);
-                result.push_str(current_part.trim_end()); // Remove trailing space
-                result.push('\n');
-
-                // Skip leading spaces on the next line
-                remaining = rest.trim_start();
-            }
-
-            result.push('\n');
-            result
-        })
-        .collect();
-
-    for (line_idx, line) in broken_lines.lines().enumerate() {
-        let margin = format!(" {} |  ", if line_idx % 3 == 1 { "◯" } else { " " });
-        let line = margin + &line + "\n";
-
-        for c in line.chars() {
-            stream_writable(&mut stream, &c.to_string());
-
-            if c != '\n' && c != ' ' {
-                thread::sleep(Duration::from_micros(5_000));
-            }
-        }
-    }
-
-    stream.write_all(b"0\r\n\r\n").unwrap(); // End
-    stream.flush().unwrap();
+    paper_page(request, "PROFILE CIRCULAR REV 10", &body, Some(("MALTED.DEV", &top_right)));
 }
 
 // fn root(request: Request, state: Arc<RwLock<State>>) {
@@ -466,6 +285,111 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
 //     stream.write_all(b"0\r\n\r\n").unwrap(); // End
 //     stream.flush().unwrap();
 // }
+
+fn paper_page(request: Request, title: &str, body: &str, top_line: Option<(&str, &str)>) {
+    let mut line_max = 60;
+
+    let user_agent = request
+        .headers()
+        .iter()
+        .find(|h| h.field.as_str() == "User-Agent")
+        .map(|h| h.value.as_str().to_owned());
+
+    if let Some(ref ua) = user_agent {
+        if ua.to_lowercase().contains("mobile") {
+            line_max = 38;
+        }
+    }
+
+    let mut stream = request.into_writer();
+    stream_http(&mut stream, true);
+    stream_header(&mut stream);
+
+    let title_length = title.chars().count();
+    let title_px = (line_max - title_length) / 2;
+
+    let mut formatted = String::from("\n\n");
+
+    if let Some((left, right)) = top_line {
+        let padding = line_max - left.len() - right.len();
+        formatted += left;
+        formatted += &" ".repeat(padding);
+        formatted += right;
+        formatted += "\n\n\n";
+    }
+
+    formatted += &" ".repeat(title_px - 2);
+    formatted += "┌";
+    formatted += &"─".repeat(title_length + 2);
+    formatted += "┐\n";
+    formatted += &" ".repeat(title_px - 2);
+    formatted += "│ ";
+    formatted += title;
+    formatted += " │\n";
+    formatted += &" ".repeat(title_px - 2);
+    formatted += "└";
+    formatted += &"─".repeat(title_length + 2);
+    formatted += "┘";
+    formatted += "\n\n";
+    formatted += &"═".repeat(line_max);
+    formatted += "\n\n";
+    formatted += body;
+    formatted += "\n\n";
+
+    let broken_lines: String = formatted
+        .lines()
+        .map(|line| {
+            let mut result = String::new();
+            let mut remaining = line;
+
+            while !remaining.is_empty() {
+                if remaining.chars().count() <= line_max {
+                    result.push_str(remaining);
+                    break;
+                }
+
+                let chars: Vec<char> = remaining.chars().collect();
+                let mut break_point = line_max;
+                for i in (0..line_max).rev() {
+                    if chars[i] == ' ' {
+                        break_point = i;
+                        break;
+                    }
+                }
+
+                let byte_index = remaining
+                    .char_indices()
+                    .nth(break_point)
+                    .map(|(byte_idx, _)| byte_idx)
+                    .unwrap_or(remaining.len());
+
+                let (current_part, rest) = remaining.split_at(byte_index);
+                result.push_str(current_part.trim_end());
+                result.push('\n');
+                remaining = rest.trim_start();
+            }
+
+            result.push('\n');
+            result
+        })
+        .collect();
+
+    for (line_idx, line) in broken_lines.lines().enumerate() {
+        let margin = format!(" {} |  ", if line_idx % 3 == 1 { "◯" } else { " " });
+        let line = margin + line + "\n";
+
+        for c in line.chars() {
+            stream_writable(&mut stream, &c.to_string());
+
+            if c != '\n' && c != ' ' {
+                thread::sleep(Duration::from_micros(5_000));
+            }
+        }
+    }
+
+    stream.write_all(b"0\r\n\r\n").unwrap();
+    stream.flush().unwrap();
+}
 
 fn stream_writable(stream: &mut Box<dyn Write + Send + 'static>, content: &str) {
     stream
