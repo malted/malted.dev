@@ -80,14 +80,23 @@ fn handle_location(request: Request) {
     let mut state_name = query_pairs.get("state").cloned().unwrap_or_default();
     let country = query_pairs.get("country").cloned().unwrap_or_default();
 
-    if let Ok(hidden_city) = env::var("LOCATION_HIDDEN_CITY") {
-        if city.eq_ignore_ascii_case(&hidden_city) {
-            city = "London".to_string();
-            state_name = "England".to_string();
-            lat = 51.5074;
-            lng = -0.1278;
+    match env::var("LOCATION_HIDDEN_CITY") {
+        Ok(hidden_city) => {
+            eprintln!("[location] LOCATION_HIDDEN_CITY={:?}, incoming city={:?}, match={}", hidden_city, city, city.eq_ignore_ascii_case(&hidden_city));
+            if city.eq_ignore_ascii_case(&hidden_city) {
+                eprintln!("[location] Hiding location: overriding to London");
+                city = "London".to_string();
+                state_name = "England".to_string();
+                lat = 51.5074;
+                lng = -0.1278;
+            }
+        }
+        Err(e) => {
+            eprintln!("[location] LOCATION_HIDDEN_CITY not set: {e}");
         }
     }
+
+    eprintln!("[location] Saving: lat={lat}, lng={lng}, city={city:?}, state={state_name:?}, country={country:?}");
 
     {
         let mut state = LOCATION_STATE.lock().unwrap();
