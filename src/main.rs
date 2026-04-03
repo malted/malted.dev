@@ -216,8 +216,10 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
         .replace("🎵", &song_string)
         .replace("📌", &location_string);
 
-    let month_abbr = chrono::Utc::now().format("%b").to_string().to_uppercase();
-    let top_right = format!("{month_abbr} 2025");
+    let utc_now =  chrono::Utc::now();
+    let month_fmt = utc_now.format("%b");
+    let year_fmt = utc_now.format("%Y");
+    let top_right = format!("{month_fmt} {year_fmt}");
 
     paper_page(request, "PROFILE CIRCULAR REV 10", &body, Some(("MALTED.DEV", &top_right)));
 }
