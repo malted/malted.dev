@@ -5,10 +5,10 @@ use typst_as_lib::typst_kit_options::TypstKitFontOptions;
 
 static CV_SRC_FILE: &str = include_str!("../../include/cv.typ");
 static FONTS: &[&[u8]] = &[
-    include_bytes!("../../include/NewCM10-Regular.otf"),
     include_bytes!("../../include/fonts/NewCM08-Book.otf"),
     include_bytes!("../../include/fonts/NewCM08-BookItalic.otf"),
     include_bytes!("../../include/fonts/NewCM10-Bold.otf"),
+    include_bytes!("../../include/fonts/NewCM10-BoldItalic.otf"),
 ];
 
 pub struct PdfResponse(Vec<u8>);
