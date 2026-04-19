@@ -9,9 +9,11 @@ use url::Url;
 
 use crate::base::location::LOCATION_STATE;
 use crate::base::music::SongInfo;
+use crate::pages::cv;
 
 mod api;
 mod base;
+mod pages;
 
 static MAIN_BODY: &str = include_str!("main.txt");
 
@@ -64,6 +66,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
                 "api" => api::api(request),
                 "foo" => foo(request),
                 "linkedin" => linkedin(request),
+                "cv" => crate::cv::cv(request),
                 _ => root(request, state_clone),
             }
         });
@@ -192,7 +195,9 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
 
             format!("I'm {where_i_am}.")
         }
-        _ => "I can't tell where either of us are right now, but I hope to see you soon!".to_string(),
+        _ => {
+            "I can't tell where either of us are right now, but I hope to see you soon!".to_string()
+        }
     };
     drop(my_location);
 
@@ -216,12 +221,17 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
         .replace("🎵", &song_string)
         .replace("📌", &location_string);
 
-    let utc_now =  chrono::Utc::now();
+    let utc_now = chrono::Utc::now();
     let month_fmt = utc_now.format("%b");
     let year_fmt = utc_now.format("%Y");
     let top_right = format!("{month_fmt} {year_fmt}");
 
-    paper_page(request, "PROFILE CIRCULAR REV 10", &body, Some(("MALTED.DEV", &top_right)));
+    paper_page(
+        request,
+        "PROFILE CIRCULAR REV 10",
+        &body,
+        Some(("MALTED.DEV", &top_right)),
+    );
 }
 
 // fn root(request: Request, state: Arc<RwLock<State>>) {

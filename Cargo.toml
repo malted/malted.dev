@@ -18,4 +18,7 @@ serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.145"
 tiny_http = "0.12.0"
 tokio = { version = "1.48.0", features = ["full"] }
+typst = "0.14.2"
+typst-as-lib = { version = "0.15.4", features = ["packages","ureq", "typst-kit-fonts", "typst-kit-embed-fonts"] }
+typst-pdf = "0.14.2"
 url = "2.5.7"
