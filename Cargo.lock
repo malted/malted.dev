@@ -549,6 +549,20 @@ dependencies = [
 ]
 
 [[package]]
+name = "derive_typst_intoval"
+version = "0.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3f6efc4e922a436e0468168c9f5f2013ca599b7d6d0a0456b771413637319725"
+dependencies = [
+ "heck",
+ "proc-macro2",
+ "quote",
+ "syn",
+ "typst",
+ "typst-macros",
+]
+
+[[package]]
 name = "digest"
 version = "0.10.7"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2002,6 +2016,7 @@ dependencies = [
  "base64",
  "chrono",
  "chrono-humanize",
+ "derive_typst_intoval",
  "dotenv",
  "geo",
  "jsonwebtoken",

@@ -1,5 +1,5 @@
-use std::fs;
 use tiny_http::{Request, Response};
+use typst::foundations::{Dict, IntoValue};
 use typst_as_lib::TypstEngine;
 use typst_as_lib::typst_kit_options::TypstKitFontOptions;
 
@@ -11,16 +11,21 @@ static FONTS: &[&[u8]] = &[
     include_bytes!("../../include/fonts/NewCM10-BoldItalic.otf"),
 ];
 
-pub struct PdfResponse(Vec<u8>);
-
 pub fn cv(request: Request) {
-    let pdf = compile();
+    let url = url::Url::parse(&format!("http://localhost{}", request.url())).expect("a valid URL");
+    let email = url
+        .query_pairs()
+        .find(|(key, _)| key == "email")
+        .map(|(_, val)| val.to_string())
+        .unwrap_or("malted@malted.dev".to_string());
+
+    let pdf = compile(email);
 
     let response = Response::from_data(pdf);
     request.respond(response).unwrap();
 }
 
-fn compile() -> Vec<u8> {
+fn compile(email: String) -> Vec<u8> {
     let template = TypstEngine::builder()
         .main_file(CV_SRC_FILE)
         .fonts(FONTS.iter().copied())
@@ -28,7 +33,10 @@ fn compile() -> Vec<u8> {
         .with_package_file_resolver()
         .build();
 
-    let compilation_result = template.compile(); //_with_input(dummy_data())
+    let mut inputs = Dict::new();
+    inputs.insert("email".into(), email.into_value());
+
+    let compilation_result = template.compile_with_input(inputs);
 
     for warning in &compilation_result.warnings {
         eprintln!("Typst warning: {:?}", warning);

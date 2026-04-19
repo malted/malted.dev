@@ -1,4 +1,5 @@
 #import "@preview/basic-resume:0.2.8": *
+#import sys: inputs
 
 // Put your personal information here, replacing mine
 #let name = "Ben Dixon"
@@ -14,7 +15,7 @@
   // All the lines below are optional.
   // For example, if you want to to hide your phone number:
   // feel free to comment those lines out and they will not show.
-  email: email,
+  email: inputs.email,
   github: github,
   // linkedin: linkedin,
   phone: phone,
