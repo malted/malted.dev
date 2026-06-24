@@ -1,5 +1,4 @@
 #import "@preview/basic-resume:0.2.8": *
-#import sys: inputs
 
 // Put your personal information here, replacing mine
 #let name = "Ben Dixon"
@@ -15,59 +14,67 @@
   // All the lines below are optional.
   // For example, if you want to to hide your phone number:
   // feel free to comment those lines out and they will not show.
-  email: inputs.email,
+  email: email,
   github: github,
   // linkedin: linkedin,
   phone: phone,
   personal-site: personal-site,
   accent-color: "#26428b",
   font: "New Computer Modern",
-  font-size: 12pt,
+  font-size: 11.2pt,
   paper: "us-letter",
   author-position: left,
   personal-info-position: left,
 )
 
 /*
- * Lines that start with == are formatted into section headings
- * You can use the specific formatting functions if needed
- * The following formatting functions are listed below
- * #edu(dates: "", degree: "", gpa: "", institution: "", location: "", consistent: false)
- * #work(company: "", dates: "", location: "", title: "")
- * #project(dates: "", name: "", role: "", url: "")
- * certificates(name: "", issuer: "", url: "", date: "")
- * #extracurriculars(activity: "", dates: "")
- * There are also the following generic functions that don't apply any formatting
- * #generic-two-by-two(top-left: "", top-right: "", bottom-left: "", bottom-right: "")
- * #generic-one-by-two(left: "", right: "")
- */
+* Lines that start with == are formatted into section headings
+* You can use the specific formatting functions if needed
+* The following formatting functions are listed below
+* #edu(dates: "", degree: "", gpa: "", institution: "", location: "", consistent: false)
+* #work(company: "", dates: "", location: "", title: "")
+* #project(dates: "", name: "", role: "", url: "")
+* certificates(name: "", issuer: "", url: "", date: "")
+* #extracurriculars(activity: "", dates: "")
+* There are also the following generic functions that don't apply any formatting
+* #generic-two-by-two(top-left: "", top-right: "", bottom-left: "", bottom-right: "")
+* #generic-one-by-two(left: "", right: "")
+*/
 
 == Skills
-*Languages:* Rust, TypeScript/JavaScript, Ruby, C\#, Swift, Python, GLSL \
-*Frameworks:* Ruby on Rails, Next.js, Actix, SwiftUI, Rocket.rs, Unity, Vapor \
+*Languages:* Rust, TypeScript/JavaScript, Swift, Ruby, C\#, Python, GLSL \
+*Frameworks:* Ruby on Rails, Next.js, SwiftUI, Actix, Rocket.rs, Unity, Vapor \
 *Infrastructure:* Kubernetes, Docker, PostgreSQL, SQLite, Cloudflare, Redis, Stripe API
 
 == Work Experience
 
 #work(
-  title: "Backend Engineer",
-  location: "England",
-  company: "Stride Inc",
-  dates: dates-helper(start-date: "September 2025", end-date: "December 2025"),
+  title: "Full-Stack Engineer (iOS)",
+  location: "United Kingdom",
+  company: "Quite Good Software",
+  dates: dates-helper(start-date: "January 2026", end-date: "Present"),
 )
-- Built scraping infrastructure and reverse engineered closed data sources to aggregate comprehensive data on all U.S. schools.
+- Reverse-engineered border agencies' traveller information retrieval systems from multiple countries (available on request), built end-to-end automated FOI pipelines, and built native SwiftUI clients for collecting passport data using CoreNFC and background WKWebViews.
+
+#work(
+  title: "Backend Engineer",
+  location: "Remote",
+  company: "Stride Inc",
+  dates: dates-helper(start-date: "September 2025", end-date: "January 2026"),
+)
+- Built novel scraping infrastructure and reverse engineered closed data sources to aggregate comprehensive data on all U.S. schools.
 - Designed and implemented ETL pipelines (Pandas, Jupyter -> PostgreSQL -> Flask) for deduplication, matching, and transformation.
 
 #work(
   title: "Full-Stack Engineer",
   location: "Vermont, USA",
   company: "Hack Club",
-  dates: dates-helper(start-date: "April 2023", end-date: "July 2025"),
+  dates: dates-helper(start-date: "April 2023", end-date: "August 2025"),
 )
 - Owned reliability and feature velocity across a suite serving 50k+ teenage hackers.
 - *#link("https://highseas.hackclub.com")[High Seas]:* (Next.js) Online hackathon where 20k students logged 18.5 years of coding time in 3 months in exchange for \$350k+ in prizes; responsible for platform engineering, site reliability, and infrastructure. Announced at GitHub Universe 2024.
 - *#link("https://github.com/hackclub/ai")[ai.hackclub.com]:* (Rust, Actix, Groq) Created a free OpenAI-schema-compatible `/chat/completions` service; \2B+ tokens processed since Jan 2025.
-- *#link("https://hackclub.com/fiscal-sponsorship")[HCB (Hack Club Bank)]:* (Ruby on Rails, Stripe) Added fine-grained permissions, spending controls, check reminders, new-IP login alerts, export formats; hundreds of bug fixes + UX improvements for an open source neobank for 501(c)(3) fiscal sponsorship.
+- *#link("https://github.com/hackclub/hcb")[HCB (Hack Club Bank)]:* (Ruby on Rails, Stripe) Added fine-grained permissions, spending controls, check reminders, new-IP login alerts, export formats; hundreds of bug fixes + UX improvements for an open source neobank for 501(c)(3) fiscal sponsorship.
 - *#link("https://github.com/hackclub/replit-lifeboat")[Replit Lifeboat]*: (Rust, K8s, S3) Reverse engineered Replit internals to build the only tool converting Replit history to timed Git commits; 1.09M files across 82k projects exported. Built in a \~weekend.
 - Spun up *#link("https://ip.hackclub.com")[ip.hackclub.com]* (Bun) & *#link("https://ships.hackclub.com")[ships.hackclub.com]* (Three.js + GLSL) in \<72h each for events and congressional demos.
 - *#link("https://summer.hackclub.com")[Summer of Making]:* (Ruby on Rails) Responsible for the platform engineering and feature integration of the in-progress successor to High Seas (above). Built and launched in \~3 weeks with 15k users.
