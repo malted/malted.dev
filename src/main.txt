@@ -6,7 +6,7 @@ I'm usually a systems engineer. At Hack Club (hackclub.com) I built out open sou
 
 🎵
 
-I move around a lot but right now 📌 DM me on Spotify (malted.dev/spotify) if you want to meet up!
+I move around a lot but right now 📌 DM me on Spotify (malted.dev/spotify) or email me at hi@malted.dev if you want to meet up!
 
 This website is streamed plaintext from a custom Rust webserver - source at github.com/malted. There are secrets hidden between these lines...
 
