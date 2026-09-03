@@ -1,9 +1,8 @@
 Hi! People call me Malted.
 
+In my free time, I like writing shaders, travelling to strange places, tinkering in Rust, and doing casual investigative journalism.
 
-I like writing shaders, travelling to strange places, tinkering in Rust, and doing casual investigative journalism.
-
-I used to work at Hack Club (hackclub.com), working on 501(c)(3) financial infrastructure and building the world's biggest hackathons. Now I'm bobbing around the world crunching big data :o
+I'm usually a systems engineer. At Hack Club (hackclub.com) I built out open source 501(c)(3) financial infrastructure in Ruby on Rails, built massive live-service hackathons using Next, and reverse-engineered complex proprietary systems in Rust, but right now I'm making a game with some awesome creatives and journalists! Check back mid-October for a Steam wishlist link!
 
 🎵
 
