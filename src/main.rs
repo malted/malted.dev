@@ -1,10 +1,17 @@
 use geo::{Distance, Haversine};
 use parking_lot::RwLock;
+use rand::prelude::IndexedRandom;
+use reqwest::header::HeaderValue;
+use serde::Deserialize;
+use std::io::Read;
 use std::io::Write;
 use std::sync::Arc;
 use std::thread;
 use std::time::Duration;
-use tiny_http::Request;
+use tiny_http::Header;
+use tiny_http::HeaderField;
+use tiny_http::StatusCode;
+use tiny_http::{Method, Request, Response};
 use url::Url;
 
 use crate::base::location::LOCATION_STATE;
@@ -16,9 +23,17 @@ mod pages;
 
 static MAIN_BODY: &str = include_str!("main.txt");
 
+#[derive(Deserialize, Debug, Clone)]
+struct ReadingListItem {
+    date_added: Option<String>,
+    title: Option<String>,
+    url: String,
+}
+
 #[derive(Debug)]
 struct State {
     song_info: SongInfo,
+    reading_list: Vec<ReadingListItem>,
 }
 
 #[tokio::main]
@@ -27,6 +42,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
     let state = Arc::new(RwLock::new(State {
         song_info: base::music::now_playing().await?,
+        reading_list: vec![],
     }));
 
     let state_2 = state.clone();
@@ -59,6 +75,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
         let state_clone = state.clone();
         tokio::spawn(async move {
+            if request.url() == "/???" {
+                return reading_list(request, state_clone);
+            }
+
             match service.as_str() {
                 "spotify" => spotify(request),
                 "location" => crate::base::location::location(request),
@@ -72,6 +92,54 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     }
 
     Ok(())
+}
+
+fn reading_list(mut request: Request, state: Arc<RwLock<State>>) {
+    println!("Reading list");
+    match request.method() {
+        Method::Post => {
+            if request
+                .headers()
+                .iter()
+                .find(|h| h.field.equiv("Authorization"))
+                .map(|h| h.value.as_str())
+                != Some(&std::env::var("SECRET_KEY").expect("failed to find env var SECRET_KEY"))
+            {
+                return request.respond(Response::empty(401)).unwrap();
+            }
+
+            let limit = 1 << 20; // 1MiB
+            let mut buf = Vec::new();
+            request
+                .as_reader()
+                .take(limit + 1)
+                .read_to_end(&mut buf)
+                .unwrap();
+            if buf.len() as u64 > limit {
+                return request.respond(Response::empty(413)).unwrap();
+            }
+
+            let body: Vec<ReadingListItem> = serde_json::from_slice(&buf).unwrap();
+            (*state.write()).reading_list = body;
+            println!("updated");
+
+            return request.respond(Response::empty(200)).unwrap();
+        }
+        Method::Get => {
+            let reading_list = (*state.read()).reading_list.to_owned();
+            let reading_list_item = reading_list.choose(&mut rand::rng()).unwrap();
+
+            let header =
+                tiny_http::Header::from_bytes(&b"Location"[..], reading_list_item.url.as_bytes())
+                    .unwrap();
+            return request
+                .respond(Response::empty(307).with_header(header))
+                .unwrap();
+        }
+        _ => {
+            return request.respond(Response::empty(501)).unwrap();
+        }
+    }
 }
 
 fn spotify(request: Request) {

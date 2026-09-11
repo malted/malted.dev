@@ -1,0 +1,10 @@
+[package]
+name = "maltedd"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+plist = "1"
+reqwest = { version = "0.13.5", features = ["blocking", "json"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.151"

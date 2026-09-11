@@ -13,6 +13,7 @@ geo = "0.31.0"
 jsonwebtoken = { version = "10.3.0", features = ["rust_crypto", "use_pem"] }
 lazy_static = "1.4"
 parking_lot = "0.12.5"
+rand = "0.10.2"
 regex = "1.11.2"
 reqwest = { version = "0.12.24", features = ["json"] }
 serde = { version = "1.0.228", features = ["derive"] }
