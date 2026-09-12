@@ -1,11 +1,13 @@
 pub mod map;
 
+use reqwest::header::{HeaderMap, HeaderValue};
+use serde_json::json;
 use std::collections::HashMap;
 use std::env;
 use tiny_http::{Header, Request, Response};
 use url::Url;
 
-use crate::base::location::{LocationInfo, LOCATION_STATE};
+use crate::base::location::{LOCATION_STATE, LocationInfo};
 
 // /api
 pub fn api(request: Request) {
@@ -82,7 +84,12 @@ fn handle_location(request: Request) {
 
     match env::var("LOCATION_HIDDEN_CITY") {
         Ok(hidden_city) => {
-            eprintln!("[location] LOCATION_HIDDEN_CITY={:?}, incoming city={:?}, match={}", hidden_city, city, city.eq_ignore_ascii_case(&hidden_city));
+            eprintln!(
+                "[location] LOCATION_HIDDEN_CITY={:?}, incoming city={:?}, match={}",
+                hidden_city,
+                city,
+                city.eq_ignore_ascii_case(&hidden_city)
+            );
             if city.eq_ignore_ascii_case(&hidden_city) {
                 eprintln!("[location] Hiding location: overriding to London");
                 city = "London".to_string();
@@ -96,7 +103,14 @@ fn handle_location(request: Request) {
         }
     }
 
-    eprintln!("[location] Saving: lat={lat}, lng={lng}, city={city:?}, state={state_name:?}, country={country:?}");
+    eprintln!(
+        "[location] Saving: lat={lat}, lng={lng}, city={city:?}, state={state_name:?}, country={country:?}"
+    );
+
+    let gh_city = city.clone();
+    tokio::spawn(async move {
+        update_github_location(&gh_city).await;
+    });
 
     {
         let mut state = LOCATION_STATE.lock().unwrap();
@@ -141,4 +155,42 @@ fn get_location(request: Request) {
         .with_header(Header::from_bytes(&b"Content-Type"[..], &b"text/plain"[..]).unwrap());
 
     let _ = request.respond(response);
+}
+
+pub async fn update_github_location(location: &str) {
+    dotenv::dotenv().unwrap();
+
+    let github_token = std::env::var("GITHUB_PROFILE_UPDATE_TOKEN")
+        .expect("an env var named GITHUB_PROFILE_UPDATE_TOKEN");
+
+    let mut headers = reqwest::header::HeaderMap::new();
+    headers.insert(
+        reqwest::header::ACCEPT,
+        HeaderValue::from_static("application/vnd.github+json"),
+    );
+    headers.insert(
+        reqwest::header::AUTHORIZATION,
+        format!("Bearer {github_token}").parse().unwrap(),
+    );
+    headers.insert(
+        "X-GitHub-Api-Version",
+        HeaderValue::from_static("2026-03-10"),
+    );
+    headers.insert(
+        reqwest::header::USER_AGENT,
+        HeaderValue::from_static("malted.dev"),
+    );
+
+    let res: serde_json::Value = reqwest::Client::new()
+        .patch("https://api.github.com/user")
+        .json(&serde_json::json!({ "location": location }))
+        .headers(headers)
+        .send()
+        .await
+        .unwrap()
+        .json()
+        .await
+        .unwrap();
+
+    dbg!(res);
 }
