@@ -127,7 +127,14 @@ fn reading_list(mut request: Request, state: Arc<RwLock<State>>) {
         }
         Method::Get => {
             let reading_list = (*state.read()).reading_list.to_owned();
-            let reading_list_item = reading_list.choose(&mut rand::rng()).unwrap();
+            let reading_list_item = match reading_list.choose(&mut rand::rng()) {
+                Some(item) => item,
+                None => &ReadingListItem {
+                    date_added: Some(String::new()),
+                    title: Some(String::new()),
+                    url: "https://www.wired.com/2000/04/joy-2/".to_string(),
+                },
+            };
 
             let header =
                 tiny_http::Header::from_bytes(&b"Location"[..], reading_list_item.url.as_bytes())
