@@ -5,3 +5,8 @@ cargo build --release && printf '<?xml version="1.0" encoding="UTF-8"?>\n<!DOCTY
 
 Uninstall:
 launchctl bootout gui/$(id -u)/dev.malted.maltedd; rm -f ~/Library/LaunchAgents/dev.malted.maltedd.plist /tmp/maltedd.log /tmp/maltedd.err
+
+
+TODOS:
+replace reqwest with ureq
+use launchd's <key>StartInterval</key><integer>3600</integer> instead of KeepAlive and looping/sleeping.
