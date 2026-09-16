@@ -1,21 +1,15 @@
 use geo::{Distance, Haversine};
 use parking_lot::RwLock;
 use rand::prelude::IndexedRandom;
-use reqwest::header::HeaderValue;
 use serde::Deserialize;
-use std::io::Read;
-use std::io::Write;
-use std::sync::Arc;
-use std::thread;
-use std::time::Duration;
-use tiny_http::Header;
-use tiny_http::HeaderField;
-use tiny_http::StatusCode;
+use std::io::{Read, Write};
+use std::{sync::Arc, thread, time::Duration};
 use tiny_http::{Method, Request, Response};
 use url::Url;
 
 use crate::base::location::LOCATION_STATE;
 use crate::base::music::SongInfo;
+use crate::base::{clash, music};
 
 mod api;
 mod base;
@@ -25,38 +19,36 @@ static MAIN_BODY: &str = include_str!("main.txt");
 
 #[derive(Deserialize, Debug, Clone)]
 struct ReadingListItem {
+    #[allow(dead_code)]
     date_added: Option<String>,
+    #[allow(dead_code)]
     title: Option<String>,
     url: String,
 }
 
 #[derive(Debug)]
 struct State {
-    song_info: SongInfo,
+    song_info: Option<SongInfo>,
     reading_list: Vec<ReadingListItem>,
+    last_clash_battle: Option<crate::base::clash::ClashBattle>,
 }
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     dotenv::dotenv().ok();
 
+    // let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL not set");
+    // let pool = sqlx::postgres::PgPoolOptions::new()
+    //     .connect(&database_url)
+    //     .await?;
+
     let state = Arc::new(RwLock::new(State {
-        song_info: base::music::now_playing().await?,
+        song_info: None,
         reading_list: vec![],
+        last_clash_battle: None,
     }));
 
-    let state_2 = state.clone();
-    tokio::spawn(async move {
-        loop {
-            tokio::time::sleep(Duration::from_secs(10)).await;
-
-            let si = match base::music::now_playing().await {
-                Ok(si) => si,
-                Err(_) => continue,
-            };
-            (*state_2.write()).song_info = si;
-        }
-    });
+    start_jobs(state.clone());
 
     let port = std::env::var("PORT").unwrap_or("3000".to_string());
 
@@ -92,6 +84,20 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     }
 
     Ok(())
+}
+
+fn start_jobs(state: Arc<RwLock<State>>) {
+    tokio::spawn(async move {
+        (state.write()).song_info = music::now_playing().await.ok();
+
+        (state.write()).last_clash_battle = clash::last_battles()
+            .await
+            .expect("failed to get last clash battles")
+            .first()
+            .cloned();
+
+        tokio::time::sleep(Duration::from_secs(60)).await;
+    });
 }
 
 fn reading_list(mut request: Request, state: Arc<RwLock<State>>) {
@@ -269,25 +275,68 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
     };
     drop(my_location);
 
-    let si = &state.read().song_info;
-    let time = if si.now_playing {
-        "I'm currently"
-    } else {
-        if let Some(ago) = &si.ago {
-            &format!("{}{} I was", ago[..1].to_uppercase(), &ago[1..])
-        } else {
-            "A bit ago I was"
+    let song_string = match &state.read().song_info {
+        Some(si) => {
+            let time = if si.now_playing {
+                "I'm currently"
+            } else {
+                if let Some(ago) = &si.ago {
+                    &format!("{}{} I was", ago[..1].to_uppercase(), &ago[1..])
+                } else {
+                    "A bit ago I was"
+                }
+            };
+
+            format!(
+                "{} listening to {} by {}. This month I've been listening to lots of {}!!",
+                time, si.track, si.artist, si.month_artist
+            )
         }
+        None => "".to_string(),
     };
 
-    let song_string = format!(
-        "{} listening to {} by {}. This month I've been listening to lots of {}!!",
-        time, si.track, si.artist, si.month_artist
-    );
+    let clash_string = match &state.read().last_clash_battle {
+        Some(battle) => 'arm: {
+            let my_tag =
+                std::env::var("CLASH_ROYALE_TAG").expect("an env var named CLASH_ROYALE_TAG");
+            let me = battle
+                .team
+                .iter()
+                .find(|b| b.tag.replace("#", "%23") == my_tag)
+                .expect("the clash api is being funky...no battle tag == my_tag :(");
+
+            let Some(them) = battle.opponent.first() else {
+                break 'arm "".to_string();
+            };
+
+            let ago = chrono_humanize::HumanTime::from(battle.battle_time).to_string();
+
+            let s = if me.trophy_change.is_positive() {
+                format!(
+                    "\n{ago} I {}-crowned a {} deck using my {} deck in Clash Royale.\n",
+                    me.crowns,
+                    clash::top_cards(&them.cards),
+                    clash::top_cards(&me.cards),
+                )
+            } else {
+                format!(
+                    "\n{ago} I got {}-crowned by a {} deck against my {} deck in Clash Royale.\n",
+                    me.crowns,
+                    clash::top_cards(&them.cards),
+                    clash::top_cards(&me.cards),
+                )
+            };
+
+            let mut s = s.chars();
+            s.next().unwrap().to_uppercase().collect::<String>() + s.as_str() // Just capitalising first letter
+        }
+        None => "".to_string(),
+    };
 
     let body = MAIN_BODY
         .replace("🎵", &song_string)
-        .replace("📌", &location_string);
+        .replace("📌", &location_string)
+        .replace("⚔️", &clash_string);
 
     let utc_now = chrono::Utc::now();
     let month_fmt = utc_now.format("%b");
