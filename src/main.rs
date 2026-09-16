@@ -88,15 +88,19 @@ async fn main() -> Result<(), Box<dyn std::error::Error + Send + Sync>> {
 
 fn start_jobs(state: Arc<RwLock<State>>) {
     tokio::spawn(async move {
-        (state.write()).song_info = music::now_playing().await.ok();
+        loop {
+            match music::now_playing().await {
+                Ok(info) => state.write().song_info = Some(info),
+                Err(e) => eprintln!("failed to fetch now playing: {e}"),
+            }
 
-        (state.write()).last_clash_battle = clash::last_battles()
-            .await
-            .expect("failed to get last clash battles")
-            .first()
-            .cloned();
+            match clash::last_battles().await {
+                Ok(battles) => state.write().last_clash_battle = battles.first().cloned(),
+                Err(e) => eprintln!("failed to fetch clash battles: {e}"),
+            }
 
-        tokio::time::sleep(Duration::from_secs(60)).await;
+            tokio::time::sleep(Duration::from_secs(60)).await;
+        }
     });
 }
 
@@ -269,9 +273,7 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
 
             format!("I'm {where_i_am}.")
         }
-        _ => {
-            "I can't tell where either of us are right now, but I hope to see you soon!".to_string()
-        }
+        _ => "I can't tell where either of us are, but I hope to see you soon!".to_string(),
     };
     drop(my_location);
 
