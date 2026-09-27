@@ -95,7 +95,19 @@ fn start_jobs(state: Arc<RwLock<State>>) {
             }
 
             match clash::last_battles().await {
-                Ok(battles) => state.write().last_clash_battle = battles.first().cloned(),
+                Ok(battles) => {
+                    // Find the first ladder game (there are so many party modes now...tsk)
+                    let last_ladder_game = battles.iter().find(|b| {
+                        let my_tag = std::env::var("CLASH_ROYALE_TAG")
+                            .expect("an env var named CLASH_ROYALE_TAG");
+                        b.team
+                            .iter()
+                            .find(|t| t.tag == my_tag)
+                            .map(|m| m.trophy_change.is_some())
+                            .unwrap_or(false)
+                    });
+                    state.write().last_clash_battle = last_ladder_game.cloned();
+                }
                 Err(e) => eprintln!("failed to fetch clash battles: {e}"),
             }
 
@@ -313,7 +325,7 @@ fn root(request: Request, state: Arc<RwLock<State>>) {
 
             let ago = chrono_humanize::HumanTime::from(battle.battle_time).to_string();
 
-            let s = if me.trophy_change.is_positive() {
+            let s = if me.trophy_change.expect("a None trophy_change should have been caught at the last_clash_battle setting point. It indicates it wasn't a ladder match.").is_positive() {
                 format!(
                     "\n{ago} I {}-crowned a {} deck using my {} deck in Clash Royale.\n",
                     me.crowns,

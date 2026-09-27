@@ -16,12 +16,13 @@ pub struct ClashBattleArena {
 pub struct ClashBattleTeammate {
     pub tag: String,
     pub name: String,
-    pub starting_trophies: i64,
-    pub trophy_change: i64,
+    // Non-ladder modes (party/PvP variants) omit the trophy and tower fields.
+    pub starting_trophies: Option<i64>,
+    pub trophy_change: Option<i64>,
     pub crowns: i64,
-    pub king_tower_hit_points: i64,
+    pub king_tower_hit_points: Option<i64>,
     pub princess_towers_hit_points: Option<Vec<i64>>,
-    pub elixir_leaked: f64,
+    pub elixir_leaked: Option<f64>,
     pub cards: Vec<ClashCard>,
 }
 
@@ -62,8 +63,13 @@ pub async fn last_battles() -> reqwest::Result<Vec<ClashBattle>> {
 
     let url = format!("https://api.clashroyale.com/v1/players/{tag}/battlelog");
     let res: Value = client.get(url).send().await?.json().await?;
-    dbg!(&res);
-    let res: Vec<ClashBattle> = serde_json::from_value(res).unwrap();
+    let res: Vec<ClashBattle> = match serde_json::from_value(res) {
+        Ok(battles) => battles,
+        Err(e) => {
+            eprintln!("failed to parse clash battlelog: {e}");
+            Vec::new()
+        }
+    };
     Ok(res)
 }
 
