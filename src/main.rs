@@ -102,7 +102,7 @@ fn start_jobs(state: Arc<RwLock<State>>) {
                             .expect("an env var named CLASH_ROYALE_TAG");
                         b.team
                             .iter()
-                            .find(|t| t.tag == my_tag)
+                            .find(|t| t.tag.replace("#", "%23") == my_tag)
                             .map(|m| m.trophy_change.is_some())
                             .unwrap_or(false)
                     });
