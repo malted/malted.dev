@@ -19,7 +19,7 @@ pub fn generate_url(is_dark: bool) -> String {
         .replace("\\n", "\n"); // fixes newlines in docker compose file env section.
 
     if let Some(loc) = LOCATION_STATE.lock().unwrap().as_ref() {
-        let center = format!("{},{}", loc.lat, loc.lng);
+        let center = format!("{}, {}, {}", loc.city, loc.state, loc.country);
         eprintln!("[map] center={center:?}, lat={}, lng={}", loc.lat, loc.lng);
         url.query_pairs_mut().append_pair("center", &center);
     }
