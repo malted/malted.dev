@@ -78,7 +78,7 @@ fn handle_location(request: Request) {
     };
     let mut city = query_pairs.get("city").cloned().unwrap_or_default();
     let mut state_name = query_pairs.get("state").cloned().unwrap_or_default();
-    let country = query_pairs.get("country").cloned().unwrap_or_default();
+    let mut country = query_pairs.get("country").cloned().unwrap_or_default();
 
     match env::var("LOCATION_HIDDEN_CITY") {
         Ok(hidden_city) => {
@@ -88,10 +88,11 @@ fn handle_location(request: Request) {
                 city,
                 city.eq_ignore_ascii_case(&hidden_city)
             );
-            if city.eq_ignore_ascii_case(&hidden_city) {
+            if city.trim().eq_ignore_ascii_case(&hidden_city.trim()) {
                 eprintln!("[location] Hiding location: overriding to London");
                 city = "London".to_string();
                 state_name = "England".to_string();
+                country = "United Kingdom".to_string();
                 lat = 51.5074;
                 lng = -0.1278;
             }
