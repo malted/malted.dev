@@ -10,14 +10,14 @@ struct ReadingListItem {
 }
 
 impl ReadingListItem {
-    fn extract() -> Vec<Self> {
-        let list = Value::from_file("/Users/malted/Library/Safari/Bookmarks.plist")
-            .expect("failed to read ~/Library/Safari/Bookmarks.plist");
+    fn extract() -> Result<Vec<Self>, plist::Error> {
+        let list = Value::from_file("/Users/malted/Library/Safari/Bookmarks.plist")?;
         let list = list
             .as_dictionary()
             .expect("failed to convert Bookmarks.plist to a plist::Dictionary");
 
-        list.get("Children")
+        Ok(list
+            .get("Children")
             .expect("Failed to find 'Children' element in Bookmarks.plist dict")
             .as_array()
             .expect("Failed to convert 'Children' element in Bookmarks.plist to array")
@@ -55,26 +55,36 @@ impl ReadingListItem {
                     date_added,
                 }
             })
-            .collect()
+            .collect())
     }
 }
 
 fn main() {
     loop {
+        sync();
         std::thread::sleep(std::time::Duration::from_secs(60 * 60));
+    }
+}
 
-        let key = match std::fs::read_to_string("/Users/malted/.config/maltedd") {
-            Ok(k) => k,
-            Err(_) => continue,
-        };
+fn sync() {
+    let key = match std::fs::read_to_string("/Users/malted/.config/maltedd") {
+        Ok(k) => k,
+        Err(e) => return eprintln!("failed to read ~/.config/maltedd: {e}"),
+    };
 
-        let items = ReadingListItem::extract();
+    let items = match ReadingListItem::extract() {
+        Ok(items) => items,
+        Err(e) => return eprintln!("failed to read Bookmarks.plist (needs Full Disk Access): {e}"),
+    };
 
-        let client = reqwest::blocking::Client::new();
-        client
-            .post("https://malted.dev/???")
-            .json(&items)
-            .header("Authorization", key.trim())
-            .send();
+    let res = reqwest::blocking::Client::new()
+        .post("https://malted.dev/???")
+        .json(&items)
+        .header("Authorization", key.trim())
+        .send();
+
+    match res {
+        Ok(r) => println!("posted {} items: {}", items.len(), r.status()),
+        Err(e) => eprintln!("failed to post reading list: {e}"),
     }
 }
