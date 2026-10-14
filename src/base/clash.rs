@@ -44,7 +44,7 @@ pub struct ClashCard {
     pub max_level: i64,
     pub name: String,
     pub rarity: String,
-    pub elixir_cost: i64,
+    pub elixir_cost: Option<i64>,
 }
 
 pub async fn last_battles() -> reqwest::Result<Vec<ClashBattle>> {
