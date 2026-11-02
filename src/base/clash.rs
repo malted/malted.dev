@@ -88,23 +88,17 @@ where
 
 pub fn top_cards(cards: &Vec<ClashCard>) -> String {
     let levels = std::collections::HashMap::from([
-        ("legendary", 0),
-        ("epic", 1),
-        ("rare", 2),
-        ("common", 3),
+        ("champion", 0),
+        ("legendary", 1),
+        ("epic", 2),
+        ("rare", 3),
+        ("common", 4),
     ]);
 
     let mut cards = cards.clone();
     cards.sort_by(|a, b| {
-        let ra = levels.get(a.rarity.as_str()).expect(&format!(
-            "Card {:?} is not an expected card rarity: {}",
-            &a, &a.rarity
-        ));
-        let rb = levels.get(b.rarity.as_str()).expect(&format!(
-            "Card {:?} is not an expected card rarity: {}",
-            &b, &b.rarity
-        ));
-
+        let ra = levels.get(a.rarity.as_str()).unwrap_or(&i32::MAX);
+        let rb = levels.get(b.rarity.as_str()).unwrap_or(&i32::MAX);
         ra.cmp(&rb)
     });
     cards.sort_by(|a, b| b.elixir_cost.cmp(&a.elixir_cost));
